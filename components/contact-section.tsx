@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { triggerConfetti } from "@/lib/confetti";
-import { useLegalModals } from "./legal-modals";
+import Link from "next/link";
 
 // Custom SVG Icons for Services - Professional White-Stroke Aesthetic
 const ServiceIcons = {
@@ -77,7 +77,6 @@ export default function ContactSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { openPrivacy } = useLegalModals();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -284,13 +283,12 @@ export default function ContactSection() {
 
                 <p className="text-center text-xs text-foreground/40">
                   By submitting this form, you agree to our{" "}
-                  <button 
-                    type="button"
-                    onClick={openPrivacy}
+                  <Link 
+                    href="/privacy"
                     className="underline hover:text-primary transition-colors cursor-pointer"
                   >
                     privacy policy
-                  </button>.
+                  </Link>.
                 </p>
               </form>
             )}

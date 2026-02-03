@@ -163,18 +163,18 @@ export default function Footer() {
               reserved.
             </div>
             <div className="flex items-center gap-8">
-              <button
-                onClick={openPrivacy}
+              <Link
+                href="/privacy"
                 className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium cursor-pointer"
               >
                 Privacy Policy
-              </button>
-              <button
-                onClick={openTerms}
+              </Link>
+              <Link
+                href="/terms"
                 className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium cursor-pointer"
               >
                 Terms of Service
-              </button>
+              </Link>
             </div>
           </div>
         </div>

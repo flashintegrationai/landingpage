@@ -221,69 +221,110 @@ export default function ServicesSection() {
                 </div>
               </DialogTrigger>
 
-              <DialogContent className="max-w-4xl p-0 overflow-hidden bg-card border-border sm:rounded-3xl">
-                <div className="grid md:grid-cols-2 h-full max-h-[90vh] overflow-y-auto md:overflow-hidden">
-                   {/* Large Image Side */}
-                   <div className="relative h-[300px] md:h-full min-h-[400px]">
-                      <Image
-                        src={service.image}
-                        alt={service.title}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t md:bg-linear-to-r from-black/60 to-transparent" />
-                      
-                      {/* Close button on mobile image */}
-                      <DialogClose className="absolute top-4 right-4 md:hidden w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm">
-                        <X className="w-4 h-4" />
-                      </DialogClose>
-                   </div>
-
-                   {/* Content Side */}
-                   <div className="p-8 md:p-10 flex flex-col justify-center bg-card">
-                      <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
-                        <service.icon className="w-7 h-7 text-primary" />
-                      </div>
-                      
-                      <DialogHeader className="mb-4">
-                        <DialogTitle className="font-(family-name:--font-orbitron) text-3xl font-bold text-foreground text-left">
-                          {service.title}
-                        </DialogTitle>
-                      </DialogHeader>
-
-                      <p className="text-muted-foreground leading-relaxed mb-8">
-                        {service.detailedDescription}
-                      </p>
-
-                      <div className="space-y-6">
-                        <h4 className="font-semibold text-foreground uppercase tracking-wider text-sm">Key Features</h4>
-                        <ul className="grid grid-cols-1 gap-3">
-                          {service.features.map((feature) => (
-                            <li key={feature} className="flex items-center gap-3 text-muted-foreground">
-                              <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div className="mt-10 pt-6 border-t border-border">
-                        <DialogClose asChild>
-                           <Button 
-                             onClick={handleQuoteClick}
-                             className="w-full bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white rounded-xl py-6 text-lg"
-                           >
-                             Book This Service
-                           </Button>
-                        </DialogClose>
-                      </div>
-                   </div>
-                </div>
+              <DialogContent className="max-w-6xl p-0 overflow-hidden bg-black border-none sm:rounded-4xl shadow-2xl">
+                <ServiceModalContent service={service} handleQuoteClick={handleQuoteClick} />
               </DialogContent>
             </Dialog>
           ))}
         </div>
       </div>
     </section>
+  )
+}
+
+function ServiceModalContent({ service, handleQuoteClick }: { service: any, handleQuoteClick: () => void }) {
+  const [showInfo, setShowInfo] = useState(true);
+
+  return (
+    <div className="relative w-full h-[85vh] md:h-[650px] flex flex-col md:flex-row bg-black">
+      {/* The HERO Image - High performance focus */}
+      <div className="relative flex-[2.5] h-full w-full overflow-hidden transition-all duration-500">
+        <Image
+          src={service.image}
+          alt={service.title}
+          fill
+          className="object-cover"
+          priority
+        />
+        
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
+        
+        {/* Floating Header on Image */}
+        <div className="absolute top-8 left-8 z-20">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#1e71cd]/20 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl">
+              <service.icon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="font-(family-name:--font-orbitron) text-2xl md:text-3xl font-bold text-white uppercase tracking-tighter drop-shadow-lg">
+                {service.title}
+              </h3>
+              <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.3em]">Elite Restoration</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Info Toggle Button */}
+        <button 
+          onClick={() => setShowInfo(!showInfo)}
+          className="absolute bottom-8 right-8 z-40 md:hidden w-14 h-14 rounded-full bg-[#1e71cd] text-white flex items-center justify-center shadow-2xl active:scale-90 transition-transform"
+        >
+          {showInfo ? <X className="w-6 h-6" /> : <Droplets className="w-6 h-6 animate-pulse" />}
+        </button>
+      </div>
+
+      {/* Content Side Panel */}
+      <div 
+        className={`absolute inset-x-4 bottom-4 md:relative md:inset-auto md:flex-1 transition-all duration-500 ease-in-out z-30 ${
+          showInfo ? "translate-y-0 opacity-100" : "translate-y-[120%] opacity-0 md:translate-y-0 md:opacity-100"
+        }`}
+      >
+        <div className="bg-black/60 backdrop-blur-3xl md:bg-card border border-white/10 md:border-l md:border-y-0 md:border-r-0 md:border-border h-full p-8 md:p-12 flex flex-col justify-between rounded-4xl md:rounded-none">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h4 className="font-bold text-white md:text-foreground/40 uppercase tracking-[0.2em] text-[10px] md:text-xs">
+                Service Experience
+              </h4>
+              <p className="text-white/90 md:text-muted-foreground leading-relaxed text-sm md:text-lg">
+                {service.detailedDescription}
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="font-bold text-white md:text-foreground/40 uppercase tracking-[0.2em] text-[10px] md:text-xs">
+                Performance Benchmarks
+              </h4>
+              <ul className="grid grid-cols-1 gap-3">
+                {service.features.map((feature: string) => (
+                  <li key={feature} className="flex items-center gap-3 text-white/80 md:text-muted-foreground text-sm font-medium">
+                    <div className="w-6 h-6 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 pt-8 border-t border-white/10 md:border-border">
+            <DialogClose asChild>
+              <Button 
+                onClick={handleQuoteClick}
+                className="w-full bg-[#1e71cd] hover:bg-primary/90 text-white rounded-2xl py-7 text-base font-black uppercase tracking-[0.2em] shadow-2xl shadow-[#1e71cd]/30 active:scale-[0.98] transition-all"
+              >
+                Book Now
+              </Button>
+            </DialogClose>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Global Close Button */}
+      <DialogClose className="absolute top-8 right-8 z-50 w-12 h-12 rounded-2xl bg-black/40 text-white flex items-center justify-center backdrop-blur-xl border border-white/10 hover:bg-white hover:text-black transition-all group">
+        <X className="w-5 h-5 transition-transform group-hover:rotate-90" />
+      </DialogClose>
+    </div>
   )
 }
