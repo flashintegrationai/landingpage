@@ -221,7 +221,7 @@ export default function ServicesSection() {
                 </div>
               </DialogTrigger>
 
-              <DialogContent className="max-w-6xl p-0 overflow-hidden bg-black border-none sm:rounded-4xl shadow-2xl">
+              <DialogContent className="max-w-[95vw] w-full h-[90vh] p-0 overflow-hidden bg-black border-none sm:rounded-4xl shadow-2xl transition-all duration-500">
                 <ServiceModalContent service={service} handleQuoteClick={handleQuoteClick} />
               </DialogContent>
             </Dialog>
@@ -233,12 +233,12 @@ export default function ServicesSection() {
 }
 
 function ServiceModalContent({ service, handleQuoteClick }: { service: any, handleQuoteClick: () => void }) {
-  const [showInfo, setShowInfo] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
 
   return (
-    <div className="relative w-full h-[85vh] md:h-[650px] flex flex-col md:flex-row bg-black">
-      {/* The HERO Image - High performance focus */}
-      <div className="relative flex-[2.5] h-full w-full overflow-hidden transition-all duration-500">
+    <div className="relative w-full h-full bg-black">
+      {/* FULL SCREEN HERO IMAGE */}
+      <div className="absolute inset-0 z-0">
         <Image
           src={service.image}
           alt={service.title}
@@ -246,85 +246,99 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
           className="object-cover"
           priority
         />
-        
-        {/* Overlays */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
-        
-        {/* Floating Header on Image */}
-        <div className="absolute top-8 left-8 z-20">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#1e71cd]/20 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl">
-              <service.icon className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-(family-name:--font-orbitron) text-2xl md:text-3xl font-bold text-white uppercase tracking-tighter drop-shadow-lg">
-                {service.title}
-              </h3>
-              <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.3em]">Elite Restoration</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Info Toggle Button */}
-        <button 
-          onClick={() => setShowInfo(!showInfo)}
-          className="absolute bottom-8 right-8 z-40 md:hidden w-14 h-14 rounded-full bg-[#1e71cd] text-white flex items-center justify-center shadow-2xl active:scale-90 transition-transform"
-        >
-          {showInfo ? <X className="w-6 h-6" /> : <Droplets className="w-6 h-6 animate-pulse" />}
-        </button>
+        {/* Dynamic Dark Gradient Protection */}
+        <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-black/80" />
       </div>
 
-      {/* Content Side Panel */}
-      <div 
-        className={`absolute inset-x-4 bottom-4 md:relative md:inset-auto md:flex-1 transition-all duration-500 ease-in-out z-30 ${
-          showInfo ? "translate-y-0 opacity-100" : "translate-y-[120%] opacity-0 md:translate-y-0 md:opacity-100"
-        }`}
-      >
-        <div className="bg-black/60 backdrop-blur-3xl md:bg-card border border-white/10 md:border-l md:border-y-0 md:border-r-0 md:border-border h-full p-8 md:p-12 flex flex-col justify-between rounded-4xl md:rounded-none">
+      {/* FLOATING BRANDING (Top Left) */}
+      <div className="absolute top-8 left-8 z-20 flex items-center gap-5 translate-y-0 animate-in fade-in slide-in-from-left-4 duration-700">
+        <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center shadow-2xl">
+          <service.icon className="w-7 h-7 md:w-10 md:h-10 text-white" />
+        </div>
+        <div>
+          <DialogTitle className="font-(family-name:--font-orbitron) text-3xl md:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
+            {service.title}
+          </DialogTitle>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="w-8 h-1 bg-[#1e71cd] rounded-full" />
+            <DialogDescription className="text-white/60 text-[10px] md:text-xs font-black uppercase tracking-[0.4em]">
+              Elite Surface Systems Professional Restoration
+            </DialogDescription>
+          </div>
+        </div>
+      </div>
+
+      {/* CONTROLS (Top Right) */}
+      <div className="absolute top-8 right-8 z-50 flex items-center gap-4">
+        <DialogClose className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-black/40 hover:bg-white text-white hover:text-black flex items-center justify-center backdrop-blur-2xl border border-white/10 transition-all duration-300 group shadow-2xl">
+          <X className="w-6 h-6 transition-transform group-hover:rotate-90" />
+        </DialogClose>
+      </div>
+
+      {/* FLOATING INFO PANEL (Bottom Left) */}
+      <div className={`absolute bottom-8 left-8 right-8 md:right-auto md:w-[450px] z-30 transition-all duration-700 ease-out ${
+        showInfo ? "translate-y-0 opacity-100 scale-100" : "translate-y-12 opacity-0 scale-95 pointer-events-none"
+      }`}>
+        <div className="bg-black/60 backdrop-blur-3xl border border-white/10 p-8 md:p-10 rounded-4xl shadow-3xl">
           <div className="space-y-8">
-            <div className="space-y-4">
-              <h4 className="font-bold text-white md:text-foreground/40 uppercase tracking-[0.2em] text-[10px] md:text-xs">
-                Service Experience
-              </h4>
-              <p className="text-white/90 md:text-muted-foreground leading-relaxed text-sm md:text-lg">
+            <div className="space-y-3">
+              <h4 className="font-bold text-[#1e71cd] uppercase tracking-[0.3em] text-[10px]">Service Intelligence</h4>
+              <p className="text-white/90 leading-relaxed text-sm md:text-base font-medium">
                 {service.detailedDescription}
               </p>
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-bold text-white md:text-foreground/40 uppercase tracking-[0.2em] text-[10px] md:text-xs">
-                Performance Benchmarks
-              </h4>
+              <h4 className="font-bold text-[#1e71cd] uppercase tracking-[0.3em] text-[10px]">Technical Advantages</h4>
               <ul className="grid grid-cols-1 gap-3">
                 {service.features.map((feature: string) => (
-                  <li key={feature} className="flex items-center gap-3 text-white/80 md:text-muted-foreground text-sm font-medium">
-                    <div className="w-6 h-6 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                  <li key={feature} className="flex items-center gap-3 text-white/80 text-sm font-medium">
+                    <div className="w-6 h-6 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#1e71cd]" />
                     </div>
                     {feature}
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
 
-          <div className="mt-10 pt-8 border-t border-white/10 md:border-border">
             <DialogClose asChild>
               <Button 
                 onClick={handleQuoteClick}
                 className="w-full bg-[#1e71cd] hover:bg-primary/90 text-white rounded-2xl py-7 text-base font-black uppercase tracking-[0.2em] shadow-2xl shadow-[#1e71cd]/30 active:scale-[0.98] transition-all"
               >
-                Book Now
+                Instant Quote
               </Button>
             </DialogClose>
           </div>
         </div>
       </div>
 
-      {/* Main Global Close Button */}
-      <DialogClose className="absolute top-8 right-8 z-50 w-12 h-12 rounded-2xl bg-black/40 text-white flex items-center justify-center backdrop-blur-xl border border-white/10 hover:bg-white hover:text-black transition-all group">
-        <X className="w-5 h-5 transition-transform group-hover:rotate-90" />
-      </DialogClose>
+      {/* INFO TOGGLE & CTA (Bottom Right) */}
+      <div className="absolute bottom-8 right-8 z-40 flex flex-col items-end gap-4 md:flex-row md:items-center">
+        {!showInfo && (
+           <Button 
+             onClick={handleQuoteClick}
+             className="hidden md:flex bg-[#1e71cd] hover:bg-primary/90 text-white rounded-2xl px-8 py-7 text-sm font-black uppercase tracking-[0.2em] shadow-2xl shadow-[#1e71cd]/40 active:scale-[0.98] transition-all"
+           >
+             Book Service Now
+           </Button>
+        )}
+        
+        <button 
+          onClick={() => setShowInfo(!showInfo)}
+          className={`w-16 h-16 md:w-20 md:h-20 rounded-3xl flex items-center justify-center shadow-3xl transition-all duration-500 group ${
+            showInfo ? "bg-white text-black rotate-0" : "bg-[#1e71cd] text-white hover:scale-110"
+          }`}
+        >
+          {showInfo ? <X className="w-8 h-8" /> : (
+            <div className="flex flex-col items-center">
+              <Droplets className="w-7 h-7 md:w-9 md:h-9 animate-pulse" />
+              <span className="text-[8px] font-black mt-1 uppercase tracking-tighter">Details</span>
+            </div>
+          )}
+        </button>
+      </div>
     </div>
   )
 }
