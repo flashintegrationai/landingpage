@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: '/favicon.jpeg',
+    icon: '/favicon32.png',
   },
 }
 
