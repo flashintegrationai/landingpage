@@ -61,20 +61,11 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-4 group">
               <div className="relative w-20 h-20 md:w-28 md:h-28 transition-transform duration-300 group-hover:scale-105">
-                {/* Light Mode Logo */}
                 <Image
-                  src="/images/navlogo.png"
+                  src="/logoremovebj.png"
                   alt="Elite Surface Systems Logo"
                   fill
-                  className="object-contain dark:hidden"
-                  priority
-                />
-                {/* Dark Mode Logo */}
-                <Image
-                  src="/images/navlogodark.png"
-                  alt="Elite Surface Systems Logo"
-                  fill
-                  className="object-contain hidden dark:block"
+                  className="object-contain"
                   priority
                 />
               </div>

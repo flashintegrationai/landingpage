@@ -62,19 +62,11 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center group mb-8">
               <div className="relative w-32 h-32 md:w-48 md:h-48 transition-transform duration-300 group-hover:scale-105">
-                {/* Light Mode Logo */}
                 <Image
-                  src="/images/navlogo.png"
+                  src="/logoremovebj.png"
                   alt="Elite Surface Systems Logo"
                   fill
-                  className="object-contain dark:hidden"
-                />
-                {/* Dark Mode Logo */}
-                <Image
-                  src="/images/navlogodark.png"
-                  alt="Elite Surface Systems Logo"
-                  fill
-                  className="object-contain hidden dark:block"
+                  className="object-contain"
                 />
               </div>
             </Link>
