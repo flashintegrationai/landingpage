@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { triggerSingleConfetti } from "@/lib/confetti"
@@ -221,7 +222,7 @@ export default function ServicesSection() {
                 </div>
               </DialogTrigger>
 
-              <DialogContent className="max-w-[95vw] w-full h-[90vh] p-0 overflow-hidden bg-black border-none sm:rounded-4xl shadow-2xl transition-all duration-500">
+              <DialogContent className="max-w-[100vw] sm:max-w-5xl w-full h-[80vh] p-0 overflow-hidden bg-black border-none sm:rounded-4xl shadow-2xl transition-all duration-500">
                 <ServiceModalContent service={service} handleQuoteClick={handleQuoteClick} />
               </DialogContent>
             </Dialog>
@@ -251,12 +252,12 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
       </div>
 
       {/* FLOATING BRANDING (Top Left) */}
-      <div className="absolute top-8 left-8 z-20 flex items-center gap-5 translate-y-0 animate-in fade-in slide-in-from-left-4 duration-700">
-        <div className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center shadow-2xl">
-          <service.icon className="w-7 h-7 md:w-10 md:h-10 text-white" />
+      <div className="absolute top-8 left-8 z-20 flex items-center gap-4 translate-y-0 animate-in fade-in slide-in-from-left-4 duration-700">
+        <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center shadow-2xl">
+          <service.icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
         </div>
         <div>
-          <DialogTitle className="font-(family-name:--font-orbitron) text-3xl md:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
+          <DialogTitle className="font-(family-name:--font-orbitron) text-xl md:text-3xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
             {service.title}
           </DialogTitle>
           <div className="flex items-center gap-2 mt-1">
