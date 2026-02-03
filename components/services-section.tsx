@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { triggerSingleConfetti } from "@/lib/confetti"
+import { useQuoteModal } from "./quote-modal"
 
 const services = [
   {
@@ -84,6 +85,14 @@ const services = [
 export default function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const { openModal } = useQuoteModal()
+
+  const handleQuoteClick = () => {
+    triggerSingleConfetti()
+    setTimeout(() => {
+      openModal()
+    }, 2000)
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -196,7 +205,13 @@ export default function ServicesSection() {
                            <p className="text-white/80 leading-relaxed text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
                              {service.description}
                            </p>
-                           <div className="flex items-center gap-2 text-primary text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200">
+                           <div 
+                             onClick={(e) => {
+                               e.stopPropagation()
+                               handleQuoteClick()
+                             }}
+                             className="flex items-center gap-2 text-primary text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200"
+                           >
                              GET FREE ESTIMATE <ArrowRight className="w-4 h-4 ml-1" />
                            </div>
                          </div>
@@ -255,7 +270,7 @@ export default function ServicesSection() {
                       <div className="mt-10 pt-6 border-t border-border">
                         <DialogClose asChild>
                            <Button 
-                             onClick={triggerSingleConfetti}
+                             onClick={handleQuoteClick}
                              className="w-full bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white rounded-xl py-6 text-lg"
                            >
                              Book This Service

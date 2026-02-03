@@ -4,6 +4,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Youtube, ArrowUp } from "lucide-react"
 import WaveDivider from "./wave-divider"
+import { useQuoteModal } from "./quote-modal"
+import { triggerSingleConfetti } from "@/lib/confetti"
 
 const footerLinks = {
   services: [
@@ -33,14 +35,23 @@ const socialLinks = [
 ]
 
 export default function Footer() {
+  const { openModal } = useQuoteModal()
+
+  const handleQuoteClick = () => {
+    triggerSingleConfetti()
+    setTimeout(() => {
+      openModal()
+    }, 2000)
+  }
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   return (
-    <footer className="relative bg-slate-50 dark:bg-[#0b0b0b] text-foreground dark:text-white pt-24 md:pt-32 transition-colors duration-300">
+    <footer className="relative bg-background dark:bg-[#0b0b0b] text-foreground dark:text-white pt-24 md:pt-32 transition-colors duration-500">
       {/* Wave Divider at the Top */}
-      <WaveDivider position="top" color="fill-slate-50 dark:fill-[#0b0b0b]" className="-translate-y-full h-[120px] md:h-[180px]" />
+      <WaveDivider position="top" color="fill-background dark:fill-[#0b0b0b]" className="-translate-y-full h-[120px] md:h-[180px]" />
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -127,14 +138,22 @@ export default function Footer() {
             <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-foreground dark:text-white uppercase tracking-[0.2em] mb-8">
               Get In Touch
             </h3>
-            <div className="p-6 rounded-3xl bg-foreground/5 dark:bg-white/5 border border-border dark:border-white/10 mb-6 group hover:border-[#1e71cd]/50 transition-colors">
+            <div 
+              onClick={handleQuoteClick}
+              className="p-6 rounded-3xl bg-foreground/5 dark:bg-white/5 border border-border dark:border-white/10 mb-6 group hover:border-[#1e71cd]/50 transition-colors cursor-pointer"
+            >
               <div className="font-(family-name:--font-orbitron) text-2xl font-black text-[#1e71cd] mb-1 group-hover:scale-105 transition-transform">
                 (123) 456-7890
               </div>
               <div className="text-sm text-muted-foreground dark:text-white/50 font-medium uppercase tracking-widest">Call for free quote</div>
             </div>
             <div className="text-muted-foreground dark:text-white/60 font-medium">
-              <p className="hover:text-primary dark:hover:text-white transition-colors cursor-pointer">info@elitesurface.com</p>
+              <p 
+                onClick={handleQuoteClick}
+                className="hover:text-primary dark:hover:text-white transition-colors cursor-pointer"
+              >
+                info@elitesurface.com
+              </p>
               <p className="mt-2 text-muted-foreground dark:text-white/60">South Florida Service Area</p>
             </div>
           </div>

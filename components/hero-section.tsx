@@ -7,6 +7,7 @@ import { ArrowRight, Droplets, Shield, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import dynamic from "next/dynamic"
 import { triggerSingleConfetti } from "@/lib/confetti"
+import { useQuoteModal } from "./quote-modal"
 
 const BackgroundEffects = dynamic(
   () => import("@/components/background-effects"),
@@ -21,6 +22,14 @@ const stats = [
 
 export default function HeroSection() {
   const [mounted, setMounted] = useState(false)
+  const { openModal } = useQuoteModal()
+
+  const handleQuoteClick = () => {
+    triggerSingleConfetti()
+    setTimeout(() => {
+      openModal()
+    }, 2000)
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -106,18 +115,17 @@ export default function HeroSection() {
               }`}
             >
               <Button
-                asChild
-                onClick={triggerSingleConfetti}
+                onClick={handleQuoteClick}
                 size="lg"
                 className="group bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white font-black px-10 py-8 text-xl rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_40px_rgba(30,113,205,0.3)] animate-pulse hover:animate-none"
               >
-                <Link href="#contact" className="flex flex-col items-center leading-tight">
+                <div className="flex flex-col items-center leading-tight">
                   <span className="flex items-center gap-2 uppercase tracking-wide">
                     Book Free Estimate
                     <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
                   </span>
                   <span className="text-[10px] font-normal opacity-80 mt-1 uppercase tracking-[0.2em]">No Commitment Required</span>
-                </Link>
+                </div>
               </Button>
             </div>
 
@@ -169,8 +177,8 @@ export default function HeroSection() {
                </div>
             </div>
 
-            {/* THE "OFFER" TRIGGER - RELOCATED TO THE TOP RIGHT OUTSIDE OVERFLOW */}
-            <div className="absolute -top-10 -right-10 z-30 animate-float">
+            {/* THE "OFFER" TRIGGER - POSITIVE RIGHT POSITION */}
+            <div className="absolute top-20 -right-12 z-40 animate-float">
                <div className="group relative">
                  <div className="absolute -inset-1 bg-linear-to-r from-red-600 to-orange-600 rounded-lg blur-md opacity-75 group-hover:opacity-100 animate-pulse transition duration-1000 group-hover:duration-200"></div>
                  <div className="relative flex flex-col items-center bg-red-600 text-white rounded-lg px-8 py-6 shadow-2xl">

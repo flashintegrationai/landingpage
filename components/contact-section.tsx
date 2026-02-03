@@ -9,14 +9,64 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { triggerConfetti } from "@/lib/confetti";
 
+// Custom SVG Icons for Services
+const ServiceIcons = {
+  PressureWashing: () => (
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+      <path d="M75 25L45 55M45 55L35 65" strokeLinecap="round" />
+      <path d="M40 50L15 75M48 58L23 83M56 66L31 91" strokeLinecap="round" strokeDasharray="1 6" className="animate-pulse" />
+      <circle cx="20" cy="70" r="1" className="fill-current" />
+      <circle cx="25" cy="85" r="1.5" className="fill-current" />
+      <circle cx="10" cy="80" r="1" className="fill-current" />
+    </svg>
+  ),
+  HouseWashing: () => (
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 50L50 20L80 50V80H20V50Z" strokeLinecap="round" />
+      <path d="M40 80V60H60V80" strokeLinecap="round" />
+      <path d="M65 30L85 45M70 40 L88 55M75 50L91 65" strokeLinecap="round" strokeDasharray="1 6" />
+    </svg>
+  ),
+  RoofCleaning: () => (
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 70L50 30L85 70" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M30 53L30 80G70 53L70 80G30 80L70 80" strokeLinecap="round" className="opacity-40" />
+      <path d="M60 20L85 40M65 30L75 35" strokeLinecap="round" strokeDasharray="1 5" />
+    </svg>
+  ),
+  ScreenEnclosure: () => (
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="30" width="60" height="40" rx="4" strokeLinecap="round" />
+      <path d="M20 43H80M20 56H80M35 30V70M50 30V70M65 30V70" strokeLinecap="round" className="opacity-40" />
+      <path d="M75 15L90 30M80 25L95 40" strokeLinecap="round" strokeDasharray="1 4" />
+    </svg>
+  ),
+  Driveway: () => (
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 20L35 80H65L80 20" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M40 40H60M38 55H62M36 70H64" strokeLinecap="round" className="opacity-40" />
+      <path d="M50 20V50" strokeLinecap="round" strokeDasharray="2 6" />
+    </svg>
+  ),
+  Commercial: () => (
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 80V30H50V80M50 80V20H80V80" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="30" y="40" width="10" height="8" rx="1" />
+      <rect x="30" y="55" width="10" height="8" rx="1" />
+      <rect x="60" y="30" width="10" height="8" rx="1" />
+      <rect x="60" y="45" width="10" height="8" rx="1" />
+      <rect x="60" y="60" width="10" height="8" rx="1" />
+    </svg>
+  ),
+};
+
 const services = [
-  "House Washing",
-  "Driveway Cleaning",
-  "Roof Cleaning",
-  "Commercial",
-  "Fence Restoration",
-  "Patio & Deck",
-  "Other",
+  { label: "Pressure Washing", icon: ServiceIcons.PressureWashing },
+  { label: "House Washing", icon: ServiceIcons.HouseWashing },
+  { label: "Roof Cleaning", icon: ServiceIcons.RoofCleaning },
+  { label: "Screen Enclosures", icon: ServiceIcons.ScreenEnclosure },
+  { label: "Driveway Cleaning", icon: ServiceIcons.Driveway },
+  { label: "Commercial", icon: ServiceIcons.Commercial },
 ];
 
 export default function ContactSection() {
@@ -163,25 +213,38 @@ export default function ContactSection() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-foreground/80">Service Needed *</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {services.map((service) => (
-                      <label
-                        key={service}
-                        className="flex items-center gap-2 p-3 rounded-xl bg-background/50 border border-input cursor-pointer hover:border-[#1e71cd]/50 transition-colors has-[:checked]:border-[#1e71cd] has-[:checked]:bg-[#1e71cd]/10"
-                      >
-                        <input
-                          type="checkbox"
-                          name="services"
-                          value={service}
-                          className="sr-only"
-                        />
-                        <span className="text-sm text-foreground/80">
-                          {service}
-                        </span>
-                      </label>
-                    ))}
+                <div className="space-y-4">
+                  <Label className="text-foreground/80 text-lg font-bold">Select Which Services You Need</Label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {services.map((service) => {
+                      const Icon = service.icon;
+                      return (
+                        <label
+                          key={service.label}
+                          className="group relative flex flex-col items-center justify-center p-6 rounded-2xl bg-background/50 border-2 border-border cursor-pointer transition-all duration-300 hover:border-[#1e71cd] hover:bg-[#1e71cd]/5 has-[:checked]:border-[#1e71cd] has-[:checked]:bg-[#1e71cd]/10 has-[:checked]:shadow-[0_0_20px_rgba(30,113,205,0.2)]"
+                        >
+                          <input
+                            type="checkbox"
+                            name="services"
+                            value={service.label}
+                            className="sr-only"
+                          />
+                          <div className="text-foreground group-hover:text-[#1e71cd] transition-colors duration-300">
+                            <Icon />
+                          </div>
+                          <span className="text-[10px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-foreground transition-colors text-center mt-2">
+                            {service.label}
+                          </span>
+                          
+                          {/* Selected Indicator Checkmark */}
+                          <div className="absolute top-3 right-3 opacity-0 group-has-[:checked]:opacity-100 transition-all scale-50 group-has-[:checked]:scale-100">
+                             <div className="bg-[#1e71cd] rounded-full p-1 shadow-lg">
+                                <CheckCircle className="w-4 h-4 text-white" />
+                             </div>
+                          </div>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
 

@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { triggerSingleConfetti } from "@/lib/confetti"
+import { useQuoteModal } from "./quote-modal"
 
 const navLinks = [
   { href: "/#services", label: "Services" },
@@ -19,6 +20,15 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+
+  const { openModal } = useQuoteModal()
+
+  const handleQuoteClick = () => {
+    triggerSingleConfetti()
+    setTimeout(() => {
+      openModal()
+    }, 2000)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,14 +101,11 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               <ThemeToggle />
               <Button
-                asChild
-                onClick={triggerSingleConfetti}
+                onClick={handleQuoteClick}
                 className="bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white font-semibold px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(30,113,205,0.4)]"
               >
-                <Link href="tel:+1234567890" className="flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  <span>Free Quote</span>
-                </Link>
+                <Phone className="w-4 h-4" />
+                <span>Free Quote</span>
               </Button>
             </div>
 
@@ -134,14 +141,11 @@ export default function Navbar() {
               <div className="pt-4 px-4 flex items-center gap-3">
                 <ThemeToggle />
                 <Button
-                  asChild
-                  onClick={triggerSingleConfetti}
-                  className="flex-1 bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white font-semibold py-3 rounded-full"
+                  onClick={handleQuoteClick}
+                  className="flex-1 bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white font-semibold py-3 rounded-full flex items-center justify-center gap-2"
                 >
-                  <Link href="tel:+1234567890" className="flex items-center justify-center gap-2">
-                    <Phone className="w-5 h-5" />
-                    <span>Get Free Quote</span>
-                  </Link>
+                  <Phone className="w-5 h-5" />
+                  <span>Get Free Quote</span>
                 </Button>
               </div>
             </div>
