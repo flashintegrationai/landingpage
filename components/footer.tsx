@@ -38,29 +38,34 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative bg-[#0b0b0b] text-white pt-24 md:pt-32">
+    <footer className="relative bg-slate-50 dark:bg-[#0b0b0b] text-foreground dark:text-white pt-24 md:pt-32 transition-colors duration-300">
       {/* Wave Divider at the Top */}
-      <WaveDivider position="top" color="fill-[#0b0b0b]" className="-translate-y-full h-[120px] md:h-[180px]" />
+      <WaveDivider position="top" color="fill-slate-50 dark:fill-[#0b0b0b]" className="-translate-y-full h-[120px] md:h-[180px]" />
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3 group mb-6">
-              <div className="relative w-12 h-12 md:w-16 md:h-16">
+            <Link href="/" className="flex items-center group mb-8">
+              <div className="relative w-32 h-32 md:w-48 md:h-48 transition-transform duration-300 group-hover:scale-105">
+                {/* Light Mode Logo */}
                 <Image
-                  src="/images/whatsapp-image-2026-01-28-at-11.png"
+                  src="/images/navlogo.png"
                   alt="Elite Surface Systems Logo"
                   fill
-                  className="object-contain brightness-0 invert"
+                  className="object-contain dark:hidden"
+                />
+                {/* Dark Mode Logo */}
+                <Image
+                  src="/images/navlogodark.png"
+                  alt="Elite Surface Systems Logo"
+                  fill
+                  className="object-contain hidden dark:block"
                 />
               </div>
-              <span className="font-(family-name:--font-orbitron) text-xl font-black tracking-wider text-white">
-                ELITE SURFACE
-              </span>
             </Link>
-            <p className="text-white/70 leading-relaxed mb-8 text-lg">
+            <p className="text-muted-foreground dark:text-white/70 leading-relaxed mb-8 text-lg">
               Cutting-edge pressure washing technology for residential and
               commercial properties. Experience the future of surface cleaning.
             </p>
@@ -71,7 +76,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-[#1e71cd] hover:border-[#1e71cd] hover:bg-white transition-all duration-300 transform hover:scale-110"
+                  className="w-12 h-12 rounded-2xl bg-foreground/5 dark:bg-white/5 border border-border dark:border-white/10 flex items-center justify-center text-muted-foreground dark:text-white/70 hover:text-[#1e71cd] hover:border-[#1e71cd] hover:bg-white dark:hover:bg-white transition-all duration-300 transform hover:scale-110"
                 >
                   <social.icon className="w-6 h-6" />
                 </a>
@@ -81,7 +86,7 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-white uppercase tracking-[0.2em] mb-8">
+            <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-foreground dark:text-white uppercase tracking-[0.2em] mb-8">
               Services
             </h3>
             <ul className="space-y-4">
@@ -89,7 +94,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-white hover:translate-x-2 inline-block transition-all duration-300 font-medium"
+                    className="text-muted-foreground dark:text-white/60 hover:text-primary dark:hover:text-white hover:translate-x-2 inline-block transition-all duration-300 font-medium"
                   >
                     {link.label}
                   </Link>
@@ -100,7 +105,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-white uppercase tracking-[0.2em] mb-8">
+            <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-foreground dark:text-white uppercase tracking-[0.2em] mb-8">
               Company
             </h3>
             <ul className="space-y-4">
@@ -108,7 +113,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-white hover:translate-x-2 inline-block transition-all duration-300 font-medium"
+                    className="text-muted-foreground dark:text-white/60 hover:text-primary dark:hover:text-white hover:translate-x-2 inline-block transition-all duration-300 font-medium"
                   >
                     {link.label}
                   </Link>
@@ -119,18 +124,18 @@ export default function Footer() {
 
           {/* Contact CTA */}
           <div>
-            <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-white uppercase tracking-[0.2em] mb-8">
+            <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-foreground dark:text-white uppercase tracking-[0.2em] mb-8">
               Get In Touch
             </h3>
-            <div className="p-6 rounded-3xl bg-white/5 border border-white/10 mb-6 group hover:border-[#1e71cd]/50 transition-colors">
+            <div className="p-6 rounded-3xl bg-foreground/5 dark:bg-white/5 border border-border dark:border-white/10 mb-6 group hover:border-[#1e71cd]/50 transition-colors">
               <div className="font-(family-name:--font-orbitron) text-2xl font-black text-[#1e71cd] mb-1 group-hover:scale-105 transition-transform">
                 (123) 456-7890
               </div>
-              <div className="text-sm text-white/50 font-medium uppercase tracking-widest">Call for free quote</div>
+              <div className="text-sm text-muted-foreground dark:text-white/50 font-medium uppercase tracking-widest">Call for free quote</div>
             </div>
-            <div className="text-white/60 font-medium">
-              <p className="hover:text-white transition-colors cursor-pointer">info@elitesurface.com</p>
-              <p className="mt-2">South Florida Service Area</p>
+            <div className="text-muted-foreground dark:text-white/60 font-medium">
+              <p className="hover:text-primary dark:hover:text-white transition-colors cursor-pointer">info@elitesurface.com</p>
+              <p className="mt-2 text-muted-foreground dark:text-white/60">South Florida Service Area</p>
             </div>
           </div>
         </div>
@@ -140,7 +145,7 @@ export default function Footer() {
       <div className="border-t border-white/10 bg-black/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-sm text-white/40 font-medium tracking-wide">
+            <div className="text-sm text-muted-foreground dark:text-white/40 font-medium tracking-wide">
               © {new Date().getFullYear()} Elite Surface Systems. All rights
               reserved.
             </div>
@@ -149,7 +154,7 @@ export default function Footer() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="text-sm text-white/40 hover:text-white transition-colors font-medium"
+                  className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium"
                 >
                   {link.label}
                 </Link>

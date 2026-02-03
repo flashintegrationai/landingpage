@@ -7,12 +7,13 @@ import GallerySection from "@/components/gallery-section"
 import TestimonialsSection from "@/components/testimonials-section"
 import ContactSection from "@/components/contact-section"
 import Footer from "@/components/footer"
-import MobileCTA from "@/components/mobile-cta"
+import FloatingContact from "@/components/floating-contact"
 import BackgroundEffects from "@/components/background-effects"
 
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-background text-foreground overflow-x-hidden transition-colors duration-300">
+      <FloatingContact />
       {/* Content */}
       <div className="relative z-10">
         <Navbar />
@@ -24,7 +25,6 @@ export default function Home() {
         <TestimonialsSection />
         <ContactSection />
         <Footer />
-        <MobileCTA />
       </div>
     </main>
   )

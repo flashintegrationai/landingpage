@@ -144,13 +144,25 @@ export default function ServicesSection() {
             <Dialog key={service.title}>
               <DialogTrigger asChild>
                 <div
-                  className={`group relative h-[400px] w-full overflow-hidden rounded-3xl cursor-pointer bg-muted transition-all duration-500 shadow-md hover:shadow-xl ${
+                  className={`group relative h-[400px] w-full overflow-hidden rounded-3xl cursor-pointer bg-muted transition-all duration-500 shadow-md hover:shadow-2xl ${
                     isVisible
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-8"
                   }`}
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
+                  {/* Badge for Commercial Appeal */}
+                  {index === 0 && (
+                    <div className="absolute top-4 right-4 z-20 bg-yellow-500 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-lg animate-pulse uppercase tracking-wider">
+                      Most Popular
+                    </div>
+                  )}
+                  {index === 1 && (
+                    <div className="absolute top-4 right-4 z-20 bg-[#1e71cd] text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg uppercase tracking-wider">
+                      Commercial Grade
+                    </div>
+                  )}
+
                   {/* Background Image */}
                   <Image
                     src={service.image}
@@ -159,30 +171,33 @@ export default function ServicesSection() {
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   
-                  {/* Dark Overlay - Always present but darker on hover */}
+                  {/* Dark Overlay */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-black/10 transition-colors duration-500 group-hover:from-black/95 group-hover:via-black/70 group-hover:to-black/30" />
 
                   {/* Content Container */}
                   <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
                     {/* Icon */}
-                    <div className="w-12 h-12 rounded-xl bg-primary/90 backdrop-blur-sm flex items-center justify-center mb-4 transform translate-y-0 transition-all duration-500 group-hover:-translate-y-2">
+                    <div className="w-12 h-12 rounded-xl bg-primary/95 backdrop-blur-sm flex items-center justify-center mb-4 transform translate-y-0 transition-all duration-500 group-hover:-translate-y-2 border border-white/20">
                        <service.icon className="w-6 h-6 text-white" />
                     </div>
 
                     {/* Text Content */}
                     <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                       <h3 className="font-(family-name:--font-orbitron) text-2xl font-bold mb-2">
+                       <h3 className="font-(family-name:--font-orbitron) text-2xl font-bold mb-2 uppercase tracking-tight">
                          {service.title}
                        </h3>
                        
-                       {/* Hidden details that reveal on hover */}
+                       {/* Price teaser or Benefit */}
+                       <div className="text-white/60 text-xs font-semibold mb-3 tracking-widest uppercase"> Professional Restoration</div>
+
+                       {/* Reveal on hover */}
                        <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-500">
                          <div className="overflow-hidden">
                            <p className="text-white/80 leading-relaxed text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
                              {service.description}
                            </p>
-                           <div className="flex items-center gap-2 text-primary text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200">
-                             View Details <ArrowRight className="w-4 h-4 ml-1" />
+                           <div className="flex items-center gap-2 text-primary text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200">
+                             GET FREE ESTIMATE <ArrowRight className="w-4 h-4 ml-1" />
                            </div>
                          </div>
                        </div>

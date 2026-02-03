@@ -45,7 +45,7 @@ export default function HeroSection() {
           
           {/* Left Column: Text Content */}
           <div className="flex flex-col items-start text-left">
-            {/* Badge */}
+            {/* Badge - ONLY the Tech Badge here */}
             <div
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 backdrop-blur-sm mb-8 transition-all duration-1000 ${
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -55,8 +55,8 @@ export default function HeroSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              <span className="text-sm font-medium text-primary">
-                Next-Gen Surface Cleaning
+              <span className="text-sm font-medium text-primary uppercase tracking-wider">
+                Industrial Surface Technology
               </span>
             </div>
 
@@ -66,21 +66,38 @@ export default function HeroSection() {
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
-              <span className="block text-balance">Transform Your</span>
+              <span className="block text-balance">Revitalize Your</span>
               <span className="block mt-2 bg-linear-to-r from-[#1e71cd] via-[#3b82f6] to-[#60a5fa] bg-clip-text text-transparent">
-                Commercial Space
+                Property Today
               </span>
             </h1>
 
-            {/* Subtitle */}
+            {/* Subtitle - MORE RELEVANT COPY */}
             <p
-              className={`max-w-2xl text-lg sm:text-xl text-muted-foreground leading-relaxed mb-10 transition-all duration-1000 delay-300 ${
+              className={`max-w-2xl text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 transition-all duration-1000 delay-300 ${
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
-              Elite Surface Systems delivers professional-grade pressure washing solutions. 
-              We revitalize properties with advanced technology and eco-friendly machinery.
+              Elite Surface Systems is the #1 choice for high-tech surface restoration. 
+              Increase your property value and curb appeal with our 
+              <span className="text-foreground font-bold"> industrial-grade soft washing.</span>
             </p>
+
+            {/* COMMERCIAL BADGES */}
+            <div className="flex flex-wrap gap-4 mb-10">
+               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                 <div className="flex text-yellow-500">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-3 h-3 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    ))}
+                 </div>
+                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">5.0 Google Rating</span>
+               </div>
+               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
+                 <Shield className="w-3 h-3 text-green-500" />
+                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">100% Guaranteed</span>
+               </div>
+            </div>
 
             {/* CTA Buttons */}
             <div
@@ -92,20 +109,15 @@ export default function HeroSection() {
                 asChild
                 onClick={triggerSingleConfetti}
                 size="lg"
-                className="group bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25"
+                className="group bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white font-black px-10 py-8 text-xl rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_40px_rgba(30,113,205,0.3)] animate-pulse hover:animate-none"
               >
-                <Link href="#contact" className="flex items-center gap-2">
-                  Get Free Estimate
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <Link href="#contact" className="flex flex-col items-center leading-tight">
+                  <span className="flex items-center gap-2 uppercase tracking-wide">
+                    Book Free Estimate
+                    <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
+                  </span>
+                  <span className="text-[10px] font-normal opacity-80 mt-1 uppercase tracking-[0.2em]">No Commitment Required</span>
                 </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-input bg-background/50 hover:bg-accent hover:text-accent-foreground font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300 backdrop-blur-sm"
-              >
-                <Link href="#services">Our Services</Link>
               </Button>
             </div>
 
@@ -154,6 +166,22 @@ export default function HeroSection() {
                     <span className="font-semibold text-lg">Industrial Grade</span>
                   </div>
                   <p className="text-sm text-white/80">Expert cleaning for large-scale facilities</p>
+               </div>
+            </div>
+
+            {/* THE "OFFER" TRIGGER - RELOCATED TO THE TOP RIGHT OUTSIDE OVERFLOW */}
+            <div className="absolute -top-10 -right-10 z-30 animate-float">
+               <div className="group relative">
+                 <div className="absolute -inset-1 bg-linear-to-r from-red-600 to-orange-600 rounded-lg blur-md opacity-75 group-hover:opacity-100 animate-pulse transition duration-1000 group-hover:duration-200"></div>
+                 <div className="relative flex flex-col items-center bg-red-600 text-white rounded-lg px-8 py-6 shadow-2xl">
+                     <span className="font-black text-4xl italic tracking-tighter animate-bounce block">OFFER</span>
+                     <div className="w-full h-px bg-white/30 my-2" />
+                     <span className="text-sm font-bold uppercase tracking-[0.2em] opacity-90">20% OFF TODAY</span>
+                     {/* Decorative corner tag */}
+                     <div className="absolute -top-4 -right-4 bg-white text-red-600 text-[12px] font-black px-3 py-1.5 rounded shadow-xl transform rotate-12 group-hover:rotate-0 transition-all">
+                       LIMITED
+                     </div>
+                 </div>
                </div>
             </div>
           </div>
