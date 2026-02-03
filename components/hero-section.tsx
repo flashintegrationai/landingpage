@@ -152,7 +152,7 @@ export default function HeroSection() {
             <div className="absolute inset-0 bg-linear-to-tr from-primary/20 to-transparent rounded-4xl transform rotate-3" />
             <div className="absolute inset-0 bg-background rounded-4xl border border-border shadow-2xl overflow-hidden transform -rotate-3 hover:rotate-0 transition-transform duration-500">
                <Image
-                 src="/images/commercial-hero.png"
+                 src="/images/commercial-hero1.png"
                  alt="Professional Pressure Washing Team"
                  fill
                  className="object-cover hover:scale-105 transition-transform duration-700"
