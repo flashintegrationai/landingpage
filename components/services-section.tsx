@@ -91,7 +91,7 @@ export default function ServicesSection() {
     triggerSingleConfetti()
     setTimeout(() => {
       openModal()
-    }, 2000)
+    }, 1500)
   }
 
   useEffect(() => {

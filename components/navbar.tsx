@@ -27,7 +27,7 @@ export default function Navbar() {
     triggerSingleConfetti()
     setTimeout(() => {
       openModal()
-    }, 2000)
+    }, 1500)
   }
 
   useEffect(() => {

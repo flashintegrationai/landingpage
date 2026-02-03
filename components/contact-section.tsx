@@ -8,54 +8,57 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { triggerConfetti } from "@/lib/confetti";
+import { useLegalModals } from "./legal-modals";
 
-// Custom SVG Icons for Services
+// Custom SVG Icons for Services - Professional White-Stroke Aesthetic
 const ServiceIcons = {
   PressureWashing: () => (
-    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
-      <path d="M75 25L45 55M45 55L35 65" strokeLinecap="round" />
-      <path d="M40 50L15 75M48 58L23 83M56 66L31 91" strokeLinecap="round" strokeDasharray="1 6" className="animate-pulse" />
-      <circle cx="20" cy="70" r="1" className="fill-current" />
-      <circle cx="25" cy="85" r="1.5" className="fill-current" />
-      <circle cx="10" cy="80" r="1" className="fill-current" />
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-2 fill-none stroke-current stroke-2" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70 30L40 60" strokeLinecap="round" />
+      <path d="M40 60L30 70" strokeLinecap="round" strokeWidth="4" />
+      <path d="M35 55L10 80M45 65L20 90M55 75L30 100" strokeLinecap="round" strokeDasharray="1 6" className="animate-pulse" />
+      <circle cx="15" cy="85" r="1.5" className="fill-current" />
+      <circle cx="25" cy="75" r="1" className="fill-current" />
     </svg>
   ),
   HouseWashing: () => (
-    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 50L50 20L80 50V80H20V50Z" strokeLinecap="round" />
-      <path d="M40 80V60H60V80" strokeLinecap="round" />
-      <path d="M65 30L85 45M70 40 L88 55M75 50L91 65" strokeLinecap="round" strokeDasharray="1 6" />
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-2 fill-none stroke-current stroke-2" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 50L50 20L80 50V85H20V50Z" strokeLinecap="round" />
+      <path d="M40 85V65H60V85" strokeLinecap="round" />
+      <path d="M55 35L85 45M60 45 L88 55" strokeLinecap="round" strokeDasharray="2 4" />
+      <path d="M75 50L90 60" strokeLinecap="round" strokeWidth="3" />
     </svg>
   ),
   RoofCleaning: () => (
-    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-2 fill-none stroke-current stroke-2" xmlns="http://www.w3.org/2000/svg">
       <path d="M15 70L50 30L85 70" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M30 53L30 80G70 53L70 80G30 80L70 80" strokeLinecap="round" className="opacity-40" />
-      <path d="M60 20L85 40M65 30L75 35" strokeLinecap="round" strokeDasharray="1 5" />
+      <path d="M50 30V80" strokeLinecap="round" className="opacity-20" />
+      <path d="M65 25L85 45M70 35L88 55" strokeLinecap="round" strokeDasharray="2 4" />
+      <path d="M75 20L90 35" strokeLinecap="round" strokeWidth="3" />
     </svg>
   ),
   ScreenEnclosure: () => (
-    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
-      <rect x="20" y="30" width="60" height="40" rx="4" strokeLinecap="round" />
-      <path d="M20 43H80M20 56H80M35 30V70M50 30V70M65 30V70" strokeLinecap="round" className="opacity-40" />
-      <path d="M75 15L90 30M80 25L95 40" strokeLinecap="round" strokeDasharray="1 4" />
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-2 fill-none stroke-current stroke-2" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="35" width="60" height="45" rx="2" strokeLinecap="round" />
+      <path d="M20 50H80M20 65H80M35 35V80M50 35V80M65 35V80" strokeLinecap="round" strokeWidth="1" className="opacity-40" />
+      <path d="M75 20L90 35" strokeLinecap="round" strokeWidth="3" />
     </svg>
   ),
   Driveway: () => (
-    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 20L35 80H65L80 20" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M40 40H60M38 55H62M36 70H64" strokeLinecap="round" className="opacity-40" />
-      <path d="M50 20V50" strokeLinecap="round" strokeDasharray="2 6" />
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-2 fill-none stroke-current stroke-2" xmlns="http://www.w3.org/2000/svg">
+      <path d="M25 20L40 85H60L75 20" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M42 45H58M40 60H60" strokeLinecap="round" className="opacity-30" />
+      <path d="M50 15V45" strokeLinecap="round" strokeDasharray="4 6" />
     </svg>
   ),
   Commercial: () => (
-    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-3 fill-none stroke-current stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 80V30H50V80M50 80V20H80V80" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="30" y="40" width="10" height="8" rx="1" />
-      <rect x="30" y="55" width="10" height="8" rx="1" />
-      <rect x="60" y="30" width="10" height="8" rx="1" />
-      <rect x="60" y="45" width="10" height="8" rx="1" />
-      <rect x="60" y="60" width="10" height="8" rx="1" />
+    <svg viewBox="0 0 100 100" className="w-12 h-12 mb-2 fill-none stroke-current stroke-2" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 85V35H50V85M50 85V25H80V85" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="30" y="45" width="8" height="6" rx="1" strokeWidth="1" />
+      <rect x="30" y="60" width="8" height="6" rx="1" strokeWidth="1" />
+      <rect x="60" y="35" width="8" height="6" rx="1" strokeWidth="1" />
+      <rect x="60" y="50" width="8" height="6" rx="1" strokeWidth="1" />
+      <rect x="60" y="65" width="8" height="6" rx="1" strokeWidth="1" />
     </svg>
   ),
 };
@@ -74,6 +77,7 @@ export default function ContactSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { openPrivacy } = useLegalModals();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -221,7 +225,7 @@ export default function ContactSection() {
                       return (
                         <label
                           key={service.label}
-                          className="group relative flex flex-col items-center justify-center p-6 rounded-2xl bg-background/50 border-2 border-border cursor-pointer transition-all duration-300 hover:border-[#1e71cd] hover:bg-[#1e71cd]/5 has-[:checked]:border-[#1e71cd] has-[:checked]:bg-[#1e71cd]/10 has-[:checked]:shadow-[0_0_20px_rgba(30,113,205,0.2)]"
+                          className="group relative flex flex-col items-center justify-center p-6 rounded-2xl bg-background/50 border-2 border-border cursor-pointer transition-all duration-300 hover:border-[#1e71cd] hover:bg-[#1e71cd]/5 has-checked:border-[#1e71cd] has-checked:bg-[#1e71cd]/10 has-checked:shadow-[0_0_20px_rgba(30,113,205,0.2)]"
                         >
                           <input
                             type="checkbox"
@@ -229,17 +233,17 @@ export default function ContactSection() {
                             value={service.label}
                             className="sr-only"
                           />
-                          <div className="text-foreground group-hover:text-[#1e71cd] transition-colors duration-300">
+                          <div className="text-foreground/80 group-hover:text-[#1e71cd] group-has-checked:text-[#1e71cd] transition-colors duration-300">
                             <Icon />
                           </div>
-                          <span className="text-[10px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-foreground transition-colors text-center mt-2">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-foreground/60 group-hover:text-foreground group-has-checked:text-foreground transition-colors text-center mt-2">
                             {service.label}
                           </span>
                           
                           {/* Selected Indicator Checkmark */}
-                          <div className="absolute top-3 right-3 opacity-0 group-has-[:checked]:opacity-100 transition-all scale-50 group-has-[:checked]:scale-100">
+                          <div className="absolute top-3 right-3 opacity-0 group-has-checked:opacity-100 transition-all scale-50 group-has-checked:scale-100">
                              <div className="bg-[#1e71cd] rounded-full p-1 shadow-lg">
-                                <CheckCircle className="w-4 h-4 text-white" />
+                                <CheckCircle className="w-3.5 h-3.5 text-white" />
                              </div>
                           </div>
                         </label>
@@ -279,7 +283,14 @@ export default function ContactSection() {
                 </Button>
 
                 <p className="text-center text-xs text-foreground/40">
-                  By submitting this form, you agree to our privacy policy.
+                  By submitting this form, you agree to our{" "}
+                  <button 
+                    type="button"
+                    onClick={openPrivacy}
+                    className="underline hover:text-primary transition-colors cursor-pointer"
+                  >
+                    privacy policy
+                  </button>.
                 </p>
               </form>
             )}

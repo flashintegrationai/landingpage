@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Facebook, Instagram, Twitter, Youtube, ArrowUp } from "lucide-react"
 import WaveDivider from "./wave-divider"
 import { useQuoteModal } from "./quote-modal"
+import { useLegalModals } from "./legal-modals"
 import { triggerSingleConfetti } from "@/lib/confetti"
 
 const footerLinks = {
@@ -36,12 +37,13 @@ const socialLinks = [
 
 export default function Footer() {
   const { openModal } = useQuoteModal()
+  const { openPrivacy, openTerms } = useLegalModals()
 
   const handleQuoteClick = () => {
     triggerSingleConfetti()
     setTimeout(() => {
       openModal()
-    }, 2000)
+    }, 1500)
   }
 
   const scrollToTop = () => {
@@ -169,15 +171,18 @@ export default function Footer() {
               reserved.
             </div>
             <div className="flex items-center gap-8">
-              {footerLinks.legal.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <button
+                onClick={openPrivacy}
+                className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium cursor-pointer"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={openTerms}
+                className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium cursor-pointer"
+              >
+                Terms of Service
+              </button>
             </div>
           </div>
         </div>

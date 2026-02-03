@@ -15,7 +15,7 @@ export default function FloatingContact() {
     triggerSingleConfetti()
     setTimeout(() => {
       openModal()
-    }, 2000)
+    }, 1500)
   }
 
   useEffect(() => {
@@ -44,13 +44,11 @@ export default function FloatingContact() {
       {/* Main FABs */}
       <div className="flex flex-col gap-3 items-end">
         <Button
-          asChild
-          onClick={triggerSingleConfetti}
-          className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg hover:scale-110 transition-all duration-300 p-0"
+          onClick={handleQuoteClick}
+          className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+          aria-label="Call or WhatsApp"
         >
-          <Link href="tel:+1234567890" title="Call Now">
-            <Phone className="w-6 h-6" />
-          </Link>
+          <Phone className="w-6 h-6" />
         </Button>
 
         <Button
