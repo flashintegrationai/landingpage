@@ -18,14 +18,37 @@ const orbitron = Orbitron({
 
 export const metadata: Metadata = {
   title: 'Elite Surface Systems | Professional Pressure Washing Services',
-  description: 'Elite Surface Systems delivers cutting-edge pressure washing technology for residential and commercial properties. Experience the future of surface cleaning with our professional team.',
-  keywords: ['pressure washing', 'power washing', 'surface cleaning', 'commercial cleaning', 'residential cleaning', 'Elite Surface Systems'],
+  description: 'Elite Surface Systems delivers cutting-edge pressure washing technology for residential and commercial properties. South Florida\'s #1 choice for high-tech surface restoration.',
+  keywords: ['pressure washing', 'power washing', 'surface cleaning', 'commercial cleaning', 'residential cleaning', 'Elite Surface Systems', 'South Florida cleaning'],
+  authors: [{ name: 'Bryan De Jesus Rosa Tavarez', url: 'https://bento.me/bryandejesusrt' }],
+  creator: 'Bryan De Jesus Rosa Tavarez',
+  publisher: 'Elite Surface Systems',
   openGraph: {
     title: 'Elite Surface Systems | Professional Pressure Washing',
-    description: 'Experience next-level pressure washing technology for pristine results.',
+    description: 'Expert industrial-grade surface restoration for residential and commercial properties.',
     type: 'website',
+    url: 'https://elitesurface.com',
+    siteName: 'Elite Surface Systems',
+    images: [
+      {
+        url: '/images/whatsapp-image-2026-01-28-at-11.png',
+        width: 1200,
+        height: 630,
+        alt: 'Elite Surface Systems Logo',
+      },
+    ],
   },
-    generator: 'v0.app'
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Elite Surface Systems | Professional Pressure Washing',
+    description: 'Expert industrial-grade surface restoration for residential and commercial properties.',
+    images: ['/images/whatsapp-image-2026-01-28-at-11.png'],
+    creator: '@bryandejesusrt',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export const viewport: Viewport = {
