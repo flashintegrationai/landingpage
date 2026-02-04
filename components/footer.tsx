@@ -1,5 +1,6 @@
 "use client"
 
+import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Youtube, ArrowUp } from "lucide-react"
@@ -36,6 +37,7 @@ const socialLinks = [
 ]
 
 export default function Footer() {
+  const [showScrollTop, setShowScrollTop] = useState(false)
   const { openModal } = useQuoteModal()
   const { openPrivacy, openTerms } = useLegalModals()
 
@@ -49,6 +51,14 @@ export default function Footer() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
     <footer className="relative bg-background dark:bg-[#0b0b0b] text-foreground dark:text-white pt-24 md:pt-32 transition-colors duration-500">
@@ -183,7 +193,9 @@ export default function Footer() {
       {/* Back to Top Button */}
       <button
         onClick={scrollToTop}
-        className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-[#1e71cd] text-white shadow-2xl hover:shadow-[#1e71cd]/50 transition-all duration-300 hover:scale-110 flex items-center justify-center z-40 group overflow-hidden"
+        className={`fixed bottom-8 left-8 w-14 h-14 rounded-2xl bg-[#1e71cd] text-white shadow-2xl hover:shadow-[#1e71cd]/50 transition-all duration-500 hover:scale-110 flex items-center justify-center z-40 group overflow-hidden ${
+          showScrollTop ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0 pointer-events-none"
+        }`}
         aria-label="Back to top"
       >
         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
