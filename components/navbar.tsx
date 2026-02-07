@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, Phone } from "lucide-react"
+import { Menu, X, Phone, Sparkles } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,7 +13,7 @@ const navLinks = [
   { href: "/#services", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/#gallery", label: "Gallery" },
-  { href: "/#testimonials", label: "Reviews" },
+  { href: "/testimonials", label: "Reviews" },
   { href: "/#contact", label: "Contact" },
 ]
 
@@ -51,7 +51,7 @@ export default function Navbar() {
 
       <nav
         className={`transition-all duration-500 w-full ${
-          scrolled
+          scrolled || isOpen
             ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-md"
             : "bg-transparent"
         }`}
@@ -88,9 +88,26 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* CTA Button & Theme Toggle */}
+            {/* CTA Buttons & Theme Toggle */}
             <div className="hidden md:flex items-center gap-3">
               <ThemeToggle />
+              
+              {/* AI Estimate Button - FEATURED */}
+              <Link href="/ai-estimate">
+                <Button className="relative bg-emerald-600 hover:bg-emerald-500 text-white font-black px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)] overflow-hidden group">
+                  {/* Animated glow */}
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  
+                  {/* Pulsing background */}
+                  <div className="absolute inset-0 animate-pulse bg-emerald-400/20 rounded-full" />
+                  
+                  <div className="relative flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 animate-pulse" />
+                    <span className="uppercase tracking-widest text-xs">AI Estimate</span>
+                  </div>
+                </Button>
+              </Link>
+
               <Button
                 onClick={handleQuoteClick}
                 className="bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white font-semibold px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(30,113,205,0.4)]"
@@ -129,8 +146,18 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-4 px-4 flex items-center gap-3">
+              <div className="pt-4 px-4 flex flex-col gap-3">
                 <ThemeToggle />
+                
+                {/* AI Estimate Button - Mobile */}
+                <Link href="/ai-estimate" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full relative bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.4)] overflow-hidden group">
+                    <div className="absolute inset-0 animate-pulse bg-emerald-400/20 rounded-full" />
+                    <Sparkles className="w-5 h-5 relative animate-pulse" />
+                    <span className="relative uppercase tracking-widest text-sm">AI Estimate</span>
+                  </Button>
+                </Link>
+
                 <Button
                   onClick={handleQuoteClick}
                   className="flex-1 bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white font-semibold py-3 rounded-full flex items-center justify-center gap-2"

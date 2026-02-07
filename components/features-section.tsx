@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   Check,
   X,
@@ -10,12 +11,19 @@ import {
   Award,
   Banknote,
   HeartHandshake,
+  Sparkles,
 } from "lucide-react"
 
 import Image from "next/image"
 import WaveDivider from "./wave-divider"
 
 const comparisonData = [
+  {
+    feature: "Instant AI Estimate",
+    independent: false,
+    established: false,
+    elite: true,
+  },
   {
     feature: "Professional Soft Washing",
     independent: false,
@@ -78,6 +86,7 @@ const featuresList = [
 export default function FeaturesSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -162,9 +171,27 @@ export default function FeaturesSection() {
               {/* Rows */}
               <div className="divide-y divide-border">
                 {comparisonData.map((row) => (
-                  <div key={row.feature} className="grid grid-cols-12 items-center group hover:bg-muted/50 transition-colors">
-                    <div className="col-span-4 md:col-span-3 p-3 md:p-8 font-bold text-[10px] md:text-lg text-foreground leading-tight">
-                      {row.feature}
+                  <div 
+                    key={row.feature} 
+                    onClick={() => row.feature === "Instant AI Estimate" && router.push("/ai-estimate")}
+                    className={`grid grid-cols-12 items-center group transition-all duration-300 ${
+                      row.feature === "Instant AI Estimate" 
+                        ? "bg-linear-to-r from-primary/10 to-transparent border-l-4 border-primary cursor-pointer hover:bg-primary/20 relative overflow-hidden" 
+                        : "hover:bg-muted/50 border-l-4 border-transparent"
+                    }`}
+                  >
+                    <div className="col-span-4 md:col-span-3 p-3 md:p-8 font-bold text-[10px] md:text-lg text-foreground leading-tight flex items-center gap-2">
+                       {row.feature === "Instant AI Estimate" && (
+                         <div className="p-1 rounded-md bg-white shadow-sm animate-pulse hidden md:block">
+                           <Sparkles className="w-4 h-4 text-primary fill-primary" />
+                         </div>
+                       )}
+                       <span className={row.feature === "Instant AI Estimate" ? "text-primary font-black tracking-wide" : ""}>
+                         {row.feature}
+                         {row.feature === "Instant AI Estimate" && (
+                            <span className="md:hidden ml-1 inline-block"><Sparkles className="w-3 h-3 text-primary fill-primary inline" /></span>
+                         )}
+                       </span>
                     </div>
                     <div className="col-span-2 md:col-span-3 p-2 md:p-8 flex justify-center">
                       {row.independent ? (
@@ -182,7 +209,7 @@ export default function FeaturesSection() {
                     </div>
                     <div className="col-span-3 md:col-span-3 p-2 md:p-8 flex justify-center bg-primary/5">
                       {row.elite ? (
-                        <Check className="w-5 h-5 md:w-10 md:h-10 text-primary drop-shadow-[0_0_10px_rgba(30,113,205,0.4)]" />
+                        <Check className={`w-5 h-5 md:w-10 md:h-10 text-primary drop-shadow-[0_0_10px_rgba(30,113,205,0.4)] ${row.feature === "Instant AI Estimate" ? "animate-pulse scale-110" : ""}`} />
                       ) : (
                         <X className="w-4 h-4 md:w-8 md:h-8 text-muted-foreground/30" />
                       )}

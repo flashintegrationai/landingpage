@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Droplets, Shield, Zap } from "lucide-react"
+import { ArrowRight, Droplets, Shield, Zap, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import dynamic from "next/dynamic"
 import { triggerSingleConfetti } from "@/lib/confetti"
@@ -54,20 +54,19 @@ export default function HeroSection() {
           
           {/* Left Column: Text Content */}
           <div className="flex flex-col items-start text-left">
-            {/* Badge - ONLY the Tech Badge here */}
-            <div
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 backdrop-blur-sm mb-8 transition-all duration-1000 ${
-                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-              </span>
-              <span className="text-sm font-medium text-primary uppercase tracking-wider">
-                Industrial Surface Technology
-              </span>
-            </div>
+            {/* Badge - AI Estimate Link */}
+            <Link href="/ai-estimate">
+              <div
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 backdrop-blur-sm mb-8 transition-all duration-300 hover:bg-primary/10 hover:border-primary/30 cursor-pointer group ${
+                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-medium text-primary uppercase tracking-wider">
+                  AI Instant Estimate
+                </span>
+              </div>
+            </Link>
 
             {/* Heading */}
             <h1
@@ -184,7 +183,7 @@ export default function HeroSection() {
                  <div className="relative flex flex-col items-center bg-red-600 text-white rounded-lg px-8 py-6 shadow-2xl">
                      <span className="font-black text-4xl italic tracking-tighter animate-bounce block">OFFER</span>
                      <div className="w-full h-px bg-white/30 my-2" />
-                     <span className="text-sm font-bold uppercase tracking-[0.2em] opacity-90">20% OFF TODAY</span>
+                     <span className="text-sm font-bold uppercase tracking-[0.2em] opacity-90">15% OFF TODAY</span>
                      {/* Decorative corner tag */}
                      <div className="absolute -top-4 -right-4 bg-white text-red-600 text-[12px] font-black px-3 py-1.5 rounded shadow-xl transform rotate-12 group-hover:rotate-0 transition-all">
                        LIMITED

@@ -48,7 +48,9 @@ const services = [
   {
     icon: Car,
     title: "Driveway Cleaning",
-    image: "/images/services/driveway.jpg",
+    image: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
+    beforeImage: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-8.jpg",
+    afterImage: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
     description:
       "Remove oil stains, dirt, and grime from your driveway for a fresh, clean appearance. We clean concrete, pavers, and asphalt.",
     features: ["Oil stain removal", "Tire mark removal", "Weed prevention", "Sealing options"],
@@ -235,20 +237,85 @@ export default function ServicesSection() {
 
 function ServiceModalContent({ service, handleQuoteClick }: { service: any, handleQuoteClick: () => void }) {
   const [showInfo, setShowInfo] = useState(false);
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const isBeforeAfter = service.beforeImage && service.afterImage;
 
   return (
-    <div className="relative w-full h-full bg-black">
+    <div className="relative w-full h-full bg-black select-none">
       {/* FULL SCREEN HERO IMAGE */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src={service.image}
-          alt={service.title}
-          fill
-          className="object-cover"
-          priority
-        />
+        {isBeforeAfter ? (
+          <div className="relative w-full h-full">
+            {/* After Image (Background) */}
+            <Image
+              src={service.afterImage}
+              alt={service.title}
+              fill
+              className="object-cover"
+              priority
+            />
+            
+            {/* Tag for After */}
+            <div className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/50 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 select-none z-10 pointer-events-none">
+              After
+            </div>
+
+            {/* Before Image (Clipped) */}
+            <div 
+              className="absolute inset-0 overflow-hidden"
+              style={{ width: `${sliderPosition}%` }}
+            >
+              <Image
+                src={service.beforeImage}
+                alt={`${service.title} before`}
+                fill
+                className="object-cover object-left"
+                priority
+              />
+               {/* Tag for Before */}
+              <div className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/50 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 select-none z-10 pointer-events-none">
+                Before
+              </div>
+            </div>
+
+            {/* Slider Handle */}
+            <div 
+              className="absolute inset-y-0"
+              style={{ left: `${sliderPosition}%` }}
+            >
+              <div className="absolute inset-y-0 -ml-0.5 w-1 bg-white/80 shadow-[0_0_10px_rgba(0,0,0,0.5)] cursor-col-resize">
+                 <div className="absolute top-1/2 left-1/2 -ml-5 -mt-5 w-10 h-10 rounded-full shadow-2xl border-4 border-black/10 flex items-center justify-center backdrop-blur-sm bg-white/90">
+                    <div className="flex gap-1">
+                      <ArrowRight className="w-3 h-3 text-black rotate-180" />
+                      <ArrowRight className="w-3 h-3 text-black" />
+                    </div>
+                 </div>
+              </div>
+            </div>
+
+            {/* Range Input Trigger */}
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={sliderPosition}
+              onChange={(e) => setSliderPosition(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-col-resize z-20"
+              aria-label="Compare before and after images"
+            />
+          </div>
+        ) : (
+          <Image
+            src={service.image}
+            alt={service.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        )}
+        
         {/* Dynamic Dark Gradient Protection */}
-        <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-black/80" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-black/80 pointer-events-none" />
       </div>
 
       {/* FLOATING BRANDING (Top Left) */}

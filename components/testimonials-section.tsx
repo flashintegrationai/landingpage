@@ -5,25 +5,40 @@ import { Star, Quote } from "lucide-react"
 
 const testimonials = [
   {
-    name: "Michael Rodriguez",
-    role: "Homeowner",
-    content: "Elite Surface Systems completely transformed my driveway. The level of detail and professionalism was outstanding. It looks brand new!",
+    name: "Roxanne Mix",
+    date: "Jan 30, 2026",
+    content: "Elite Surface Systems is an honest and reliable company! I have used them several times for my house. The driveway looks brand new every time.",
     rating: 5,
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100",
   },
   {
-    name: "Sarah Jenkins",
-    role: "Property Manager",
-    content: "We've used several services for our commercial properties, but none match the efficiency and quality of Elite Surface. Highly recommended.",
+    name: "Marianne Molleur",
+    date: "Jan 29, 2026",
+    content: "Professional service, very satisfied with the results. They removed oil stains that I thought were permanent. Highly recommend!",
     rating: 5,
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100",
   },
   {
-    name: "David Chen",
-    role: "Real Estate Agent",
-    content: "The professional cleaning they provided significantly boosted our property's curb appeal before the open house. Fantastic work!",
+    name: "Blanca Blanco",
+    date: "Jan 28, 2026",
+    content: "Highly recommend Elite Surface Systems! They were on time and very Professional at their work. Did an Amazing job on my driveway and house. Very Happy Customer! Thank you.",
     rating: 5,
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100&h=100",
+  },
+  {
+    name: "G. D.",
+    date: "Jan 20, 2026",
+    content: "It was a pleasure working with the team again. The quote was fair and the work was scheduled in a timely manner. The quality of the work was great! Can always count on them.",
+    rating: 5,
+  },
+  {
+    name: "Maria Pravato",
+    date: "Jan 15, 2026",
+    content: "This was an incredible team. The team is awesome. They did a wonderful job. Everything they pressure washed looks brand new! Thank you so much.",
+    rating: 5,
+  },
+  {
+    name: "Chris Matinides",
+    date: "Jan 7, 2026",
+    content: "Elite did an excellent job with my roof pressure washing. I am very satisfied and would highly recommend them to anyone looking for quality work.",
+    rating: 5,
   },
 ]
 
@@ -73,21 +88,31 @@ export default function TestimonialsSection() {
           </p>
 
           {/* Aggregate Rating */}
-          <div className="mt-8 flex items-center justify-center gap-4 transition-all duration-1000 delay-300">
-            <div className="flex -space-x-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className="w-6 h-6 fill-primary text-primary"
-                />
-              ))}
+          {/* Aggregate Rating & Trust Indicators */}
+          <div className="mt-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white border border-gray-200 shadow-lg shadow-black/5 transition-transform hover:scale-105 cursor-default">
+               <img src="https://localimpact.com/assets/global/images/source-logos/google/h120w120.png" alt="Google" className="h-6 w-6" />
+               <span className="font-medium text-gray-500 text-sm pl-2 border-l border-gray-300 left-2">Reviews</span>
             </div>
-            <div className="h-8 w-px bg-border" />
-            <div>
-              <div className="font-(family-name:--font-orbitron) text-2xl font-bold text-foreground">
-                5.0
+
+            <div className="flex items-center gap-4">
+              <div className="flex -space-x-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    className="w-6 h-6 fill-yellow-400 text-yellow-500 drop-shadow-sm"
+                  />
+                ))}
               </div>
-              <div className="text-xs text-muted-foreground">Based on 150+ reviews</div>
+              <div className="h-8 w-px bg-border" />
+              <div className="flex flex-col items-start">
+                <div className="font-(family-name:--font-orbitron) text-2xl font-black text-foreground">
+                  5.0
+                </div>
+                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Average Rating
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -97,45 +122,45 @@ export default function TestimonialsSection() {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.name}
-              className={`group relative p-8 rounded-4xl bg-card border border-border shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:border-primary/30 ${
+              className={`group relative p-6 rounded-2xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/20 ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
               }`}
-              style={{ transitionDelay: `${index * 200}ms` }}
+              style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <Quote className="absolute top-6 right-8 w-12 h-12 text-primary/5 group-hover:text-primary/10 transition-colors" />
-              
-              <div className="flex gap-1 mb-6">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className="w-4 h-4 fill-primary text-primary"
+              {/* Card Header: Name & Google Logo */}
+              <div className="flex justify-between items-start mb-3">
+                <div className="font-bold text-lg text-foreground font-(family-name:--font-orbitron) tracking-wide">
+                  {testimonial.name}
+                </div>
+                {/* Google G Logo */}
+                <div className="shrink-0 w-6 h-6 bg-white rounded-full flex items-center justify-center p-0.5 shadow-sm border border-gray-100">
+                  <img 
+                    src="https://localimpact.com/assets/global/images/source-logos/google/h120w120.png" 
+                    alt="Google" 
+                    className="w-full h-full object-contain"
                   />
-                ))}
+                </div>
               </div>
 
-              <p className="text-foreground/80 leading-relaxed mb-8 italic">
-                "{testimonial.content}"
+              {/* Rating & Date */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className="w-4 h-4 fill-[#F4B400] text-[#F4B400]" 
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">{testimonial.date}</span>
+              </div>
+
+              {/* Content */}
+              <p className="text-foreground/80 leading-relaxed text-sm">
+                {testimonial.content}
               </p>
-
-              <div className="flex items-center gap-4 mt-auto">
-                <div className="relative w-12 h-12 rounded-2xl overflow-hidden border-2 border-primary/20">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <div className="font-bold text-foreground">
-                    {testimonial.name}
-                  </div>
-                  <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                    {testimonial.role}
-                  </div>
-                </div>
-              </div>
             </div>
           ))}
         </div>

@@ -24,8 +24,8 @@ const beforeAfterImages = [
     id: 3,
     title: "House Washing",
     location: "Palm Beach, FL",
-    before: "/images/services/house-washing.png",
-    after: "/images/services/house-washing.png",
+    before: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-8.jpg",
+    after: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
   },
 ]
 
@@ -84,11 +84,8 @@ function BeforeAfterCard({
             src={item.before}
             alt={`${item.title} Before`}
             fill
-            className={`object-cover ${item.id === 3 ? "grayscale brightness-50" : ""}`}
+            className="object-cover"
           />
-          {item.id === 3 && (
-            <div className="absolute inset-0 bg-black/40" />
-          )}
         </div>
 
         {/* Slider Line */}

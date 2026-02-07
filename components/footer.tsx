@@ -70,15 +70,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center group mb-8">
-              <div className="relative w-32 h-32 md:w-48 md:h-48 transition-transform duration-300 group-hover:scale-105">
-                <Image
-                  src="/logoremovebj.png"
-                  alt="Elite Surface Systems Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
+            <Link href="/" className="block mb-8">
+              <span className="font-(family-name:--font-orbitron) text-xl md:text-2xl font-black tracking-widest text-foreground dark:text-white uppercase hover:text-primary transition-colors leading-tight">
+                ELITE SURFACE SYSTEMS
+              </span>
             </Link>
             <p className="text-muted-foreground dark:text-white/70 leading-relaxed mb-8 text-lg">
               Cutting-edge pressure washing technology for residential and
