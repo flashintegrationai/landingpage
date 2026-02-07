@@ -14,7 +14,12 @@ import {
   User,
   ArrowRight,
   ShieldCheck,
-  BrainCircuit
+  BrainCircuit,
+  Target,
+  Maximize2,
+  ShieldAlert,
+  Clock,
+  DollarSign
 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -22,13 +27,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
 
 interface AnalysisResult {
   detectedMaterial: string
@@ -42,9 +40,9 @@ export default function AiEstimateSection() {
   const [image, setImage] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
-  const [showLeadModal, setShowLeadModal] = useState(false)
   const [leadData, setLeadData] = useState({ name: "", phone: "" })
   const [isSubmittingLead, setIsSubmittingLead] = useState(false)
+  const [activeStep, setActiveStep] = useState<"idle" | "form" | "analyzing" | "result">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +55,7 @@ export default function AiEstimateSection() {
       const reader = new FileReader()
       reader.onloadend = () => {
         setImage(reader.result as string)
-        setShowLeadModal(true)
+        setActiveStep("form")
       }
       reader.readAsDataURL(file)
     }
@@ -72,42 +70,34 @@ export default function AiEstimateSection() {
 
     setIsSubmittingLead(true)
     try {
-      // Save to Supabase 'listo' table as requested
-      const { error } = await supabase
-        .from('listo')
+      const { data: leadRecord, error } = await supabase
+        .from('leads')
         .insert([
           { 
-            name: leadData.name, 
-            phone: leadData.phone, 
-            status: 'pending_ai_analysis',
-            created_at: new Date().toISOString()
+            full_name: leadData.name, 
+            phone_number: leadData.phone, 
+            source: 'ai_estimator',
+            status: 'new',
+            notes: `AI Analysis started for image.`
           }
         ])
+        .select()
 
-      // We don't error out if table doesn't exist for demo purposes, 
-      // but we log it and proceed if it's just a missing table.
-      if (error) {
-        console.error("Supabase insert error:", error)
-        // toast.error("Failed to save your info. Please try again.")
-        // return
-      }
+      if (error) console.error("Supabase insert error:", error)
 
-      setShowLeadModal(false)
-      if (image) {
-        analyzeImage(image)
-      }
+      setActiveStep("analyzing")
+      if (image) analyzeImage(image, leadRecord?.[0]?.id)
     } catch (error: any) {
-      console.error("Supabase Error:", error)
-      toast.error("An error occurred. Please try again.")
+      console.error(error)
+      setActiveStep("analyzing")
+      if (image) analyzeImage(image)
     } finally {
       setIsSubmittingLead(false)
     }
   }
 
-  const analyzeImage = async (base64Image: string) => {
+  const analyzeImage = async (base64Image: string, leadId?: string) => {
     setIsAnalyzing(true)
-    setResult(null)
-    
     try {
       const response = await fetch("/api/analyze-surface", {
         method: "POST",
@@ -116,31 +106,25 @@ export default function AiEstimateSection() {
       })
 
       const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Analysis failed")
-      }
+      if (!response.ok) throw new Error(data.error || "Analysis failed")
 
       setResult(data)
+      setActiveStep("result")
       
-      // Update the lead in Supabase with the result if possible
-      try {
+      if (leadId) {
         await supabase
-          .from('listo')
+          .from('leads')
           .update({ 
-            detected_material: data.detectedMaterial,
-            estimated_price: data.priceRange,
+            notes: `Material: ${data.detectedMaterial}, Price: ${data.priceRange}, Area: ${data.estimatedSqFt}sqft.`,
             status: 'analyzed'
           })
-          .eq('phone', leadData.phone)
-      } catch (updErr) {
-        console.error("Supabase update error:", updErr)
+          .eq('id', leadId)
       }
-
       toast.success("Analysis complete!")
     } catch (error: any) {
       console.error(error)
       toast.error(error.message || "Failed to analyze image. Please try again.")
+      setActiveStep("idle")
     } finally {
       setIsAnalyzing(false)
     }
@@ -149,203 +133,256 @@ export default function AiEstimateSection() {
   const handleRetry = () => {
     setImage(null)
     setResult(null)
+    setActiveStep("idle")
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
-  const handleWhatsApp = (type: "claim" | "negotiate") => {
-    const message = type === "claim" 
-      ? `Hi! I used your AI Estimate tool and got a range of ${result?.priceRange} for my ${result?.detectedMaterial}. I'd like to book this service.`
-      : `Hi! Your AI estimated ${result?.priceRange} for my ${result?.detectedMaterial}, but I'd like to discuss the price. Can we chat?`
-    
+  const handleWhatsApp = () => {
+    const message = `Hi! I used your AI Estimate tool and got a range of ${result?.priceRange} for my ${result?.detectedMaterial}. I'd like to book this service.`
     const whatsappUrl = `https://wa.me/19544703554?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
   return (
     <section id="ai-estimate" className="relative py-24 bg-background overflow-hidden border-t border-border/50">
-      {/* Background Decor */}
+      {/* Dynamic Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(30,113,205,0.05),transparent_70%)]" />
       
       <div className="relative max-w-5xl mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-20">
+        {/* Header - Strongly Sales Focused */}
+        <div className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1e71cd]/10 border border-[#1e71cd]/20 text-[#1e71cd] text-[10px] font-black uppercase tracking-[0.3em] mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-8"
           >
-            <Sparkles className="w-3 h-3 animate-pulse" /> Experimental AI
+            <Sparkles className="w-3 h-3" /> NO MORE GUESSING
           </motion.div>
           
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="font-[family-name:var(--font-orbitron)] text-4xl md:text-6xl font-black text-foreground uppercase tracking-tighter mb-8"
+            className="font-[family-name:var(--font-orbitron)] text-4xl md:text-7xl font-black text-foreground uppercase tracking-tighter mb-8"
           >
-            Instant AI <span className="text-[#1e71cd] drop-shadow-[0_0_20px_rgba(30,113,205,0.4)]">Estimate</span>
+            STOP <span className="text-primary italic">OVERPAYING</span>
           </motion.h2>
 
-          <p className="max-w-2xl mx-auto text-foreground/60 text-lg leading-relaxed mb-10">
-            Get a professional price estimate in seconds. Our neural network analyzes your surface photos with laboratory precision to provide an immediate range.
+          <p className="max-w-2xl mx-auto text-muted-foreground text-lg md:text-xl font-medium leading-relaxed mb-10">
+            Get an instant, laboratory-precise price range using our neural network. 
+            Avoid hidden technician costs and lock in your <span className="text-foreground font-black">AI-Special Discount</span> today.
           </p>
-          
-          <div className="flex flex-wrap items-center justify-center gap-6 text-foreground/40 font-bold uppercase tracking-[0.2em] text-[10px]">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#1e71cd]" /> Secure Analysis
+
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-12">
+            <div className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                 <Clock className="w-5 h-5 text-primary" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">3-Second Scan</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#1e71cd]" /> Instant Price
+            <div className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                 <DollarSign className="w-5 h-5 text-green-500" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">0 Overcharges</span>
             </div>
-            <div className="flex items-center gap-2">
-              <BrainCircuit className="w-4 h-4 text-[#1e71cd]" /> No Man-in-Middle
+            <div className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                 <CheckCircle2 className="w-5 h-5 text-primary" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Instant Proof</span>
             </div>
           </div>
         </div>
 
-        {/* Center UI */}
+        {/* Action Container - Strictly Single Column */}
         <div className="max-w-3xl mx-auto">
           <AnimatePresence mode="wait">
-            {!result && !isAnalyzing ? (
+            {activeStep === "idle" && (
               <motion.div 
                 key="idle"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="group relative"
               >
-                {/* Border Glow */}
-                <div className="absolute -inset-1 bg-linear-to-r from-[#1e71cd]/50 to-cyan-500/50 rounded-[2.5rem] blur opacity-20 group-hover:opacity-60 transition duration-1000" />
+                {/* Glow Ring */}
+                <div className="absolute -inset-10 bg-primary/5 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition duration-1000" />
                 
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative aspect-video bg-card border-2 border-dashed border-border group-hover:border-[#1e71cd]/50 rounded-[2.5rem] flex flex-col items-center justify-center p-12 cursor-pointer transition-all duration-500 shadow-2xl overflow-hidden"
+                  className="relative aspect-video md:aspect-[21/9] bg-card border-2 border-dashed border-primary/20 group-hover:border-primary rounded-[3rem] flex flex-col items-center justify-center p-8 md:p-12 cursor-pointer transition-all duration-500 shadow-2xl hover:shadow-primary/10 overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-linear-to-b from-[#1e71cd]/5 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-b from-primary/5 to-transparent opacity-50" />
                   
-                  <div className="mb-8 w-24 h-24 rounded-3xl bg-[#1e71cd]/10 flex items-center justify-center border border-[#1e71cd]/20 shadow-[0_0_40px_rgba(30,113,205,0.1)] group-hover:scale-110 group-hover:bg-[#1e71cd]/20 transition-all duration-700">
-                    <Camera className="w-10 h-10 text-[#1e71cd]" />
-                  </div>
+                  <motion.div 
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="mb-8 w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-[0_0_40px_rgba(30,113,205,0.4)] group-hover:scale-110 transition-transform duration-700"
+                  >
+                    <Camera className="w-10 h-10 text-white" />
+                  </motion.div>
                   
-                  <h3 className="text-3xl font-black text-foreground mb-4 uppercase tracking-tighter">Click to Start Analysis</h3>
-                  <p className="text-foreground/40 text-center text-sm max-w-sm font-medium">
-                    Take a clear photo or select one from your device. We'll identify the material and provide a detailed price range instantly.
+                  <h3 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-5xl font-black text-foreground mb-4 uppercase tracking-tighter">
+                    UNLOCK <span className="text-primary italic">PRICING</span>
+                  </h3>
+                  <p className="text-muted-foreground text-sm font-bold uppercase tracking-[0.2em] max-w-sm text-center leading-relaxed">
+                    Upload photo to identify material & verify <span className="text-foreground">Exclusive Discounts</span>
                   </p>
                   
-                  <div className="mt-10 flex gap-4">
-                    <Button variant="outline" className="h-14 px-8 rounded-2xl border-border bg-background/50 backdrop-blur-md hover:bg-accent text-xs font-black uppercase tracking-widest">
-                      <Camera className="w-4 h-4 mr-2" /> Camera
+                  <div className="mt-10 flex flex-col sm:flex-row gap-4 w-full justify-center">
+                    <Button className="h-16 px-12 rounded-2xl bg-primary hover:bg-primary/90 text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 group/btn">
+                      <Upload className="w-4 h-4 mr-3 group-hover/btn:-translate-y-1 transition-transform" /> Start AI Scan
                     </Button>
-                    <Button className="h-14 px-8 rounded-2xl bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-[#1e71cd]/20">
-                      <Upload className="w-4 h-4 mr-2" /> Gallery
+                    <Button variant="outline" className="h-16 px-12 rounded-2xl border-border bg-background/50 backdrop-blur-md text-xs font-black uppercase tracking-widest hover:bg-accent group/btn">
+                      <Camera className="w-4 h-4 mr-3 group-hover/btn:scale-110 transition-transform" /> Take Photo
                     </Button>
                   </div>
                 </div>
               </motion.div>
-            ) : isAnalyzing ? (
+            )}
+
+            {activeStep === "form" && (
               <motion.div 
-                key="analyzing"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-8"
+                key="form"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-card border border-border rounded-[3rem] p-10 md:p-16 shadow-2xl relative overflow-hidden"
               >
-                <div className="relative aspect-video bg-card border border-border rounded-[2.5rem] overflow-hidden shadow-2xl">
-                   {image && <Image src={image} alt="Target" fill className="object-cover opacity-60 contrast-125" />}
-                   <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-[2px]">
-                      <motion.div 
-                        initial={{ top: "0%" }}
-                        animate={{ top: "100%" }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-x-0 h-1 bg-[#1e71cd] shadow-[0_0_30px_#1e71cd] z-10"
+                <div className="absolute top-0 right-0 p-10 text-primary/5 pointer-events-none">
+                  <ShieldAlert size={140} />
+                </div>
+
+                <div className="text-center mb-12">
+                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary font-black text-[10px] mb-6 uppercase tracking-widest border border-primary/20">
+                      <Zap size={14} className="animate-pulse" /> Final Verification
+                   </div>
+                   <h3 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-4xl font-black text-foreground mb-4 uppercase tracking-tighter">CLAIM YOUR <span className="text-primary">ESTIMATE</span></h3>
+                   <p className="text-muted-foreground font-medium">Verify your details below to reveal the AI analysis and lock-in your price.</p>
+                </div>
+
+                <form onSubmit={handleLeadSubmit} className="space-y-6 max-w-md mx-auto relative z-10">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60 ml-1">Full Name</Label>
+                    <div className="relative group">
+                      <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Input 
+                        placeholder="John Doe" 
+                        required
+                        className="h-16 pl-14 bg-background border-border rounded-2xl focus:border-primary focus:ring-primary/10 transition-all font-bold"
+                        value={leadData.name}
+                        onChange={e => setLeadData({...leadData, name: e.target.value})}
                       />
-                      <div className="p-8 bg-black/80 rounded-2xl border border-white/10 flex items-center gap-6 shadow-2xl">
-                        <Loader2 className="w-6 h-6 text-[#1e71cd] animate-spin" />
-                        <span className="text-white font-black uppercase tracking-[0.3em] text-xs">Decrypting Surface Data...</span>
-                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60 ml-1">Phone Number</Label>
+                    <div className="relative group">
+                      <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Input 
+                        type="tel"
+                        placeholder="(123) 456-7890" 
+                        required
+                        className="h-16 pl-14 bg-background border-border rounded-2xl focus:border-primary focus:ring-primary/10 transition-all font-bold"
+                        value={leadData.phone}
+                        onChange={e => setLeadData({...leadData, phone: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmittingLead}
+                    className="w-full h-20 bg-primary hover:bg-primary/90 text-white rounded-2xl text-lg font-black uppercase tracking-widest shadow-2xl shadow-primary/25 group/submit"
+                  >
+                    {isSubmittingLead ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+                      <span className="flex items-center justify-center gap-3">
+                        GENERATE REPORT <ArrowRight className="w-5 h-5 group-hover/submit:translate-x-1 transition-transform" />
+                      </span>
+                    )}
+                  </Button>
+                </form>
+              </motion.div>
+            )}
+
+            {activeStep === "analyzing" && (
+              <div className="relative aspect-video rounded-[3rem] overflow-hidden border border-primary/20 shadow-2xl">
+                {image && <Image src={image} alt="Processing" fill className="object-cover opacity-60 contrast-125 saturate-50" />}
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center">
+                   <motion.div 
+                     animate={{ top: ["0%", "100%", "0%"] }}
+                     transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                     className="absolute inset-x-0 h-1 bg-primary shadow-[0_0_30px_rgba(30,113,205,1)] z-10"
+                   />
+                   <div className="p-10 bg-black/80 rounded-[2.5rem] border border-white/10 flex flex-col items-center gap-4">
+                     <BrainCircuit className="w-10 h-10 text-primary animate-pulse" />
+                     <span className="text-white font-black uppercase tracking-[0.4em] text-[10px]">Neural Surface Mapping...</span>
                    </div>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="h-14 bg-card rounded-2xl animate-pulse border border-border" />
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
+              </div>
+            )}
+
+            {activeStep === "result" && (
               <motion.div 
                 key="result"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-card border border-border rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden"
               >
-                {/* Accent Background */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#1e71cd]/5 blur-[100px] pointer-events-none" />
-                
-                <div className="flex items-center justify-between mb-12">
-                   <div className="space-y-1">
-                      <p className="text-[#1e71cd] text-[10px] font-black uppercase tracking-[0.3em]">Analysis Complete</p>
-                      <h3 className="font-[family-name:var(--font-orbitron)] text-3xl font-black text-foreground uppercase">Surface Report</h3>
+                <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
+                   <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-[0.4em]">
+                         <CheckCircle2 size={14} /> Analysis Verified
+                      </div>
+                      <h3 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter">FINAL <span className="text-primary italic">REPORT</span></h3>
                    </div>
-                   <div className="hidden sm:flex px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full items-center gap-2">
+                   <div className="px-5 py-3 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center gap-3 self-end md:self-start">
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      <span className="text-green-500 text-[10px] font-black uppercase tracking-widest">Verified by AI</span>
+                      <span className="text-green-500 text-[10px] font-black uppercase tracking-widest">Accuracy: {result?.confidenceScore}%</span>
                    </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6 md:gap-10 mb-12 uppercase tracking-widest">
-                  <div className="space-y-2">
-                    <span className="text-foreground/40 text-[10px] font-bold">Detected Material</span>
-                    <p className="text-xl font-black text-[#1e71cd]">{result?.detectedMaterial}</p>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="text-foreground/40 text-[10px] font-bold">Contamination</span>
-                    <p className="text-xl font-black text-foreground">{result?.contaminationLevel}</p>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="text-foreground/40 text-[10px] font-bold">Estimated Size</span>
-                    <p className="text-xl font-black text-foreground">~{result?.estimatedSqFt} SQ FT</p>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="text-foreground/40 text-[10px] font-bold">Confidence Score</span>
-                    <p className="text-xl font-black text-green-500">{result?.confidenceScore}%</p>
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                  {[
+                    { label: "Material", val: result?.detectedMaterial, icon: Target },
+                    { label: "Quality", val: result?.contaminationLevel, icon: Zap },
+                    { label: "Est. Area", val: `~${result?.estimatedSqFt} SQFT`, icon: Maximize2 },
+                    { label: "Security", val: "Verified", icon: ShieldCheck }
+                  ].map((item, idx) => (
+                    <div key={idx} className="p-6 bg-muted/50 border border-border rounded-2xl">
+                      <item.icon className="w-5 h-5 text-primary mb-3" />
+                      <span className="text-muted-foreground text-[8px] font-black uppercase tracking-widest block mb-1">{item.label}</span>
+                      <p className="text-xs md:text-sm font-black text-foreground uppercase truncate">{item.val}</p>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="bg-linear-to-br from-[#1e71cd] to-[#124d8c] rounded-[2rem] p-10 mb-12 relative overflow-hidden group shadow-2xl shadow-[#1e71cd]/20">
-                  <div className="absolute top-0 right-0 p-8 text-white/10 group-hover:scale-125 transition-transform duration-700">
-                    <Zap size={180} />
+                <div className="bg-primary/5 border-l-4 border-primary p-10 md:p-14 rounded-r-3xl mb-12 relative group overflow-hidden">
+                  <div className="absolute -top-10 -right-10 text-primary/5 group-hover:scale-110 transition-transform duration-700">
+                    <Zap size={200} />
                   </div>
-                  <span className="text-white/60 text-[10px] font-black uppercase tracking-[0.4em] block mb-4">Instant Price Range</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl md:text-7xl font-[family-name:var(--font-orbitron)] font-black text-white tracking-tighter">
-                      {result?.priceRange}
-                    </span>
+                  <span className="text-primary text-[10px] font-black uppercase tracking-[0.5em] block mb-6">LOCKED-IN PRICE RANGE*</span>
+                  <div className="text-5xl md:text-8xl font-[family-name:var(--font-orbitron)] font-black text-foreground tracking-tighter tabular-nums mb-6">
+                    {result?.priceRange}
                   </div>
-                  <p className="text-white/40 text-[9px] mt-8 uppercase font-bold leading-relaxed px-1">
-                    *This is an automated estimate. Includes deep cleaning, biological treatment, and surface protection.
+                  <p className="text-muted-foreground text-[9px] uppercase font-bold max-w-sm">
+                    *Exclusive AI Discount Applied. Valid for 48 hours.
                   </p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button 
-                    onClick={() => handleWhatsApp("claim")}
-                    className="flex-[2] h-20 bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white rounded-2xl text-xl font-black uppercase tracking-widest shadow-xl shadow-[#1e71cd]/30 active:scale-95 transition-all"
+                    onClick={handleWhatsApp}
+                    className="flex-[3] h-20 bg-primary hover:bg-primary/90 text-white rounded-2xl text-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20"
                   >
-                    Lock This Price
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => handleWhatsApp("negotiate")}
-                    className="flex-1 h-20 border-border bg-background hover:bg-accent rounded-2xl font-bold uppercase text-[10px] tracking-widest"
-                  >
-                    Negotiate
+                    Lock My Booking
                   </Button>
                   <Button 
                     variant="ghost" 
                     onClick={handleRetry}
-                    className="w-20 h-20 rounded-2xl border border-border text-foreground/20 hover:text-foreground hover:bg-accent transition-colors"
+                    className="flex-1 h-20 rounded-2xl border border-border text-muted-foreground hover:text-foreground font-black uppercase tracking-widest text-[10px]"
                   >
-                    <RotateCcw className="w-6 h-6" />
+                    Retry
                   </Button>
                 </div>
               </motion.div>
@@ -361,79 +398,6 @@ export default function AiEstimateSection() {
         accept="image/*"
         className="hidden"
       />
-
-      {/* Lead Capture Modal */}
-      <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
-        <DialogContent className="sm:max-w-md bg-card border-border rounded-[2.5rem] p-0 overflow-hidden shadow-[0_0_100px_rgba(30,113,205,0.2)]">
-          <div className="relative h-40 bg-linear-to-br from-[#1e71cd] to-[#124d8c] flex items-center justify-center">
-             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
-             <div className="relative p-6 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
-                <BrainCircuit className="w-12 h-12 text-white" />
-             </div>
-             <div className="absolute bottom-0 inset-x-0 h-20 bg-linear-to-t from-black/20 to-transparent" />
-          </div>
-          
-          <div className="p-10">
-            <DialogHeader className="mb-10 text-center sm:text-center">
-              <DialogTitle className="font-[family-name:var(--font-orbitron)] text-3xl font-black uppercase tracking-tight mb-4">Almost There!</DialogTitle>
-              <DialogDescription className="text-foreground/60 text-base leading-relaxed">
-                Our AI has processed your image. Please provide your contact details to view the final analysis and price range.
-              </DialogDescription>
-            </DialogHeader>
-
-            <form onSubmit={handleLeadSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="lead-name" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1e71cd]">Your Full Name</Label>
-                <div className="relative group">
-                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 group-focus-within:text-[#1e71cd] transition-colors" />
-                   <Input 
-                      id="lead-name" 
-                      placeholder="e.g. John Doe" 
-                      required 
-                      className="pl-12 h-16 bg-background/50 border-border rounded-2xl focus:ring-[#1e71cd]/20 focus:border-[#1e71cd] transition-all"
-                      value={leadData.name}
-                      onChange={(e) => setLeadData({...leadData, name: e.target.value})}
-                   />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="lead-phone" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1e71cd]">Your Phone Number</Label>
-                <div className="relative group">
-                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 group-focus-within:text-[#1e71cd] transition-colors" />
-                   <Input 
-                      id="lead-phone" 
-                      type="tel" 
-                      placeholder="(123) 456-7890" 
-                      required 
-                      className="pl-12 h-16 bg-background/50 border-border rounded-2xl focus:ring-[#1e71cd]/20 focus:border-[#1e71cd] transition-all"
-                      value={leadData.phone}
-                      onChange={(e) => setLeadData({...leadData, phone: e.target.value})}
-                   />
-                </div>
-              </div>
-
-              <Button 
-                type="submit" 
-                disabled={isSubmittingLead}
-                className="w-full h-18 bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white rounded-2xl text-lg font-black uppercase tracking-widest shadow-2xl shadow-[#1e71cd]/30 group active:scale-95 transition-all"
-              >
-                {isSubmittingLead ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  <>
-                    Unlock Estimate <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" />
-                  </>
-                )}
-              </Button>
-              
-              <p className="text-center text-[9px] text-foreground/30 uppercase font-bold tracking-widest px-4">
-                 By continuing, you agree to receive a one-time automated estimate report via SMS/WhatsApp.
-              </p>
-            </form>
-          </div>
-        </DialogContent>
-      </Dialog>
     </section>
   )
 }
