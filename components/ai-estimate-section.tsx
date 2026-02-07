@@ -327,63 +327,124 @@ export default function AiEstimateSection() {
                 key="result"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-card border border-border rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden"
+                className="space-y-8"
               >
-                <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
-                   <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-[0.4em]">
-                         <CheckCircle2 size={14} /> Analysis Verified
-                      </div>
-                      <h3 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter">FINAL <span className="text-primary italic">REPORT</span></h3>
-                   </div>
-                   <div className="px-5 py-3 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center gap-3 self-end md:self-start">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      <span className="text-green-500 text-[10px] font-black uppercase tracking-widest">Accuracy: {result?.confidenceScore}%</span>
-                   </div>
+                {/* Analyzed Image with Logo Overlay - Like Reference */}
+                <div className="relative aspect-video rounded-[3rem] overflow-hidden border border-primary/30 shadow-2xl">
+                  {image && <Image src={image} alt="Analyzed Surface" fill className="object-cover" />}
+                  
+                  {/* Dark Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
+                  
+                  {/* Elite Logo Centered - Like ai stimate.png */}
+                  <div className="absolute inset-0 flex items-center justify-center p-12">
+                     <div className="relative w-full max-w-md aspect-square">
+                        <Image src="/images/logo.png" alt="Elite Surface Systems" fill className="object-contain drop-shadow-[0_0_40px_rgba(30,113,205,0.5)]" />
+                     </div>
+                  </div>
+
+                  {/* Status Badge Bottom Left */}
+                  <div className="absolute bottom-8 left-8 px-5 py-3 rounded-2xl bg-green-500/20 backdrop-blur-xl border border-green-500/30 flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <span className="text-green-500 text-xs font-black uppercase tracking-widest">Analysis Complete</span>
+                  </div>
+
+                  {/* Confidence Score Top Right */}
+                  <div className="absolute top-8 right-8 px-5 py-3 rounded-2xl bg-primary/20 backdrop-blur-xl border border-primary/30 flex items-center gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                    <span className="text-primary text-xs font-black uppercase tracking-widest">{result?.confidenceScore}% Match</span>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                  {[
-                    { label: "Material", val: result?.detectedMaterial, icon: Target },
-                    { label: "Quality", val: result?.contaminationLevel, icon: Zap },
-                    { label: "Est. Area", val: `~${result?.estimatedSqFt} SQFT`, icon: Maximize2 },
-                    { label: "Security", val: "Verified", icon: ShieldCheck }
-                  ].map((item, idx) => (
-                    <div key={idx} className="p-6 bg-muted/50 border border-border rounded-2xl">
-                      <item.icon className="w-5 h-5 text-primary mb-3" />
-                      <span className="text-muted-foreground text-[8px] font-black uppercase tracking-widest block mb-1">{item.label}</span>
-                      <p className="text-xs md:text-sm font-black text-foreground uppercase truncate">{item.val}</p>
+                {/* Report Card Below */}
+                <div className="bg-card border border-border rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-10 text-primary/5 pointer-events-none">
+                    <Zap size={180} />
+                  </div>
+
+                  <div className="mb-12">
+                    <div className="flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-[0.4em] mb-3">
+                       <Target size={14} /> Surface Intelligence Report
                     </div>
-                  ))}
-                </div>
-
-                <div className="bg-primary/5 border-l-4 border-primary p-10 md:p-14 rounded-r-3xl mb-12 relative group overflow-hidden">
-                  <div className="absolute -top-10 -right-10 text-primary/5 group-hover:scale-110 transition-transform duration-700">
-                    <Zap size={200} />
+                    <h3 className="font-[family-name:var(--font-orbitron)] text-3xl md:text-6xl font-black text-foreground uppercase tracking-tighter">
+                      YOUR <span className="text-primary italic">ESTIMATE</span>
+                    </h3>
                   </div>
-                  <span className="text-primary text-[10px] font-black uppercase tracking-[0.5em] block mb-6">LOCKED-IN PRICE RANGE*</span>
-                  <div className="text-5xl md:text-8xl font-[family-name:var(--font-orbitron)] font-black text-foreground tracking-tighter tabular-nums mb-6">
-                    {result?.priceRange}
-                  </div>
-                  <p className="text-muted-foreground text-[9px] uppercase font-bold max-w-sm">
-                    *Exclusive AI Discount Applied. Valid for 48 hours.
-                  </p>
-                </div>
 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    onClick={handleWhatsApp}
-                    className="flex-[3] h-20 bg-primary hover:bg-primary/90 text-white rounded-2xl text-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20"
-                  >
-                    Lock My Booking
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleRetry}
-                    className="flex-1 h-20 rounded-2xl border border-border text-muted-foreground hover:text-foreground font-black uppercase tracking-widest text-[10px]"
-                  >
-                    Retry
-                  </Button>
+                  {/* Data Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+                    <div className="p-8 bg-muted/50 border border-border rounded-2xl space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <Target className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest">Material Type</span>
+                      </div>
+                      <p className="text-xl md:text-2xl font-black text-foreground uppercase">{result?.detectedMaterial}</p>
+                    </div>
+
+                    <div className="p-8 bg-muted/50 border border-border rounded-2xl space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <ShieldAlert className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest">Contamination</span>
+                      </div>
+                      <p className="text-xl md:text-2xl font-black text-foreground uppercase">{result?.contaminationLevel}</p>
+                    </div>
+
+                    <div className="p-8 bg-muted/50 border border-border rounded-2xl space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <Maximize2 className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest">Surface Area</span>
+                      </div>
+                      <p className="text-xl md:text-2xl font-black text-foreground uppercase">~{result?.estimatedSqFt} SQFT</p>
+                    </div>
+                  </div>
+
+                  {/* Price Range - Hero Element */}
+                  <div className="bg-linear-to-r from-primary/10 to-primary/5 border-l-4 border-primary rounded-r-3xl p-10 md:p-16 mb-12 relative group">
+                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-primary/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-6">
+                        <DollarSign className="w-8 h-8 text-primary" />
+                        <span className="text-primary text-xs font-black uppercase tracking-[0.5em]">AI-Locked Price Range</span>
+                      </div>
+                      
+                      <div className="text-6xl md:text-8xl font-[family-name:var(--font-orbitron)] font-black text-foreground tracking-tighter tabular-nums mb-6 drop-shadow-lg">
+                        {result?.priceRange}
+                      </div>
+                      
+                      <div className="flex items-start gap-3 p-4 bg-background/50 rounded-xl border border-border">
+                        <Clock className="w-4 h-4 text-primary mt-0.5" />
+                        <p className="text-muted-foreground text-xs font-bold uppercase leading-relaxed">
+                          This exclusive AI discount is valid for <span className="text-foreground font-black">48 hours</span>. Book now via WhatsApp to lock in this price.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-5">
+                    <Button 
+                      onClick={handleWhatsApp}
+                      className="flex-[3] h-20 bg-primary hover:bg-primary/90 text-white rounded-2xl text-lg md:text-xl font-black uppercase tracking-widest shadow-2xl shadow-primary/30 group"
+                    >
+                      <span className="flex items-center justify-center gap-3">
+                        Lock This Price <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                      </span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleRetry}
+                      className="flex-1 h-20 rounded-2xl border-border hover:bg-accent text-muted-foreground hover:text-foreground font-black uppercase tracking-widest text-xs"
+                    >
+                      <RotateCcw className="w-5 h-5 mr-2" /> New Analysis
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             )}
