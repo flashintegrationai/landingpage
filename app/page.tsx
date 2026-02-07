@@ -6,6 +6,7 @@ import ProcessSection from "@/components/process-section"
 import GallerySection from "@/components/gallery-section"
 import TestimonialsSection from "@/components/testimonials-section"
 import ContactSection from "@/components/contact-section"
+import AiEstimateSection from "@/components/ai-estimate-section"
 import Footer from "@/components/footer"
 import FloatingContact from "@/components/floating-contact"
 import QuoteModal from "@/components/quote-modal"
@@ -27,6 +28,7 @@ export default function Home() {
         <ProcessSection />
         <GallerySection />
         <TestimonialsSection />
+        <AiEstimateSection />
         <ContactSection />
         <Footer />
       </div>
