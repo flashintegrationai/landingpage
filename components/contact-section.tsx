@@ -184,8 +184,8 @@ export default function ContactSection() {
       className="relative pt-20 pb-64 md:pt-32 md:pb-80 bg-background transition-colors duration-300"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1e71cd]/5 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#1e71cd]/50 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-[#1e71cd]/5 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#1e71cd]/50 to-transparent" />
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -197,7 +197,7 @@ export default function ContactSection() {
           <span className="inline-block px-4 py-2 rounded-full bg-[#1e71cd]/10 text-[#1e71cd] text-sm font-semibold mb-4 border border-[#1e71cd]/20">
             Contact Us
           </span>
-          <h2 className="font-[family-name:var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h2 className="font-(family-name:--font-orbitron) text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
             <span className="text-balance">Get Your Free Quote</span>
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-foreground/60 leading-relaxed mb-10">
@@ -216,7 +216,7 @@ export default function ContactSection() {
                     <Sparkles className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-[family-name:var(--font-orbitron)] text-lg font-bold text-foreground uppercase tracking-tight mb-1">Want it even faster?</h4>
+                    <h4 className="font-(family-name:--font-orbitron) text-lg font-bold text-foreground uppercase tracking-tight mb-1">Want it even faster?</h4>
                     <p className="text-sm text-foreground/60">Use our <span className="text-[#1e71cd] font-bold">AI Instant Estimate</span> to get a price in seconds. Simply upload a photo and skip the form!</p>
                   </div>
                   <div className="md:ml-auto">
@@ -242,7 +242,7 @@ export default function ContactSection() {
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/20 mb-6">
                   <CheckCircle className="w-10 h-10 text-green-500" />
                 </div>
-                <h3 className="font-[family-name:var(--font-orbitron)] text-2xl font-bold text-foreground mb-4">
+                <h3 className="font-(family-name:--font-orbitron) text-2xl font-bold text-foreground mb-4">
                   Thank You!
                 </h3>
                 <p className="text-foreground/60 mb-6">
@@ -352,7 +352,7 @@ export default function ContactSection() {
                     <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">Max 5 files</span>
                   </div>
                   
-                  <div className="border-2 border-dashed border-border rounded-2xl p-8 transition-colors bg-[#1e71cd]/5 border-[#1e71cd]/50 group cursor-pointer">
+                  <div className="border-2 border-dashed rounded-2xl p-8 transition-colors bg-[#1e71cd]/5 border-[#1e71cd]/50 group cursor-pointer">
                     <input
                       type="file"
                       id="file-upload"
