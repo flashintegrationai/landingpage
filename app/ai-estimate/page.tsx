@@ -54,6 +54,17 @@ export default function AiEstimatePage() {
     setMounted(true)
   }, [])
 
+  const formatPhoneNumber = (value: string) => {
+    if (!value) return value
+    const phoneNumber = value.replace(/[^\d]/g, "")
+    const phoneNumberLength = phoneNumber.length
+    if (phoneNumberLength < 4) return phoneNumber
+    if (phoneNumberLength < 7) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`
+    }
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -72,6 +83,14 @@ export default function AiEstimatePage() {
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Simple phone validation (10 digits)
+    const phoneDigits = leadData.phone.replace(/[^\d]/g, "")
+    if (phoneDigits.length < 10) {
+      toast.error("Please enter a valid 10-digit phone number.")
+      return
+    }
+
     if (!leadData.name || !leadData.phone) {
       toast.error("Please provide both name and phone number.")
       return
@@ -283,11 +302,15 @@ export default function AiEstimatePage() {
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input 
                         type="tel"
-                        placeholder="e.g. +1 (555) 000-0000" 
+                        placeholder="(555) 000-0000" 
                         required
-                        className="h-14 pl-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all"
+                        className="h-14 pl-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all font-medium"
                         value={leadData.phone}
-                        onChange={e => setLeadData({...leadData, phone: e.target.value})}
+                        onChange={e => {
+                          const formatted = formatPhoneNumber(e.target.value)
+                          setLeadData({...leadData, phone: formatted})
+                        }}
+                        maxLength={14}
                       />
                     </div>
                   </div>

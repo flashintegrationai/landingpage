@@ -3,7 +3,7 @@
 import React from "react";
 
 import { useEffect, useRef, useState } from "react";
-import { Send, CheckCircle, Loader2, Upload, X, Image as ImageIcon } from "lucide-react";
+import { Send, CheckCircle, Loader2, Upload, X, Image as ImageIcon, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -200,10 +200,34 @@ export default function ContactSection() {
           <h2 className="font-[family-name:var(--font-orbitron)] text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
             <span className="text-balance">Get Your Free Quote</span>
           </h2>
-          <p className="max-w-2xl mx-auto text-lg text-foreground/60 leading-relaxed">
+          <p className="max-w-2xl mx-auto text-lg text-foreground/60 leading-relaxed mb-10">
             Ready to transform your property? Fill out the form below and
-            {"we'll"} get back to you within 24 hours.
+            {" we'll"} get back to you within 24 hours.
           </p>
+
+          {/* AI Estimate Promo Card */}
+          <Link href="/ai-estimate" className="block max-w-2xl mx-auto mb-12 group">
+            <div className="relative p-6 rounded-2xl bg-[#1e71cd]/5 border border-[#1e71cd]/20 hover:border-[#1e71cd]/40 transition-all duration-300 overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Sparkles size={80} className="text-[#1e71cd]" />
+               </div>
+               <div className="flex flex-col md:flex-row items-center gap-6 relative z-10 text-center md:text-left">
+                  <div className="w-16 h-16 rounded-xl bg-[#1e71cd] flex items-center justify-center shrink-0 shadow-lg shadow-[#1e71cd]/20">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-[family-name:var(--font-orbitron)] text-lg font-bold text-foreground uppercase tracking-tight mb-1">Want it even faster?</h4>
+                    <p className="text-sm text-foreground/60">Use our <span className="text-[#1e71cd] font-bold">AI Instant Estimate</span> to get a price in seconds. Simply upload a photo and skip the form!</p>
+                  </div>
+                  <div className="md:ml-auto">
+                    <div className="flex items-center gap-2 px-8 py-4 bg-[#1e71cd] text-white text-xs font-black uppercase tracking-widest rounded-xl group-active:scale-95 transition-all shadow-[0_10px_20px_rgba(30,113,205,0.2)] group-hover:shadow-[0_15px_30px_rgba(30,113,205,0.4)] group-hover:bg-[#1e71cd]/90">
+                      Try AI Now
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+               </div>
+            </div>
+          </Link>
         </div>
 
         {/* Contact Form */}

@@ -29,7 +29,7 @@ export default function FloatingContact() {
 
   return (
     <div 
-      className={`fixed bottom-8 right-6 z-50 flex flex-col gap-3 transition-all duration-500 transform ${
+      className={`fixed bottom-24 right-6 z-50 flex flex-col gap-3 transition-all duration-500 transform ${
         isVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-10 opacity-0 scale-90 pointer-events-none"
       }`}
     >

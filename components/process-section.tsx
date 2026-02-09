@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ClipboardList, CalendarCheck, Coffee, ArrowRight } from "lucide-react"
+import { ClipboardList, CalendarCheck, Coffee, ArrowRight, Sparkles, Zap } from "lucide-react"
 import dynamic from "next/dynamic"
+import Link from "next/link"
 
 const BackgroundEffects = dynamic(
   () => import("@/components/background-effects"),
@@ -12,11 +13,11 @@ import { triggerSingleConfetti } from "@/lib/confetti"
 
 const steps = [
   {
-    icon: ClipboardList,
+    icon: Sparkles,
     number: "1",
-    title: "Request A Quote",
+    title: "AI Instant Estimate",
     description:
-      "It's simple to get started. Just complete our contact form to receive a free, customized estimate. We will return your quote within 24 hours.",
+      "Skip the wait. Use our advanced AI tool to get a precise cost estimate in seconds just by uploading a photo of your property.",
   },
   {
     icon: CalendarCheck,
@@ -83,10 +84,20 @@ export default function ProcessSection() {
             <span className="text-[#1e71cd]">FAST & EASY</span>
           </h3>
           
-          <p className="max-w-3xl mx-auto text-xl text-foreground font-medium leading-relaxed mb-8">
+          <p className="max-w-3xl mx-auto text-xl text-foreground font-medium leading-relaxed mb-10">
             When dirt, mold, mildew, and algae take over your property, it can feel overwhelming. 
-            We make it simple to receive superior cleaning results without the stress.
+            Receive superior cleaning results instantly with our cutting-edge AI technology or professional on-site quotes.
           </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <Link href="/ai-estimate">
+              <div className="group relative inline-flex items-center gap-3 px-8 py-4 bg-accent/10 border border-accent/30 rounded-2xl hover:bg-accent/20 transition-all duration-300 cursor-pointer">
+                <Sparkles className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-black text-primary uppercase tracking-widest">Try AI Estimate Now</span>
+                <Zap className="w-4 h-4 text-primary fill-primary animate-pulse" />
+              </div>
+            </Link>
+          </div>
 
           {/* Decorative Wavy Line */}
           <div className="flex justify-center mb-16">
