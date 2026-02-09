@@ -51,14 +51,7 @@ export default function FloatingContact() {
           <Phone className="w-6 h-6" />
         </Button>
 
-        <Button
-          onClick={handleQuoteClick}
-          className="bg-primary hover:bg-primary/90 text-white font-bold px-6 h-14 rounded-2xl shadow-[0_10px_30px_rgba(30,113,205,0.4)] flex items-center gap-3 transition-all duration-300 hover:scale-105"
-        >
-          <Quote className="w-5 h-5" />
-          <span className="hidden sm:inline">GET FREE QUOTE</span>
-          <span className="sm:hidden">QUOTE</span>
-        </Button>
+ 
       </div>
     </div>
   )

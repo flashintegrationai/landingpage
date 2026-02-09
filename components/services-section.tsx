@@ -30,7 +30,7 @@ const services = [
   {
     icon: Home,
     title: "House Washing",
-    image: "/images/services/house-washing.png",
+    image: "/Gemini_Generated_Image_g2m4vcg2m4vcg2m4.png",
     description:
       "Restore your home's exterior to its original beauty with our gentle yet effective soft wash technology. We remove dirt, mold, mildew, and algae safely.",
     features: ["Safe for all siding types", "Increases curb appeal", "Eco-friendly solutions", "Long-lasting results"],
@@ -39,7 +39,7 @@ const services = [
   {
     icon: Building2,
     title: "Commercial",
-    image: "/images/services/commercial.jpg",
+    image: "/Gemini_Generated_Image_2ep2e2ep2e2ep2e2.png",
     description:
       "Keep your business looking professional with our commercial-grade pressure washing services. We handle storefronts, office buildings, and industrial spaces.",
     features: ["Storefronts & Entrances", "Graffiti Removal", "Parking Areas", "Flexible Scheduling"],
@@ -68,7 +68,7 @@ const services = [
   {
     icon: Droplets,
     title: "Roof Cleaning",
-    image: "/images/services/house-washing.png", // Reusing image as placeholder/best fit
+    image: "/Gemini_Generated_Image_31xr5g31xr5g31xr.png", 
     description:
       "Safely remove algae, moss, and debris from your roof without damaging shingles. Extends the life of your roof.",
     features: ["Soft wash method", "Moss removal", "Black streak removal", "Shingle protection"],
@@ -77,7 +77,7 @@ const services = [
   {
     icon: Trees,
     title: "Patio & Deck",
-    image: "/images/services/driveway.jpg", // Reusing image as placeholder/best fit
+    image: "/Gemini_Generated_Image_3fxd073fxd073fxd.png", 
     description:
       "Transform your outdoor living spaces into pristine entertaining areas. We clean wood decks, pool decks, and stone patios.",
     features: ["Slip hazard removal", "Pool deck cleaning", "Stone restoration", "Wood brightening"],

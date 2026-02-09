@@ -1,28 +1,21 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-  Camera, 
   Upload, 
-  RotateCcw, 
   Zap, 
   Sparkles,
   Loader2,
-  CheckCircle2,
   Phone,
   User,
   ArrowRight,
   ShieldCheck,
-  BrainCircuit,
   Target,
   Maximize2,
-  ShieldAlert,
-  Clock,
-  DollarSign,
-  Home,
   ChevronRight,
-  Bot
+  Shield,
+  Droplets
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -31,6 +24,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
+import Navbar from "@/components/navbar"
+import dynamic from "next/dynamic"
+
+const BackgroundEffects = dynamic(
+  () => import("@/components/background-effects"),
+  { ssr: false }
+)
 
 interface AnalysisResult {
   detectedMaterial: string
@@ -48,6 +48,11 @@ export default function AiEstimatePage() {
   const [isSubmittingLead, setIsSubmittingLead] = useState(false)
   const [activeStep, setActiveStep] = useState<"idle" | "form" | "analyzing" | "result">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -148,304 +153,270 @@ export default function AiEstimatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-background text-foreground relative transition-colors duration-500 overflow-x-hidden">
+      <Navbar />
       
-      {/* Dynamic Background */}
-      <div className="fixed inset-0 bg-linear-to-br from-[#1e71cd] via-[#0a2e5c] to-black z-0 opacity-80" />
-      <div className="fixed inset-0 bg-[url('/grid.svg')] opacity-20 z-0 pointer-events-none" />
-      
-      {/* Floating Orbs - Ambient Effect */}
-      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-primary/30 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 z-0 animate-pulse" />
-      <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 z-0 animate-pulse delay-1000" />
+      {/* Background Layer */}
+      <div
+        className="fixed inset-0 z-0 opacity-100 dark:opacity-40 pointer-events-none"
+        style={{
+          background: "radial-gradient(125% 125% at 50% 10%, var(--background) 40%, #1e71cd 100%)",
+        }}
+      />
+      <div className="fixed inset-0 z-5 pointer-events-none">
+        <BackgroundEffects showWaves={false} />
+      </div>
 
-      {/* Content Wrapper */}
-      <div className="relative z-10 text-white">
-        
-        {/* Transparent Header */}
-        <header className="border-b border-white/10 backdrop-blur-md bg-black/20 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-3 group">
-                <div className="relative w-10 h-10">
-                  <Image src="/logoremovebj.png"  width="100" height="100" alt="Elite Surface Systems" className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-(family-name:--font-orbitron) text-lg font-black text-white uppercase tracking-tight">Elite Surface</span>
-                  <span className="text-[10px] font-bold text-primary-foreground/80 uppercase tracking-[0.3em]">AI Lab</span>
-                </div>
-              </Link>
-  
-              <Link href="/">
-                <Button variant="ghost" className="gap-2 font-bold uppercase tracking-widest text-xs text-white/70 hover:text-white hover:bg-white/10">
-                  <Home className="w-4 h-4" /> Back to Home
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </header>
-  
+      <div className="relative z-10 pt-32 pb-20">
         {/* Breadcrumbs */}
-        <div className="border-b border-white/5 bg-black/20">
-          <div className="max-w-7xl mx-auto px-6 py-3">
-            <div className="flex items-center gap-2 text-xs text-white/50 font-medium uppercase tracking-wider">
-              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-              <ChevronRight className="w-3 h-3" />
-              <span className="text-white">AI Surface Estimate</span>
-            </div>
-          </div>
+        <div className="max-w-7xl mx-auto px-6 mb-8">
+          <nav className="flex items-center gap-2 text-[10px] md:text-xs text-muted-foreground font-bold uppercase tracking-[0.2em]">
+            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+            <ChevronRight className="w-3 h-3" />
+            <span className="text-foreground">AI Instant Estimate</span>
+          </nav>
         </div>
-  
-        {/* Hero Section */}
-        <section className="relative py-16 md:py-24 text-center px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 mb-8 backdrop-blur-sm"
-            >
-              <Sparkles className="w-4 h-4 fill-yellow-400" />
-              <span className="text-xs font-black uppercase tracking-widest">AI-Powered Tech v2.0</span>
-            </motion.div>
-  
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="font-(family-name:--font-orbitron) text-5xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-white to-white/50 uppercase tracking-tighter mb-6 drop-shadow-2xl"
-            >
-              Instant <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-cyan-400">Analysis</span>
-            </motion.h1>
-  
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="max-w-2xl mx-auto text-lg md:text-xl text-white/60 leading-relaxed mb-12"
-            >
-              Upload a photo. Get a price. It's that simple.
-            </motion.p>
-        </section>
-  
-        {/* Interactive Main Area */}
-        <section className="relative pb-32 px-4 max-w-5xl mx-auto">
-            <AnimatePresence mode="wait">
-              {activeStep === "idle" && (
-                <motion.div 
-                  key="idle"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-                  className="group relative"
-                >
-                  {/* Glassmorphism Card */}
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="relative aspect-video bg-white/5 border border-white/10 backdrop-blur-xl rounded-[2rem] md:rounded-[3rem] flex flex-col items-center justify-center p-8 md:p-12 cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all duration-500 shadow-2xl overflow-hidden group/card"
-                  >
-                    {/* Inner Glow */}
-                    <div className="absolute inset-0 bg-linear-to-b from-primary/10 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-700" />
-                    
-                    {/* Floating Centerpiece */}
-                    <div className="relative mb-8 z-10">
-                        <motion.div 
-                          animate={{ y: [0, -10, 0] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                          className="w-32 h-32 md:w-40 md:h-40 bg-linear-to-br from-white/10 to-white/5 backdrop-blur-2xl border border-white/20 rounded-3xl flex items-center justify-center shadow-2xl relative"
-                        >
-                            <Bot className="w-16 h-16 md:w-20 md:h-20 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
-                            
-                            {/* "AI Powered" Badge */}
-                            <div className="absolute -top-4 -right-4 bg-yellow-400 text-black text-[10px] md:text-xs font-black px-3 py-1.5 rounded-lg shadow-lg rotate-12 uppercase tracking-wide border-2 border-black/10">
-                              AI Powered
-                            </div>
-                        </motion.div>
-                        
-                        {/* Glow under element */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-primary/40 rounded-full blur-3xl -z-10 group-hover/card:bg-primary/60 transition-colors duration-500" />
-                    </div>
-                    
-                    <h3 className="relative z-10 font-(family-name:--font-orbitron) text-2xl md:text-4xl font-black text-white mb-4 uppercase tracking-tight text-center">
-                      Upload Surface Photo
-                    </h3>
-                    <p className="relative z-10 text-white/60 text-sm md:text-base font-medium max-w-md text-center mb-8">
-                      Tap anywhere to scan your driveway, roof, or exterior. 
-                      <strong className="text-white block mt-1">Instant Quote. No waiting.</strong>
-                    </p>
-                    
-                    <div className="relative z-10 flex gap-4">
-                        <Button className="h-14 px-8 bg-primary hover:bg-primary/80 text-white rounded-xl text-sm font-bold uppercase tracking-widest shadow-lg shadow-primary/30">
-                           <Upload className="w-5 h-5 mr-2" /> Select Image
-                        </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-  
-              {activeStep === "form" && (
-                <motion.div 
-                  key="form"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-14 shadow-2xl relative overflow-hidden"
-                >
-                  <div className="text-center mb-10 text-white">
-                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/10 text-green-400 font-bold text-[10px] mb-6 uppercase tracking-widest border border-green-500/20">
-                        <ShieldCheck size={14} /> Secure Upload
-                     </div>
-                     <h3 className="font-(family-name:--font-orbitron) text-3xl md:text-4xl font-black mb-4 uppercase tracking-tighter"> almost <span className="text-primary">done</span></h3>
-                     <p className="text-white/50 text-sm md:text-base">We need these details to send your AI report.</p>
-                  </div>
-  
-                  <form onSubmit={handleLeadSubmit} className="space-y-6 max-w-md mx-auto relative z-10">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Full Name</Label>
-                      <div className="relative group">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 group-focus-within:text-primary transition-colors" />
-                        <Input 
-                          placeholder="Name" 
-                          required
-                          className="h-14 pl-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 rounded-xl focus:border-primary focus:ring-primary/20 transition-all font-medium"
-                          value={leadData.name}
-                          onChange={e => setLeadData({...leadData, name: e.target.value})}
-                        />
-                      </div>
-                    </div>
-  
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Phone Number</Label>
-                      <div className="relative group">
-                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 group-focus-within:text-primary transition-colors" />
-                        <Input 
-                          type="tel"
-                          placeholder="Phone" 
-                          required
-                          className="h-14 pl-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 rounded-xl focus:border-primary focus:ring-primary/20 transition-all font-medium"
-                          value={leadData.phone}
-                          onChange={e => setLeadData({...leadData, phone: e.target.value})}
-                        />
-                      </div>
-                    </div>
-  
-                    <Button 
-                      type="submit" 
-                      disabled={isSubmittingLead}
-                      className="w-full h-16 bg-white text-black hover:bg-white/90 rounded-xl text-lg font-black uppercase tracking-widest shadow-xl shadow-white/10 mt-4"
-                    >
-                      {isSubmittingLead ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
-                        <span className="flex items-center justify-center gap-2">
-                          GET ESTIMATE <ArrowRight className="w-5 h-5" />
-                        </span>
-                      )}
-                    </Button>
-                  </form>
-                </motion.div>
-              )}
 
-              {activeStep === "analyzing" && (
-                <div className="relative aspect-video bg-black/60 rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl flex flex-col items-center justify-center">
-                  {/* Scanning Line */}
-                  <motion.div 
-                    animate={{ top: ["0%", "100%", "0%"] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-x-0 h-0.5 bg-primary shadow-[0_0_50px_rgba(30,113,205,0.8)] z-20"
-                  />
-                  
-                  {image && <Image src={image} alt="Processing" fill className="object-cover opacity-30 blur-sm" />}
-                  
-                  <div className="relative z-30 flex flex-col items-center gap-8">
-                     <div className="relative">
-                        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
-                        <BrainCircuit className="w-16 h-16 text-primary animate-pulse relative z-10" />
-                     </div>
-                     <div className="text-center space-y-2">
-                        <h3 className="text-2xl font-black text-white uppercase tracking-widest">Scanning Surface</h3>
-                        <p className="text-white/50 text-xs uppercase tracking-[0.2em] animate-pulse">Analyzing Neural Patterns...</p>
-                     </div>
+        {/* Hero Section */}
+        <section className="max-w-7xl mx-auto px-4 md:px-8 text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm mb-8"
+          >
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">Instant Solutions at Your Fingertips</span>
+          </motion.div>
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="font-(family-name:--font-orbitron) text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6"
+          >
+            Get Your <span className="bg-linear-to-r from-primary via-[#3b82f6] to-[#60a5fa] bg-clip-text text-transparent">Quote in Seconds</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed font-medium"
+          >
+            Don't waste time waiting. Upload a photo of your property and receive an accurate estimate instantly to revitalize your surfaces today.
+          </motion.p>
+        </section>
+
+        {/* Interactive Main Area */}
+        <div className="max-w-4xl mx-auto px-4">
+          <AnimatePresence mode="wait">
+            {activeStep === "idle" && (
+              <motion.div
+                key="idle"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
+                className="relative"
+              >
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="group relative bg-card/50 backdrop-blur-xl border border-border rounded-4xl p-12 md:p-20 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 hover:border-primary/50 hover:shadow-[0_0_50px_rgba(30,113,205,0.1)] overflow-hidden"
+                >
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+                  <div className="relative z-10 flex flex-col items-center text-center">
+                    <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-white/10 transition-all duration-500 border border-border overflow-hidden p-4">
+                      <Image src="/logoremovebj.png" width={80} height={80} alt="Logo" className="object-contain" />
+                    </div>
+                    
+                    <h2 className="font-(family-name:--font-orbitron) text-3xl md:text-4xl font-black text-foreground mb-4 uppercase tracking-tight">
+                      Scan Your Property
+                    </h2>
+                    <p className="max-w-sm text-muted-foreground text-sm md:text-base mb-10 leading-relaxed">
+                      Tap to upload or take a photo of your driveway, roof, or exterior surfaces.
+                    </p>
+
+                    <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-10 py-7 rounded-2xl h-auto text-lg transition-all duration-300 group-hover:shadow-[0_15px_30px_rgba(30,113,205,0.3)]">
+                      <Upload className="mr-2 w-5 h-5 shrink-0" />
+                      SELECT PHOTO
+                    </Button>
                   </div>
                 </div>
-              )}
-  
-              {activeStep === "result" && (
-                <motion.div 
-                  key="result"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="space-y-8"
-                >
-                  {/* Result Card */}
-                  <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-12 text-white/5 pointer-events-none">
-                      <Zap size={200} />
-                    </div>
-  
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
-                      
-                      {/* Left: Image & Stats */}
-                      <div className="space-y-6">
-                        <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/20 shadow-lg group">
-                          {image && <Image src={image} alt="Analyzed" fill className="object-cover" />}
-                          <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
-                          <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-4 py-2 rounded-lg border border-white/10">
-                            <div className="text-[10px] text-white/60 uppercase tracking-widest font-bold mb-0.5">Confidence</div>
-                            <div className="text-white font-bold text-sm flex items-center gap-2">
-                               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" /> {result?.confidenceScore}%
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
-                              <Target className="w-6 h-6 text-primary mb-3" />
-                              <div className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Material</div>
-                              <div className="text-lg font-black text-white uppercase">{result?.detectedMaterial}</div>
-                           </div>
-                           <div className="bg-white/5 border border-white/10 p-5 rounded-2xl">
-                              <Maximize2 className="w-6 h-6 text-primary mb-3" />
-                              <div className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Area</div>
-                              <div className="text-lg font-black text-white uppercase">~{result?.estimatedSqFt} sf</div>
-                           </div>
-                        </div>
-                      </div>
-                      
-                      {/* Right: Pricing & CTA */}
-                      <div className="flex flex-col justify-center">
-                         <div className="mb-8">
-                            <span className="text-yellow-400 font-bold text-xs uppercase tracking-[0.2em] mb-2 block animate-pulse">● AI Exclusive Offer</span>
-                            <h3 className="text-white text-5xl md:text-7xl font-(family-name:--font-orbitron) font-black tracking-tighter mb-4">
-                              {result?.priceRange}
-                            </h3>
-                            <p className="text-white/50 text-sm leading-relaxed">
-                               Comparison market value for this job is typically 20% higher. 
-                               This AI-generated quote is locked for 48 hours.
-                            </p>
-                         </div>
-                         
-                         <div className="space-y-4">
-                            <Button 
-                              onClick={handleWhatsApp}
-                              className="w-full h-16 bg-white text-black hover:bg-gray-200 rounded-xl text-lg font-black uppercase tracking-widest shadow-[0_0_30px_rgba(255,255,255,0.2)] group"
-                            >
-                              <span className="flex items-center gap-3">
-                                Lock Price <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                              </span>
-                            </Button>
-                            
-                            <Button 
-                              variant="ghost" 
-                              onClick={handleRetry}
-                              className="w-full text-white/40 hover:text-white hover:bg-white/5 uppercase tracking-widest text-xs font-bold"
-                            >
-                              Scan Another Photo
-                            </Button>
-                         </div>
-                      </div>
-  
+              </motion.div>
+            )}
+
+            {activeStep === "form" && (
+              <motion.div
+                key="form"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-card/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-8 md:p-16 shadow-2xl relative overflow-hidden"
+              >
+                <div className="text-center mb-12">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-bold text-[10px] mb-6 uppercase tracking-widest">
+                    <ShieldCheck size={14} /> Encrypted Session
+                  </div>
+                  <h3 className="font-(family-name:--font-orbitron) text-3xl font-black mb-4 uppercase tracking-tighter">Information <span className="text-primary italic">Required</span></h3>
+                  <p className="text-muted-foreground text-sm">Verify your details to generate the official estimate.</p>
+                </div>
+
+                <form onSubmit={handleLeadSubmit} className="space-y-6 max-w-sm mx-auto relative z-10">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Client Name</Label>
+                    <div className="relative group">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Input 
+                        placeholder="e.g. John Smith" 
+                        required
+                        className="h-14 pl-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all"
+                        value={leadData.name}
+                        onChange={e => setLeadData({...leadData, name: e.target.value})}
+                      />
                     </div>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-        </section>
-  
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Phone Number</Label>
+                    <div className="relative group">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Input 
+                        type="tel"
+                        placeholder="e.g. +1 (555) 000-0000" 
+                        required
+                        className="h-14 pl-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all"
+                        value={leadData.phone}
+                        onChange={e => setLeadData({...leadData, phone: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmittingLead}
+                    className="w-full h-16 bg-primary text-white hover:bg-primary/90 rounded-xl text-lg font-black uppercase tracking-widest shadow-xl shadow-primary/10 mt-6"
+                  >
+                    {isSubmittingLead ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (
+                      <span className="flex items-center justify-center gap-2">
+                        GENERATE REPORT <ArrowRight className="w-5 h-5" />
+                      </span>
+                    )}
+                  </Button>
+                </form>
+              </motion.div>
+            )}
+
+            {activeStep === "analyzing" && (
+              <div className="relative aspect-video bg-card/50 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-border shadow-2xl flex flex-col items-center justify-center">
+                {/* Scanning Animation */}
+                <motion.div 
+                  animate={{ top: ["0%", "100%", "0%"] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-x-0 h-1 bg-primary shadow-[0_0_30px_rgba(30,113,205,0.8)] z-20"
+                />
+                
+                {image && <Image src={image} alt="Processing" fill className="object-cover opacity-20" />}
+                
+                <div className="relative z-30 flex flex-col items-center gap-6">
+                   <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center animate-pulse p-4 border border-white/20">
+                      <Image src="/logoremovebj.png" width={60} height={60} alt="Logo" className="object-contain" />
+                   </div>
+                   <div className="text-center">
+                      <h3 className="text-2xl font-bold text-foreground font-(family-name:--font-orbitron) tracking-wider mb-2 uppercase">Analyzing Surface</h3>
+                      <p className="text-muted-foreground text-[10px] uppercase tracking-[0.3em] font-bold">Deploying Neural Network...</p>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeStep === "result" && (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="space-y-6"
+              >
+                <div className="bg-card/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                    
+                    {/* Visual Analysis */}
+                    <div className="space-y-6">
+                      <div className="relative aspect-square md:aspect-video rounded-2xl overflow-hidden border border-border group shadow-inner">
+                        {image && <Image src={image} alt="Analyzed" fill className="object-cover" />}
+                        <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-all duration-300" />
+                        
+                        <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-3 py-1 rounded-full border border-border flex items-center gap-2">
+                           <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                           <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">{result?.confidenceScore}% Confidence</span>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                         <div className="bg-muted/30 border border-border p-4 rounded-xl flex flex-col gap-1">
+                            <Target className="w-4 h-4 text-primary mb-1" />
+                            <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-black">Detected Type</span>
+                            <span className="text-base font-black text-foreground uppercase">{result?.detectedMaterial}</span>
+                         </div>
+                         <div className="bg-muted/30 border border-border p-4 rounded-xl flex flex-col gap-1">
+                            <Maximize2 className="w-4 h-4 text-primary mb-1" />
+                            <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-black">Estimated Area</span>
+                            <span className="text-base font-black text-foreground uppercase">~{result?.estimatedSqFt} SQ FT</span>
+                         </div>
+                      </div>
+                    </div>
+                    
+                    {/* Proposal */}
+                    <div className="flex flex-col text-center md:text-left">
+                       <span className="text-amber-500 font-bold text-[10px] uppercase tracking-[0.2em] mb-3 md:mb-1 block">Commercial Estimate Locked</span>
+                       <h3 className="text-foreground text-5xl md:text-7xl font-(family-name:--font-orbitron) font-black tracking-tighter mb-6 leading-tight">
+                         {result?.priceRange}
+                       </h3>
+                       
+                       <p className="text-muted-foreground text-sm mb-10 leading-relaxed italic">
+                         Based on visual material analysis and local market data in South Florida. 
+                         Pricing includes industrial-grade soft washing and protective sealants.
+                       </p>
+                       
+                       <div className="space-y-3">
+                          <Button 
+                            onClick={handleWhatsApp}
+                            className="w-full h-16 bg-[#1e71cd] text-white hover:bg-[#1e71cd]/90 rounded-2xl text-lg font-bold uppercase tracking-widest transition-all duration-300 hover:scale-105 shadow-[0_15px_30px_rgba(30,113,205,0.2)] group"
+                          >
+                            <span className="flex items-center gap-3">
+                              BOOK THIS PRICE <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                          </Button>
+                          
+                          <button 
+                            onClick={handleRetry}
+                            className="w-full py-3 text-muted-foreground hover:text-foreground text-[10px] font-bold uppercase tracking-[0.3em] transition-colors"
+                          >
+                            Scan Another Aspect
+                          </button>
+                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trust Badges */}
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { icon: Shield, label: "Guaranteed" },
+                    { icon: Droplets, label: "Industrial" },
+                    { icon: Zap, label: "Eco-Friendly" }
+                  ].map((item, i) => (
+                    <div key={i} className="bg-card/30 backdrop-blur-md border border-border p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-2">
+                      <item.icon className="w-5 h-5 text-primary/60" />
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         <input 
           type="file" 
           ref={fileInputRef}
