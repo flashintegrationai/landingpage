@@ -1,5 +1,8 @@
 import { OpenAI } from "openai";
 import { NextResponse } from "next/server";
+import dns from "node:dns";
+
+dns.setDefaultResultOrder("ipv4first");
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -7,6 +10,12 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    console.log(
+      "Using API Key (Prefix):",
+      apiKey ? apiKey.substring(0, 7) + "..." : "MISSING",
+    );
+
     const { image } = await req.json();
 
     if (!image) {
@@ -62,13 +71,29 @@ export async function POST(req: Request) {
 
     return NextResponse.json(JSON.parse(content));
   } catch (error: any) {
-    console.error("AI Analysis Error:", error);
+    console.error("AI Analysis Error Details:", {
+      message: error.message,
+      code: error.code,
+      type: error.type,
+      stack: error.stack,
+      cause: error.cause,
+    });
+
+    let errorMessage = "Failed to analyze surface. Please try again.";
+
+    if (error.code === "EAI_FAIL" || error.message?.includes("getaddrinfo")) {
+      errorMessage =
+        "Network/DNS Error: Unable to reach OpenAI servers. Please check your internet connection.";
+    } else if (error.status === 401) {
+      errorMessage =
+        "Invalid OpenAI API Key. Please verify your environment variables.";
+    } else if (error.status === 429) {
+      errorMessage = "OpenAI rate limit reached. Please try again later.";
+    }
+
     return NextResponse.json(
-      {
-        error:
-          "Failed to analyze surface. Please check if your OpenAI API Key is valid.",
-      },
-      { status: 500 },
+      { error: errorMessage },
+      { status: error.status || 500 },
     );
   }
 }
