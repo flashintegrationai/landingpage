@@ -68,7 +68,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+        <html lang="en">
+          <head>
+            <script
+              src="https://link.msgsndr.com/js/external-tracking.js"
+              data-tracking-id="tk_e86876678ed543d68052afb2d95036b2"
+            />
+          </head>
       <body className={`${inter.variable} ${orbitron.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"
