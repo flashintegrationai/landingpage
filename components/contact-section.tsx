@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-
 import { useEffect, useRef, useState } from "react";
 import { Send, CheckCircle, Loader2, Upload, X, Image as ImageIcon, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { triggerConfetti } from "@/lib/confetti";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/context/language-context";
 
 // Custom SVG Icons for Services - Professional White-Stroke Aesthetic
 const ServiceIcons = {
@@ -64,22 +64,23 @@ const ServiceIcons = {
   ),
 };
 
-const services = [
-  { label: "Pressure Washing", icon: ServiceIcons.PressureWashing },
-  { label: "House Washing", icon: ServiceIcons.HouseWashing },
-  { label: "Roof Cleaning", icon: ServiceIcons.RoofCleaning },
-  { label: "Screen Enclosures", icon: ServiceIcons.ScreenEnclosure },
-  { label: "Driveway Cleaning", icon: ServiceIcons.Driveway },
-  { label: "Commercial", icon: ServiceIcons.Commercial },
-];
-
 export default function ContactSection() {
+  const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [files, setFiles] = useState<File[]>([]);
+
+  const services = [
+    { label: t("contact.services.pressureWashing"), icon: ServiceIcons.PressureWashing },
+    { label: t("contact.services.houseWashing"), icon: ServiceIcons.HouseWashing },
+    { label: t("contact.services.roofCleaning"), icon: ServiceIcons.RoofCleaning },
+    { label: t("contact.services.screenEnclosures"), icon: ServiceIcons.ScreenEnclosure },
+    { label: t("contact.services.drivewayCleaning"), icon: ServiceIcons.Driveway },
+    { label: t("contact.services.commercial"), icon: ServiceIcons.Commercial },
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -118,7 +119,7 @@ export default function ContactSection() {
       const phone = formData.get("phone") as string;
       const email = formData.get("email") as string;
       const address = formData.get("address") as string;
-      const services = formData.getAll("services") as string[];
+      const servicesSubmited = formData.getAll("services") as string[];
       const message = formData.get("message") as string;
       
       let imageUrls: string[] = [];
@@ -155,7 +156,7 @@ export default function ContactSection() {
           phone,
           email,
           address,
-          services,
+          services: servicesSubmited,
           message,
           image_urls: imageUrls,
           source: 'website_contact_form'
@@ -195,14 +196,13 @@ export default function ContactSection() {
           }`}
         >
           <span className="inline-block px-4 py-2 rounded-full bg-[#1e71cd]/10 text-[#1e71cd] text-sm font-semibold mb-4 border border-[#1e71cd]/20">
-            Contact Us
+            {t("contact.title")}
           </span>
           <h2 className="font-(family-name:--font-orbitron) text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
-            <span className="text-balance">Get Your Free Quote</span>
+            <span className="text-balance">{t("contact.subtitle")}</span>
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-foreground/60 leading-relaxed mb-10">
-            Ready to transform your property? Fill out the form below and
-            {" we'll"} get back to you within 24 hours.
+            {t("contact.description")}
           </p>
 
           {/* AI Estimate Promo Card */}
@@ -216,12 +216,12 @@ export default function ContactSection() {
                     <Sparkles className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-(family-name:--font-orbitron) text-lg font-bold text-foreground uppercase tracking-tight mb-1">Want it even faster?</h4>
-                    <p className="text-sm text-foreground/60">Use our <span className="text-[#1e71cd] font-bold">AI Instant Estimate</span> to get a price in seconds. Simply upload a photo and skip the form!</p>
+                    <h4 className="font-(family-name:--font-orbitron) text-lg font-bold text-foreground uppercase tracking-tight mb-1">{t("contact.promo.title")}</h4>
+                    <p className="text-sm text-foreground/60">{t("contact.promo.description")}</p>
                   </div>
                   <div className="md:ml-auto">
                     <div className="flex items-center gap-2 px-8 py-4 bg-[#1e71cd] text-white text-xs font-black uppercase tracking-widest rounded-xl group-active:scale-95 transition-all shadow-[0_10px_20px_rgba(30,113,205,0.2)] group-hover:shadow-[0_15px_30px_rgba(30,113,205,0.4)] group-hover:bg-[#1e71cd]/90">
-                      Try AI Now
+                      {t("contact.promo.cta")}
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -243,18 +243,17 @@ export default function ContactSection() {
                   <CheckCircle className="w-10 h-10 text-green-500" />
                 </div>
                 <h3 className="font-(family-name:--font-orbitron) text-2xl font-bold text-foreground mb-4">
-                  Thank You!
+                  {t("contact.form.success.title")}
                 </h3>
                 <p className="text-foreground/60 mb-6">
-                  Your message has been sent successfully. {"We'll"} get back to
-                  you within 24 hours.
+                  {t("contact.form.success.description")}
                 </p>
                 <Button
                   onClick={() => setIsSubmitted(false)}
                   variant="outline"
                   className="border-input bg-background hover:bg-accent hover:text-accent-foreground"
                 >
-                  Send Another Message
+                  {t("contact.form.success.button")}
                 </Button>
               </div>
             ) : (
@@ -262,10 +261,11 @@ export default function ContactSection() {
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="text-foreground/80">
-                      Full Name *
+                      {t("contact.form.fullName")}
                     </Label>
                     <Input
                       id="name"
+                      name="name"
                       required
                       placeholder="John Doe"
                       className="bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20"
@@ -273,10 +273,11 @@ export default function ContactSection() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-foreground/80">
-                      Phone Number *
+                      {t("contact.form.phone")}
                     </Label>
                     <Input
                       id="phone"
+                      name="phone"
                       type="tel"
                       required
                       placeholder="(123) 456-7890"
@@ -287,10 +288,11 @@ export default function ContactSection() {
 
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-foreground/80">
-                    Email Address *
+                    {t("contact.form.email")}
                   </Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     required
                     placeholder="john@example.com"
@@ -300,10 +302,11 @@ export default function ContactSection() {
 
                 <div className="space-y-2">
                   <Label htmlFor="address" className="text-foreground/80">
-                    Property Address *
+                    {t("contact.form.address")}
                   </Label>
                   <Input
                     id="address"
+                    name="address"
                     required
                     placeholder="123 Main St, Miami, FL"
                     className="bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20"
@@ -311,7 +314,7 @@ export default function ContactSection() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-foreground/80 text-lg font-bold">Select Which Services You Need</Label>
+                  <Label className="text-foreground/80 text-lg font-bold">{t("contact.form.selectServices")}</Label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {services.map((service) => {
                       const Icon = service.icon;
@@ -348,8 +351,8 @@ export default function ContactSection() {
                 {/* File Upload Section (Optional) */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label className="text-foreground/80 text-lg font-bold">Upload Photos <span className="text-sm font-normal text-muted-foreground ml-2">(Optional)</span></Label>
-                    <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">Max 5 files</span>
+                    <Label className="text-foreground/80 text-lg font-bold">{t("contact.form.uploadPhotos")} <span className="text-sm font-normal text-muted-foreground ml-2">{t("contact.form.optional")}</span></Label>
+                    <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded-md">{t("contact.form.maxFiles")}</span>
                   </div>
                   
                   <div className="border-2 border-dashed rounded-2xl p-8 transition-colors bg-[#1e71cd]/5 border-[#1e71cd]/50 group cursor-pointer">
@@ -368,8 +371,8 @@ export default function ContactSection() {
                       <div className="w-14 h-14 rounded-full bg-[#1e71cd]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                          <Upload className="w-7 h-7 text-[#1e71cd]" />
                       </div>
-                      <p className="font-bold text-foreground text-center">Click to upload images</p>
-                      <p className="text-sm text-muted-foreground mt-2 text-center">or drag and drop here (JPG, PNG)</p>
+                      <p className="font-bold text-foreground text-center">{t("contact.form.clickToUpload")}</p>
+                      <p className="text-sm text-muted-foreground mt-2 text-center">{t("contact.form.dragAndDrop")}</p>
                     </label>
                   </div>
 
@@ -400,12 +403,13 @@ export default function ContactSection() {
 
                 <div className="space-y-2">
                   <Label htmlFor="message" className="text-foreground/80">
-                    Additional Details
+                    {t("contact.form.additionalDetails")}
                   </Label>
                   <textarea
                     id="message"
+                    name="message"
                     rows={4}
-                    placeholder="Tell us more about your project..."
+                    placeholder={t("contact.form.messagePlaceholder")}
                     className="w-full px-4 py-3 bg-background/50 border border-input rounded-xl text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-1 focus:ring-[#1e71cd]/20 focus:outline-none resize-none"
                   />
                 </div>
@@ -418,24 +422,25 @@ export default function ContactSection() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Sending...
+                      {t("contact.form.sending")}
                     </>
                   ) : (
                     <>
                       <Send className="w-5 h-5 mr-2" />
-                      Get Free Quote
+                      {t("contact.form.submit")}
                     </>
                   )}
                 </Button>
 
                 <p className="text-center text-xs text-foreground/40">
-                  By submitting this form, you agree to our{" "}
-                  <Link 
+                  {t("contact.form.privacy").split("{{link}}")[0]}
+                  <Link
                     href="/privacy"
                     className="underline hover:text-primary transition-colors cursor-pointer"
                   >
-                    privacy policy
-                  </Link>.
+                    {t("contact.form.privacyLink")}
+                  </Link>
+                  {t("contact.form.privacy").split("{{link}}")[1]}
                 </p>
               </form>
             )}

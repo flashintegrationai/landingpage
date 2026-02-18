@@ -3,41 +3,20 @@
 import React from "react"
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import WaterBlastEffect from "./water-blast-effect"
-const beforeAfterImages = [
-  { 
-    id: 1,
-    title: "Driveway Restoration",
-    location: "Miami, FL",
-    before: "/images/gallery/driveway-before.jpg",
-    after: "/images/gallery/driveway-after.jpg",
-  },
-  {
-    id: 2,
-    title: "Deck Restoration",
-    location: "Fort Lauderdale, FL",
-    before: "/images/gallery/deck-before.jpg",
-    after: "/images/gallery/deck-after.jpg",
-  },
-  {
-    id: 3,
-    title: "House Washing",
-    location: "Palm Beach, FL",
-    before: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-8.jpg",
-    after: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
-  },
-]
+import { useLanguage } from "@/context/language-context"
 
 function BeforeAfterCard({
   item,
   isVisible,
   index,
 }: {
-  item: (typeof beforeAfterImages)[0]
+  item: any
   isVisible: boolean
   index: number
 }) {
+  const { t } = useLanguage()
   const [sliderPosition, setSliderPosition] = useState(50)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -69,7 +48,7 @@ function BeforeAfterCard({
         <div className="absolute inset-0">
           <Image
             src={item.after}
-            alt={`${item.title} After`}
+            alt={`${item.title} ${t("services.after")}`}
             fill
             className="object-cover"
           />
@@ -82,7 +61,7 @@ function BeforeAfterCard({
         >
           <Image
             src={item.before}
-            alt={`${item.title} Before`}
+            alt={`${item.title} ${t("services.before")}`}
             fill
             className="object-cover"
           />
@@ -101,10 +80,10 @@ function BeforeAfterCard({
 
         {/* Labels */}
         <div className="absolute bottom-4 left-4 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-[10px] font-bold text-white uppercase tracking-wider z-20">
-          Before
+          {t("services.before")}
         </div>
         <div className="absolute bottom-4 right-4 px-3 py-1 bg-primary/80 backdrop-blur-sm rounded-full text-[10px] font-bold text-white uppercase tracking-wider z-20">
-          After
+          {t("services.after")}
         </div>
       </div>
 
@@ -123,8 +102,34 @@ function BeforeAfterCard({
 }
 
 export default function GallerySection() {
+  const { t } = useLanguage()
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+
+  const galleryItems = t("gallery.items")
+  const beforeAfterImages = [
+    { 
+      id: 1,
+      title: galleryItems[0].title,
+      location: "Miami, FL",
+      before: "/images/gallery/driveway-before.jpg",
+      after: "/images/gallery/driveway-after.jpg",
+    },
+    {
+      id: 2,
+      title: galleryItems[1].title,
+      location: "Fort Lauderdale, FL",
+      before: "/images/gallery/deck-before.jpg",
+      after: "/images/gallery/deck-after.jpg",
+    },
+    {
+      id: 3,
+      title: galleryItems[2].title,
+      location: "Palm Beach, FL",
+      before: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-8.jpg",
+      after: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
+    },
+  ]
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -158,14 +163,14 @@ export default function GallerySection() {
           }`}
         >
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
-            Real Transformations
+            {t("gallery.title")}
           </span>
           <h2 className="font-(family-name:--font-orbitron) text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6">
-            <span className="text-balance">See the Difference</span>
+            <span className="text-balance">{t("gallery.subtitle")}</span>
           </h2>
           
           <p className="max-w-3xl mx-auto text-xl text-muted-foreground leading-relaxed mb-8">
-            Drag the slider over our real projects to witness the incredible power of professional pressure washing.
+            {t("gallery.description")}
           </p>
 
           {/* Decorative Wavy Line */}
@@ -195,13 +200,13 @@ export default function GallerySection() {
           }`}
         >
           <p className="text-muted-foreground mb-4">
-            Is your property ready for a transformation?
+            {t("gallery.ready")}
           </p>
           <a
             href="#contact"
             className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-4 transition-all duration-300 group"
           >
-            Get a Free Quote Now
+            {t("gallery.cta")}
             <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
           </a>
         </div>

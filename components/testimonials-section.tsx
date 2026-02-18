@@ -1,50 +1,15 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Star, Quote } from "lucide-react"
-
-const testimonials = [
-  {
-    name: "Roxanne Mix",
-    date: "Jan 30, 2026",
-    content: "Elite Surface Systems is an honest and reliable company! I have used them several times for my house. The driveway looks brand new every time.",
-    rating: 5,
-  },
-  {
-    name: "Marianne Molleur",
-    date: "Jan 29, 2026",
-    content: "Professional service, very satisfied with the results. They removed oil stains that I thought were permanent. Highly recommend!",
-    rating: 5,
-  },
-  {
-    name: "Blanca Blanco",
-    date: "Jan 28, 2026",
-    content: "Highly recommend Elite Surface Systems! They were on time and very Professional at their work. Did an Amazing job on my driveway and house. Very Happy Customer! Thank you.",
-    rating: 5,
-  },
-  {
-    name: "G. D.",
-    date: "Jan 20, 2026",
-    content: "It was a pleasure working with the team again. The quote was fair and the work was scheduled in a timely manner. The quality of the work was great! Can always count on them.",
-    rating: 5,
-  },
-  {
-    name: "Maria Pravato",
-    date: "Jan 15, 2026",
-    content: "This was an incredible team. The team is awesome. They did a wonderful job. Everything they pressure washed looks brand new! Thank you so much.",
-    rating: 5,
-  },
-  {
-    name: "Chris Matinides",
-    date: "Jan 7, 2026",
-    content: "Elite did an excellent job with my roof pressure washing. I am very satisfied and would highly recommend them to anyone looking for quality work.",
-    rating: 5,
-  },
-]
+import { Star } from "lucide-react"
+import { useLanguage } from "@/context/language-context"
 
 export default function TestimonialsSection() {
+  const { t } = useLanguage()
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+
+  const testimonials = t("testimonials.items")
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -77,22 +42,20 @@ export default function TestimonialsSection() {
           }`}
         >
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
-            Testimonials
+            {t("testimonials.title")}
           </span>
           <h2 className="font-(family-name:--font-orbitron) text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
-            <span className="text-balance">What Our Clients Say</span>
+            <span className="text-balance">{t("testimonials.subtitle")}</span>
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
-            Don't just take our word for it. Hear from the residential and
-            commercial clients who trust Elite Surface Systems.
+            {t("testimonials.description")}
           </p>
 
-          {/* Aggregate Rating */}
           {/* Aggregate Rating & Trust Indicators */}
           <div className="mt-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
             <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white border border-gray-200 shadow-lg shadow-black/5 transition-transform hover:scale-105 cursor-default">
                <img src="https://localimpact.com/assets/global/images/source-logos/google/h120w120.png" alt="Google" className="h-6 w-6" />
-               <span className="font-medium text-gray-500 text-sm pl-2 border-l border-gray-300 left-2">Reviews</span>
+               <span className="font-medium text-gray-500 text-sm pl-2 border-l border-gray-300 left-2">{t("testimonials.reviews")}</span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -110,7 +73,7 @@ export default function TestimonialsSection() {
                   5.0
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Average Rating
+                  {t("testimonials.averageRating")}
                 </div>
               </div>
             </div>
@@ -119,7 +82,7 @@ export default function TestimonialsSection() {
 
         {/* Testimonials Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
+          {Array.isArray(testimonials) && testimonials.map((testimonial: any, index: number) => (
             <div
               key={testimonial.name}
               className={`group relative p-6 rounded-2xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/20 ${

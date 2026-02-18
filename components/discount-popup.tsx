@@ -1,13 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { X, Sparkles, Bot, ArrowRight, Zap } from "lucide-react"
+import { X, Sparkles, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
-
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/context/language-context"
 
 export default function DiscountPopup() {
+  const { t } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
   const [timeLeft, setTimeLeft] = useState(15 * 60) // 15 minutes in seconds
   const router = useRouter()
@@ -96,12 +97,12 @@ export default function DiscountPopup() {
                     className="w-40 h-40 md:w-40 md:h-40 object-contain drop-shadow-md"
                   />
                   <div className="absolute -top-3 -right-3 bg-yellow-400 text-black text-xs font-black px-2 py-1 rounded-md shadow-lg rotate-12">
-                    AI POWERED
+                    {t("discount.aiPowered")}
                   </div>
                 </motion.div>
 
                 <div className="relative z-10 text-center">
-                  <div className="text-white/80 text-sm font-bold uppercase tracking-widest mb-1">Exclusive Offer</div>
+                  <div className="text-white/80 text-sm font-bold uppercase tracking-widest mb-1">{t("discount.exclusiveOffer")}</div>
                   <div className="font-(family-name:--font-orbitron) text-4xl font-black text-white leading-none">
                     20% <span className="text-xs align-top">OFF</span>
                   </div>
@@ -113,16 +114,16 @@ export default function DiscountPopup() {
                 {/* Urgent Timer Badge */}
                 <div className="absolute top-6 right-16 md:right-auto md:left-10 flex items-center gap-2 bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest animate-pulse">
                   <Zap className="w-3 h-3 fill-current" />
-                  Offer Expires in {formatTime(timeLeft)}
+                  {t("discount.expiresIn")} {formatTime(timeLeft)}
                 </div>
 
                 <div className="mt-6 md:mt-2">
                   <h2 className="font-(family-name:--font-orbitron) text-2xl md:text-3xl font-black text-foreground mb-3 leading-tight">
-                    Unlock Your <span className="text-transparent bg-clip-text bg-linear-to-r from-[#1e71cd] to-purple-500">Instant AI Estimate</span>
+                    {t("discount.title")} <span className="text-transparent bg-clip-text bg-linear-to-r from-[#1e71cd] to-purple-500">{t("discount.instantAI")}</span>
                   </h2>
                   
                   <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-8">
-                    Stop guessing. Our AI technology analyzes your property instantly to give you the most accurate price. <strong className="text-foreground">Book 2+ services today and save big.</strong>
+                    {t("discount.description")}
                   </p>
 
                   <div className="space-y-4">
@@ -132,7 +133,7 @@ export default function DiscountPopup() {
                     >
                       <span className="relative z-10 flex items-center gap-2">
                         <Sparkles className="w-5 h-5" />
-                        Claim AI Offer Now
+                        {t("discount.claimCTA")}
                       </span>
                       {/* Button shine effect */}
                       <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/20 to-transparent" />
@@ -142,7 +143,7 @@ export default function DiscountPopup() {
                       onClick={handleClose}
                       className="w-full text-center text-xs text-muted-foreground hover:text-foreground underline decoration-dotted transition-colors"
                     >
-                      No thanks, I prefer paying full price
+                      {t("discount.noThanks")}
                     </button>
                   </div>
                 </div>

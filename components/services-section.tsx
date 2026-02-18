@@ -25,70 +25,66 @@ import {
 import { Button } from "@/components/ui/button"
 import { triggerSingleConfetti } from "@/lib/confetti"
 import { useQuoteModal } from "./quote-modal"
-
-const services = [
-  {
-    icon: Home,
-    title: "House Washing",
-    image: "/Gemini_Generated_Image_g2m4vcg2m4vcg2m4.png",
-    description:
-      "Restore your home's exterior to its original beauty with our gentle yet effective soft wash technology. We remove dirt, mold, mildew, and algae safely.",
-    features: ["Safe for all siding types", "Increases curb appeal", "Eco-friendly solutions", "Long-lasting results"],
-    detailedDescription: "Our house washing service utilizes a soft washing technique that is safe for all types of siding, including vinyl, stucco, brick, and wood. Unlike high-pressure washing which can damage surfaces, our low-pressure method combined with specialized cleaning solutions effectively kills organic growth like mold and algae at the root."
-  },
-  {
-    icon: Building2,
-    title: "Commercial",
-    image: "/Gemini_Generated_Image_2ep2e2ep2e2ep2e2.png",
-    description:
-      "Keep your business looking professional with our commercial-grade pressure washing services. We handle storefronts, office buildings, and industrial spaces.",
-    features: ["Storefronts & Entrances", "Graffiti Removal", "Parking Areas", "Flexible Scheduling"],
-    detailedDescription: "First impressions matter. Our commercial pressure washing services ensure your business property looks its best for clients and customers. We offer flexible scheduling to minimize disruption to your operations and have the capacity to handle large-scale projects including multi-story buildings and expansive parking lots."
-  },
-  {
-    icon: Car,
-    title: "Driveway Cleaning",
-    image: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
-    beforeImage: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-8.jpg",
-    afterImage: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
-    description:
-      "Remove oil stains, dirt, and grime from your driveway for a fresh, clean appearance. We clean concrete, pavers, and asphalt.",
-    features: ["Oil stain removal", "Tire mark removal", "Weed prevention", "Sealing options"],
-    detailedDescription: "Your driveway is often the first thing people see. Our deep cleaning process removes years of accumulated dirt, oil stains, and tire marks. We use commercial-grade surface cleaners that provide a uniform clean without the 'zebra stripes' often left by consumer pressure washers."
-  },
-  {
-    icon: Fence,
-    title: "Fence Restoration",
-    image: "/images/services/fence-restoration.png",
-    description:
-      "Bring your fence back to life with our specialized cleaning and restoration techniques. We clean wood, vinyl, and metal fencing.",
-    features: ["Wood restoration", "Vinyl cleaning", "Mold removal", "Stain prevetion"],
-    detailedDescription: "Don't replace your gray, weathered fence—restore it! Our fence cleaning services can strip away years of weathering, gray wood fibers, and organic growth, revealing the beautiful wood underneath. We also specialized in safely cleaning vinyl and metal fences without causing damage."
-  },
-  {
-    icon: Droplets,
-    title: "Roof Cleaning",
-    image: "/Gemini_Generated_Image_31xr5g31xr5g31xr.png", 
-    description:
-      "Safely remove algae, moss, and debris from your roof without damaging shingles. Extends the life of your roof.",
-    features: ["Soft wash method", "Moss removal", "Black streak removal", "Shingle protection"],
-    detailedDescription: "Those black streaks on your roof aren't just dirt—they're algae feeding on your shingles. Our specialized roof soft washing service safely neutralizes and removes these organisms without using high pressure that could void your warranty or damage your roof's granular coating."
-  },
-  {
-    icon: Trees,
-    title: "Patio & Deck",
-    image: "/Gemini_Generated_Image_3fxd073fxd073fxd.png", 
-    description:
-      "Transform your outdoor living spaces into pristine entertaining areas. We clean wood decks, pool decks, and stone patios.",
-    features: ["Slip hazard removal", "Pool deck cleaning", "Stone restoration", "Wood brightening"],
-    detailedDescription: "Make your outdoor living space inviting again. Our patio and deck cleaning services remove slippery algae, dirt, and food stains. Whether you have a delicate wood deck, composite material, or natural stone patio, we adjust our pressure and cleaning agents to safe, effective levels."
-  },
-]
+import { useLanguage } from "@/context/language-context"
 
 export default function ServicesSection() {
+  const { t } = useLanguage()
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const { openModal } = useQuoteModal()
+
+  const services = [
+    {
+      icon: Home,
+      title: t("services.items.houseWashing.title"),
+      image: "/Gemini_Generated_Image_g2m4vcg2m4vcg2m4.png",
+      description: t("services.items.houseWashing.description"),
+      features: t("services.items.houseWashing.features"),
+      detailedDescription: t("services.items.houseWashing.detailedDescription")
+    },
+    {
+      icon: Building2,
+      title: t("services.items.commercial.title"),
+      image: "/Gemini_Generated_Image_2ep2e2ep2e2ep2e2.png",
+      description: t("services.items.commercial.description"),
+      features: t("services.items.commercial.features"),
+      detailedDescription: t("services.items.commercial.detailedDescription")
+    },
+    {
+      icon: Car,
+      title: t("services.items.driveway.title"),
+      image: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
+      beforeImage: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-8.jpg",
+      afterImage: "/Pressure-Washing-Company-Service-Near-Me-in-Citrus-County-7.jpg",
+      description: t("services.items.driveway.description"),
+      features: t("services.items.driveway.features"),
+      detailedDescription: t("services.items.driveway.detailedDescription")
+    },
+    {
+      icon: Fence,
+      title: t("services.items.fence.title"),
+      image: "/images/services/fence-restoration.png",
+      description: t("services.items.fence.description"),
+      features: t("services.items.fence.features"),
+      detailedDescription: t("services.items.fence.detailedDescription")
+    },
+    {
+      icon: Droplets,
+      title: t("services.items.roof.title"),
+      image: "/Gemini_Generated_Image_31xr5g31xr5g31xr.png", 
+      description: t("services.items.roof.description"),
+      features: t("services.items.roof.features"),
+      detailedDescription: t("services.items.roof.detailedDescription")
+    },
+    {
+      icon: Trees,
+      title: t("services.items.patio.title"),
+      image: "/Gemini_Generated_Image_3fxd073fxd073fxd.png", 
+      description: t("services.items.patio.description"),
+      features: t("services.items.patio.features"),
+      detailedDescription: t("services.items.patio.detailedDescription")
+    },
+  ]
 
   const handleQuoteClick = () => {
     triggerSingleConfetti()
@@ -131,15 +127,14 @@ export default function ServicesSection() {
           }`}
         >
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
-            Our Services
+            {t("services.ourServices")}
           </span>
           <h2 className="font-(family-name:--font-orbitron) text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-8">
-            <span className="text-balance">Premium Cleaning Solutions</span>
+            <span className="text-balance">{t("services.premiumSolutions")}</span>
           </h2>
           
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed mb-8">
-            We offer a comprehensive range of pressure washing services designed
-            to meet all your exterior cleaning needs.
+            {t("services.comprehensiveRange")}
           </p>
 
           {/* Decorative Wavy Line */}
@@ -166,12 +161,12 @@ export default function ServicesSection() {
                   {/* Badge for Commercial Appeal */}
                   {index === 0 && (
                     <div className="absolute top-4 right-4 z-20 bg-yellow-500 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-lg animate-pulse uppercase tracking-wider">
-                      Most Popular
+                      {t("services.mostPopular")}
                     </div>
                   )}
                   {index === 1 && (
                     <div className="absolute top-4 right-4 z-20 bg-[#1e71cd] text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg uppercase tracking-wider">
-                      Commercial Grade
+                      {t("services.commercialGrade")}
                     </div>
                   )}
 
@@ -200,7 +195,7 @@ export default function ServicesSection() {
                        </h3>
                        
                        {/* Price teaser or Benefit */}
-                       <div className="text-white/60 text-xs font-semibold mb-3 tracking-widest uppercase"> Professional Restoration</div>
+                       <div className="text-white/60 text-xs font-semibold mb-3 tracking-widest uppercase">{t("services.professionalRestoration")}</div>
 
                        {/* Reveal on hover */}
                        <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-500">
@@ -215,7 +210,7 @@ export default function ServicesSection() {
                              }}
                              className="flex items-center gap-2 text-primary text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200"
                            >
-                             GET FREE ESTIMATE <ArrowRight className="w-4 h-4 ml-1" />
+                             {t("services.getFreeEstimate")} <ArrowRight className="w-4 h-4 ml-1" />
                            </div>
                          </div>
                        </div>
@@ -225,7 +220,7 @@ export default function ServicesSection() {
               </DialogTrigger>
 
               <DialogContent className="max-w-[100vw] sm:max-w-5xl w-full h-[80vh] p-0 overflow-hidden bg-black border-none sm:rounded-4xl shadow-2xl transition-all duration-500">
-                <ServiceModalContent service={service} handleQuoteClick={handleQuoteClick} />
+                <ServiceModalContent service={service} handleQuoteClick={handleQuoteClick} t={t} />
               </DialogContent>
             </Dialog>
           ))}
@@ -235,7 +230,7 @@ export default function ServicesSection() {
   )
 }
 
-function ServiceModalContent({ service, handleQuoteClick }: { service: any, handleQuoteClick: () => void }) {
+function ServiceModalContent({ service, handleQuoteClick, t }: { service: any, handleQuoteClick: () => void, t: any }) {
   const [showInfo, setShowInfo] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(50);
   const isBeforeAfter = service.beforeImage && service.afterImage;
@@ -257,7 +252,7 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
             
             {/* Tag for After */}
             <div className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/50 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 select-none z-10 pointer-events-none">
-              After
+              {t("services.after")}
             </div>
 
             {/* Before Image (Clipped) */}
@@ -274,7 +269,7 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
               />
                {/* Tag for Before */}
               <div className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/50 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 select-none z-10 pointer-events-none">
-                Before
+                {t("services.before")}
               </div>
             </div>
 
@@ -350,14 +345,14 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
         <div className="bg-black/60 backdrop-blur-3xl border border-white/10 p-8 md:p-10 rounded-4xl shadow-3xl">
           <div className="space-y-8">
             <div className="space-y-3">
-              <h4 className="font-bold text-[#1e71cd] uppercase tracking-[0.3em] text-[10px]">Service Intelligence</h4>
+              <h4 className="font-bold text-[#1e71cd] uppercase tracking-[0.3em] text-[10px]">{t("services.serviceIntelligence")}</h4>
               <p className="text-white/90 leading-relaxed text-sm md:text-base font-medium">
                 {service.detailedDescription}
               </p>
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-bold text-[#1e71cd] uppercase tracking-[0.3em] text-[10px]">Technical Advantages</h4>
+              <h4 className="font-bold text-[#1e71cd] uppercase tracking-[0.3em] text-[10px]">{t("services.technicalAdvantages")}</h4>
               <ul className="grid grid-cols-1 gap-3">
                 {service.features.map((feature: string) => (
                   <li key={feature} className="flex items-center gap-3 text-white/80 text-sm font-medium">
@@ -375,7 +370,7 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
                 onClick={handleQuoteClick}
                 className="w-full bg-[#1e71cd] hover:bg-primary/90 text-white rounded-2xl py-7 text-base font-black uppercase tracking-[0.2em] shadow-2xl shadow-[#1e71cd]/30 active:scale-[0.98] transition-all"
               >
-                Instant Quote
+                {t("services.instantQuote")}
               </Button>
             </DialogClose>
           </div>
@@ -389,7 +384,7 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
              onClick={handleQuoteClick}
              className="hidden md:flex bg-[#1e71cd] hover:bg-primary/90 text-white rounded-2xl px-8 py-7 text-sm font-black uppercase tracking-[0.2em] shadow-2xl shadow-[#1e71cd]/40 active:scale-[0.98] transition-all"
            >
-             Book Service Now
+             {t("services.bookServiceNow")}
            </Button>
         )}
         
@@ -402,7 +397,7 @@ function ServiceModalContent({ service, handleQuoteClick }: { service: any, hand
           {showInfo ? <X className="w-8 h-8" /> : (
             <div className="flex flex-col items-center">
               <Droplets className="w-7 h-7 md:w-9 md:h-9 animate-pulse" />
-              <span className="text-[8px] font-black mt-1 uppercase tracking-tighter">Details</span>
+              <span className="text-[8px] font-black mt-1 uppercase tracking-tighter">{t("services.details")}</span>
             </div>
           )}
         </button>

@@ -1,45 +1,40 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Youtube, ArrowUp } from "lucide-react"
 import WaveDivider from "./wave-divider"
 import { useQuoteModal } from "./quote-modal"
-import { useLegalModals } from "./legal-modals"
 import { triggerSingleConfetti } from "@/lib/confetti"
-
-const footerLinks = {
-  services: [
-    { label: "House Washing", href: "/#services" },
-    { label: "Driveway Cleaning", href: "/#services" },
-    { label: "Roof Cleaning", href: "/#services" },
-    { label: "Commercial", href: "/#services" },
-    { label: "Fence Restoration", href: "/#services" },
-  ],
-  company: [
-    { label: "About Us", href: "/about" },
-    { label: "Our Work", href: "/#gallery" },
-    { label: "Reviews", href: "/#testimonials" },
-    { label: "Contact", href: "/#contact" },
-  ],
-  legal: [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-  ],
-}
-
-const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Youtube, href: "#", label: "YouTube" },
-]
+import { useLanguage } from "@/context/language-context"
 
 export default function Footer() {
+  const { t } = useLanguage()
   const [showScrollTop, setShowScrollTop] = useState(false)
   const { openModal } = useQuoteModal()
-  const { openPrivacy, openTerms } = useLegalModals()
+
+  const footerLinks = {
+    services: [
+      { label: t("services.items.houseWashing.title"), href: "/#services" },
+      { label: t("services.items.driveway.title"), href: "/#services" },
+      { label: t("services.items.roof.title"), href: "/#services" },
+      { label: t("services.items.commercial.title"), href: "/#services" },
+      { label: t("services.items.fence.title"), href: "/#services" },
+    ],
+    company: [
+      { label: t("nav.about"), href: "/about" },
+      { label: t("nav.gallery"), href: "/#gallery" },
+      { label: t("nav.reviews"), href: "/#testimonials" },
+      { label: t("nav.contact"), href: "/#contact" },
+    ],
+  }
+
+  const socialLinks = [
+    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Youtube, href: "#", label: "YouTube" },
+  ]
 
   const handleQuoteClick = () => {
     triggerSingleConfetti()
@@ -76,8 +71,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground dark:text-white/70 leading-relaxed mb-8 text-lg">
-              Cutting-edge pressure washing technology for residential and
-              commercial properties. Experience the future of surface cleaning.
+              {t("footer.description")}
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-4">
@@ -97,7 +91,7 @@ export default function Footer() {
           {/* Services */}
           <div>
             <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-foreground dark:text-white uppercase tracking-[0.2em] mb-8">
-              Services
+              {t("footer.services")}
             </h3>
             <ul className="space-y-4">
               {footerLinks.services.map((link) => (
@@ -116,7 +110,7 @@ export default function Footer() {
           {/* Company */}
           <div>
             <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-foreground dark:text-white uppercase tracking-[0.2em] mb-8">
-              Company
+              {t("footer.company")}
             </h3>
             <ul className="space-y-4">
               {footerLinks.company.map((link) => (
@@ -135,7 +129,7 @@ export default function Footer() {
           {/* Contact CTA */}
           <div>
             <h3 className="font-(family-name:--font-orbitron) text-base font-bold text-foreground dark:text-white uppercase tracking-[0.2em] mb-8">
-              Get In Touch
+              {t("footer.getInTouch")}
             </h3>
             <div 
               onClick={handleQuoteClick}
@@ -144,7 +138,7 @@ export default function Footer() {
               <div className="font-(family-name:--font-orbitron) text-2xl font-black text-[#1e71cd] mb-1 group-hover:scale-105 transition-transform">
                 (123) 456-7890
               </div>
-              <div className="text-sm text-muted-foreground dark:text-white/50 font-medium uppercase tracking-widest">Call for free quote</div>
+              <div className="text-sm text-muted-foreground dark:text-white/50 font-medium uppercase tracking-widest">{t("footer.callFreeQuote")}</div>
             </div>
             <div className="text-muted-foreground dark:text-white/60 font-medium">
               <p 
@@ -153,7 +147,7 @@ export default function Footer() {
               >
                 info@elitesurface.com
               </p>
-              <p className="mt-2 text-muted-foreground dark:text-white/60">South Florida Service Area</p>
+              <p className="mt-2 text-muted-foreground dark:text-white/60">{t("footer.serviceArea")}</p>
             </div>
           </div>
         </div>
@@ -164,21 +158,20 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-sm text-muted-foreground dark:text-white/40 font-medium tracking-wide">
-              © {new Date().getFullYear()} Elite Surface Systems. All rights
-              reserved.
+              © {new Date().getFullYear()} Elite Surface Systems. {t("footer.rights")}
             </div>
             <div className="flex items-center gap-8">
               <Link
                 href="/privacy"
                 className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium cursor-pointer"
               >
-                Privacy Policy
+                {t("footer.privacyPolicy")}
               </Link>
               <Link
                 href="/terms"
                 className="text-sm text-muted-foreground dark:text-white/40 hover:text-primary dark:hover:text-white transition-colors font-medium cursor-pointer"
               >
-                Terms of Service
+                {t("footer.termsOfService")}
               </Link>
             </div>
           </div>

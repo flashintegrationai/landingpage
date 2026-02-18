@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
 import { ThemeProvider } from '@/components/theme-provider'
+import { LanguageProvider } from "@/context/language-context"
 import './globals.css'
 
 const inter = Inter({ 
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -68,7 +69,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
           <head>
             <script
               src="https://link.msgsndr.com/js/external-tracking.js"
@@ -78,11 +79,13 @@ export default function RootLayout({
       <body className={`${inter.variable} ${orbitron.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           disableTransitionOnChange={false}
         >
-          {children}
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

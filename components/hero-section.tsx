@@ -8,21 +8,23 @@ import { Button } from "@/components/ui/button"
 import dynamic from "next/dynamic"
 import { triggerSingleConfetti } from "@/lib/confetti"
 import { useQuoteModal } from "./quote-modal"
+import { useLanguage } from "@/context/language-context"
 
 const BackgroundEffects = dynamic(
   () => import("@/components/background-effects"),
   { ssr: false }
 )
 
-const stats = [
-  { icon: Droplets, value: "500+", label: "Projects" },
-  { icon: Shield, value: "100%", label: "Satisfaction" },
-  { icon: Zap, value: "24/7", label: "Service" },
-]
-
 export default function HeroSection() {
+  const { t } = useLanguage()
   const [mounted, setMounted] = useState(false)
   const { openModal } = useQuoteModal()
+
+  const stats = [
+    { icon: Droplets, value: "500+", label: t("stats.projects") },
+    { icon: Shield, value: "100%", label: t("stats.satisfaction") },
+    { icon: Zap, value: "24/7", label: t("stats.service") },
+  ]
 
   const handleQuoteClick = () => {
     triggerSingleConfetti()
@@ -63,7 +65,7 @@ export default function HeroSection() {
               >
                 <Sparkles className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                 <span className="text-sm font-medium text-primary uppercase tracking-wider">
-                  AI Instant Estimate
+                  {t("nav.aiEstimate")}
                 </span>
               </div>
             </Link>
@@ -74,9 +76,9 @@ export default function HeroSection() {
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
-              <span className="block text-balance">Revitalize Your</span>
+              <span className="block text-balance">{t("hero.revitalize")}</span>
               <span className="block mt-2 bg-linear-to-r from-[#1e71cd] via-[#3b82f6] to-[#60a5fa] bg-clip-text text-transparent">
-                Property Today
+                {t("hero.propertyToday")}
               </span>
             </h1>
 
@@ -86,9 +88,8 @@ export default function HeroSection() {
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
-              Elite Surface Systems is the #1 choice for high-tech surface restoration. 
-              Increase your property value and curb appeal with our 
-              <span className="text-foreground font-bold"> industrial-grade soft washing.</span>
+              {t("hero.description")}
+              <span className="text-foreground font-bold">{t("hero.industrialSoftWash")}</span>
             </p>
 
             {/* COMMERCIAL BADGES */}
@@ -99,11 +100,11 @@ export default function HeroSection() {
                       <svg key={i} className="w-3 h-3 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                     ))}
                  </div>
-                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">5.0 Google Rating</span>
+                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">{t("hero.googleRating")}</span>
                </div>
                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20">
                  <Shield className="w-3 h-3 text-green-500" />
-                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">100% Guaranteed</span>
+                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tight">{t("hero.guaranteed")}</span>
                </div>
             </div>
 
@@ -120,10 +121,10 @@ export default function HeroSection() {
               >
                 <div className="flex flex-col items-center leading-tight">
                   <span className="flex items-center gap-2 uppercase tracking-wide">
-                    Book Free Estimate
+                    {t("hero.bookEstimate")}
                     <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
                   </span>
-                  <span className="text-[10px] font-normal opacity-80 mt-1 uppercase tracking-[0.2em]">No Commitment Required</span>
+                  <span className="text-[10px] font-normal opacity-80 mt-1 uppercase tracking-[0.2em]">{t("hero.noCommitment")}</span>
                 </div>
               </Button>
             </div>
@@ -170,9 +171,9 @@ export default function HeroSection() {
                <div className="absolute bottom-0 left-0 right-0 p-6 bg-linear-to-t from-black/80 to-transparent text-white">
                   <div className="flex items-center gap-2 mb-1">
                     <Shield className="w-5 h-5 text-primary" />
-                    <span className="font-semibold text-lg">Industrial Grade</span>
+                    <span className="font-semibold text-lg">{t("hero.industrialGrade")}</span>
                   </div>
-                  <p className="text-sm text-white/80">Expert cleaning for large-scale facilities</p>
+                  <p className="text-sm text-white/80">{t("hero.expertCleaning")}</p>
                </div>
             </div>
 
@@ -181,12 +182,12 @@ export default function HeroSection() {
                <div className="group relative">
                  <div className="absolute -inset-1 bg-linear-to-r from-red-600 to-orange-600 rounded-lg blur-md opacity-75 group-hover:opacity-100 animate-pulse transition duration-1000 group-hover:duration-200"></div>
                  <div className="relative flex flex-col items-center bg-red-600 text-white rounded-lg px-8 py-6 shadow-2xl">
-                     <span className="font-black text-4xl italic tracking-tighter animate-bounce block">OFFER</span>
+                     <span className="font-black text-4xl italic tracking-tighter animate-bounce block">{t("hero.offer")}</span>
                      <div className="w-full h-px bg-white/30 my-2" />
-                     <span className="text-sm font-bold uppercase tracking-[0.2em] opacity-90">15% OFF TODAY</span>
+                     <span className="text-sm font-bold uppercase tracking-[0.2em] opacity-90">{t("hero.offToday")}</span>
                      {/* Decorative corner tag */}
                      <div className="absolute -top-4 -right-4 bg-white text-red-600 text-[12px] font-black px-3 py-1.5 rounded shadow-xl transform rotate-12 group-hover:rotate-0 transition-all">
-                       LIMITED
+                       {t("hero.limited")}
                      </div>
                  </div>
                </div>

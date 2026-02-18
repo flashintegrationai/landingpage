@@ -15,78 +15,79 @@ import {
 } from "lucide-react"
 
 import Image from "next/image"
-import WaveDivider from "./wave-divider"
-
-const comparisonData = [
-  {
-    feature: "Instant AI Estimate",
-    independent: false,
-    established: false,
-    elite: true,
-  },
-  {
-    feature: "Professional Soft Washing",
-    independent: false,
-    established: true,
-    elite: true,
-  },
-  {
-    feature: "Roof Cleaning Warranty",
-    independent: false,
-    established: true,
-    elite: true,
-  },
-  {
-    feature: "House Washing Warranty",
-    independent: false,
-    established: false,
-    elite: true,
-  },
-  {
-    feature: "Eco-Friendly Solutions",
-    independent: false,
-    established: false,
-    elite: true,
-  },
-  {
-    feature: "100% Satisfaction Guarantee",
-    independent: false,
-    established: false,
-    elite: true,
-  },
-]
-
-const featuresList = [
-  {
-    icon: Shield,
-    title: "Fully Insured",
-  },
-  {
-    icon: Leaf,
-    title: "Eco-Friendly",
-  },
-  {
-    icon: Clock,
-    title: "On-Time Service",
-  },
-  {
-    icon: Award,
-    title: "Certified Experts",
-  },
-  {
-    icon: Banknote,
-    title: "Fair Pricing",
-  },
-  {
-    icon: HeartHandshake,
-    title: "100% Guarantee",
-  },
-]
+import { useLanguage } from "@/context/language-context"
 
 export default function FeaturesSection() {
+  const { t } = useLanguage()
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const router = useRouter()
+
+  const comparisonData = [
+    {
+      feature: t("features.featureItems.instantEstimate"),
+      independent: false,
+      established: false,
+      elite: true,
+    },
+    {
+      feature: t("features.featureItems.professionalSoftWashing"),
+      independent: false,
+      established: true,
+      elite: true,
+    },
+    {
+      feature: t("features.featureItems.roofWarranty"),
+      independent: false,
+      established: true,
+      elite: true,
+    },
+    {
+      feature: t("features.featureItems.houseWarranty"),
+      independent: false,
+      established: false,
+      elite: true,
+    },
+    {
+      feature: t("features.featureItems.ecoFriendly"),
+      independent: false,
+      established: false,
+      elite: true,
+    },
+    {
+      feature: t("features.featureItems.satisfactionGuarantee"),
+      independent: false,
+      established: false,
+      elite: true,
+    },
+  ]
+
+  const featuresList = [
+    {
+      icon: Shield,
+      title: t("features.summary.fullyInsured"),
+    },
+    {
+      icon: Leaf,
+      title: t("features.summary.ecoFriendly"),
+    },
+    {
+      icon: Clock,
+      title: t("features.summary.onTime"),
+    },
+    {
+      icon: Award,
+      title: t("features.summary.certified"),
+    },
+    {
+      icon: Banknote,
+      title: t("features.summary.fairPricing"),
+    },
+    {
+      icon: HeartHandshake,
+      title: t("features.summary.guarantee"),
+    },
+  ]
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -121,13 +122,13 @@ export default function FeaturesSection() {
           }`}
         >
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
-            Why Choose Us
+            {t("features.whyChooseUs")}
           </span>
           <h2 className="font-(family-name:--font-orbitron) text-4xl sm:text-5xl md:text-6xl font-black text-foreground mb-8 tracking-tight uppercase">
-            THE <span className="text-primary italic">ELITE</span> DIFFERENCE
+            {t("features.theEliteDifference")}
           </h2>
           <p className="max-w-2xl mx-auto text-xl text-muted-foreground font-medium">
-            Not all pressure washing services are created equal. See how Elite Surface Systems sets the gold standard.
+            {t("features.notAllServices")}
           </p>
         </div>
 
@@ -136,16 +137,15 @@ export default function FeaturesSection() {
           className={`mb-24 transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
         >
           <div className="bg-card rounded-3xl md:rounded-[2.5rem] border border-border shadow-2xl overflow-hidden">
-            {/* Table wrapper for mobile scroll if needed, but aimed at fitting */}
             <div className="w-full">
               {/* Header */}
               <div className="grid grid-cols-12 p-3 md:p-8 border-b border-border bg-muted/30 items-center gap-1">
                 <div className="col-span-4 md:col-span-3" />
                 <div className="col-span-2 md:col-span-3 text-center font-(family-name:--font-orbitron) text-[6px] md:text-xs font-bold text-muted-foreground uppercase tracking-tighter md:tracking-[0.2em] leading-tight">
-                  Indep. Washers
+                  {t("features.independentWashers")}
                 </div>
                 <div className="col-span-3 md:col-span-3 text-center font-(family-name:--font-orbitron) text-[6px] md:text-xs font-bold text-muted-foreground uppercase tracking-tighter md:tracking-[0.2em] leading-tight">
-                  Estab. Washers
+                   {t("features.establishedWashers")}
                 </div>
                 <div className="col-span-3 md:col-span-3 flex flex-col items-center justify-center gap-0.5 md:gap-2">
                   <div className="relative w-6 h-6 md:w-20 md:h-20">
@@ -163,7 +163,7 @@ export default function FeaturesSection() {
                     />
                   </div>
                   <div className="text-center font-(family-name:--font-orbitron) text-[8px] md:text-base font-black text-primary uppercase tracking-tighter md:tracking-[0.2em]">
-                    Elite
+                    {t("features.elite")}
                   </div>
                 </div>
               </div>
@@ -173,22 +173,22 @@ export default function FeaturesSection() {
                 {comparisonData.map((row) => (
                   <div 
                     key={row.feature} 
-                    onClick={() => row.feature === "Instant AI Estimate" && router.push("/ai-estimate")}
+                    onClick={() => row.feature === t("features.featureItems.instantEstimate") && router.push("/ai-estimate")}
                     className={`grid grid-cols-12 items-center group transition-all duration-300 ${
-                      row.feature === "Instant AI Estimate" 
+                      row.feature === t("features.featureItems.instantEstimate") 
                         ? "bg-linear-to-r from-primary/10 to-transparent border-l-4 border-primary cursor-pointer hover:bg-primary/20 relative overflow-hidden" 
                         : "hover:bg-muted/50 border-l-4 border-transparent"
                     }`}
                   >
                     <div className="col-span-4 md:col-span-3 p-3 md:p-8 font-bold text-[10px] md:text-lg text-foreground leading-tight flex items-center gap-2">
-                       {row.feature === "Instant AI Estimate" && (
+                       {row.feature === t("features.featureItems.instantEstimate") && (
                          <div className="p-1 rounded-md bg-white shadow-sm animate-pulse hidden md:block">
                            <Sparkles className="w-4 h-4 text-primary fill-primary" />
                          </div>
                        )}
-                       <span className={row.feature === "Instant AI Estimate" ? "text-primary font-black tracking-wide" : ""}>
+                       <span className={row.feature === t("features.featureItems.instantEstimate") ? "text-primary font-black tracking-wide" : ""}>
                          {row.feature}
-                         {row.feature === "Instant AI Estimate" && (
+                         {row.feature === t("features.featureItems.instantEstimate") && (
                             <span className="md:hidden ml-1 inline-block"><Sparkles className="w-3 h-3 text-primary fill-primary inline" /></span>
                          )}
                        </span>
@@ -209,7 +209,7 @@ export default function FeaturesSection() {
                     </div>
                     <div className="col-span-3 md:col-span-3 p-2 md:p-8 flex justify-center bg-primary/5">
                       {row.elite ? (
-                        <Check className={`w-5 h-5 md:w-10 md:h-10 text-primary drop-shadow-[0_0_10px_rgba(30,113,205,0.4)] ${row.feature === "Instant AI Estimate" ? "animate-pulse scale-110" : ""}`} />
+                        <Check className={`w-5 h-5 md:w-10 md:h-10 text-primary drop-shadow-[0_0_10px_rgba(30,113,205,0.4)] ${row.feature === t("features.featureItems.instantEstimate") ? "animate-pulse scale-110" : ""}`} />
                       ) : (
                         <X className="w-4 h-4 md:w-8 md:h-8 text-muted-foreground/30" />
                       )}
@@ -221,10 +221,10 @@ export default function FeaturesSection() {
               {/* Footer Row */}
               <div className="grid grid-cols-12 p-3 md:p-8 bg-primary/10 items-center">
                 <div className="col-span-9 text-right pr-4 md:pr-12 font-bold text-foreground text-[10px] md:text-lg uppercase tracking-wide">
-                  The best choice:
+                  {t("features.bestChoice")}
                 </div>
                 <div className="col-span-3 text-center font-(family-name:--font-orbitron) text-xs md:text-3xl font-black text-primary animate-pulse tracking-tighter">
-                  ELITE
+                  {t("features.elite")}
                 </div>
               </div>
             </div>
@@ -247,7 +247,6 @@ export default function FeaturesSection() {
           ))}
         </div>
       </div>
-
     </section>
   )
 }

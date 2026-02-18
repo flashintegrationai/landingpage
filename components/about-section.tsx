@@ -3,40 +3,35 @@
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { CheckCircle, Award, Clock, Users } from "lucide-react"
-
-const features = [
-  "State-of-the-art pressure washing equipment",
-  "Eco-friendly cleaning solutions",
-  "Fully licensed and insured",
-  "100% satisfaction guarantee",
-  "Competitive pricing",
-  "Same-week availability",
-]
-
-const highlights = [
-  {
-    icon: Award,
-    value: "5★",
-    label: "Rating",
-    description: "Consistently rated",
-  },
-  {
-    icon: Clock,
-    value: "10+",
-    label: "Years",
-    description: "Of experience",
-  },
-  {
-    icon: Users,
-    value: "2K+",
-    label: "Clients",
-    description: "Happy customers",
-  },
-]
+import { useLanguage } from "@/context/language-context"
 
 export default function AboutSection() {
+  const { t } = useLanguage()
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+
+  const features = t("about.features")
+
+  const highlights = [
+    {
+      icon: Award,
+      value: "5★",
+      label: t("about.highlights.rating"),
+      description: t("about.highlights.consistentlyRated"),
+    },
+    {
+      icon: Clock,
+      value: "10+",
+      label: t("about.highlights.years"),
+      description: t("about.highlights.ofExperience"),
+    },
+    {
+      icon: Users,
+      value: "2K+",
+      label: t("about.highlights.clients"),
+      description: t("about.highlights.happyCustomers"),
+    },
+  ]
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -132,26 +127,23 @@ export default function AboutSection() {
             }`}
           >
             <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6 border border-primary/20">
-              About Us
+              {t("about.title")}
             </span>
 
             <h2 className="font-(family-name:--font-orbitron) text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
               <span className="text-balance">
-                The Future of{" "}
-                <span className="text-primary">Surface Cleaning</span>
+                {t("about.subtitle")}{" "}
+                <span className="text-primary">{t("about.surfaceCleaning")}</span>
               </span>
             </h2>
 
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              At Elite Surface Systems, we combine cutting-edge technology with
-              years of expertise to deliver unmatched pressure washing results.
-              Our team is committed to transforming your property while protecting
-              the environment.
+              {t("about.description")}
             </p>
 
             {/* Features List */}
             <div className="grid sm:grid-cols-2 gap-4 mb-10">
-              {features.map((feature, index) => (
+              {Array.isArray(features) && features.map((feature: string, index: number) => (
                 <div
                   key={feature}
                   className="flex items-center gap-3 group"
@@ -170,7 +162,7 @@ export default function AboutSection() {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="px-6 py-4 rounded-2xl bg-linear-to-br from-primary/20 to-transparent border border-primary/30">
-                <div className="text-sm text-foreground/60 mb-1">Ready to start?</div>
+                <div className="text-sm text-foreground/60 mb-1">{t("about.readyToStart")}</div>
                 <div className="font-(family-name:--font-orbitron) text-xl font-bold text-foreground">
                   Call (123) 456-7890
                 </div>

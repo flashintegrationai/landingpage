@@ -4,42 +4,40 @@ import { useEffect, useRef, useState } from "react"
 import { ClipboardList, CalendarCheck, Coffee, ArrowRight, Sparkles, Zap } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { triggerSingleConfetti } from "@/lib/confetti"
+import { useLanguage } from "@/context/language-context"
 
 const BackgroundEffects = dynamic(
   () => import("@/components/background-effects"),
   { ssr: false }
 )
-import { triggerSingleConfetti } from "@/lib/confetti"
-
-const steps = [
-  {
-    icon: Sparkles,
-    number: "1",
-    title: "AI Instant Estimate",
-    description:
-      "Skip the wait. Use our advanced AI tool to get a precise cost estimate in seconds just by uploading a photo of your property.",
-  },
-  {
-    icon: CalendarCheck,
-    number: "2",
-    title: "Pick A Day",
-    description:
-      "We make it easy to schedule cleaning services at a time that works for you. Let us know what days work best, and we'll work our schedule around yours.",
-  },
-  {
-    icon: Coffee,
-    number: "3",
-    title: "Sit-Back & Relax",
-    description:
-      "Once it's time for a cleaning, our professionals will arrive on time and have your home's exterior spotlessly clean without you having to lift a finger.",
-  },
-]
-
 import WaveDivider from "./wave-divider"
 
 export default function ProcessSection() {
+  const { t } = useLanguage()
   const sectionRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+
+  const steps = [
+    {
+      icon: Sparkles,
+      number: "1",
+      title: t("process.steps.step1.title"),
+      description: t("process.steps.step1.description"),
+    },
+    {
+      icon: CalendarCheck,
+      number: "2",
+      title: t("process.steps.step2.title"),
+      description: t("process.steps.step2.description"),
+    },
+    {
+      icon: Coffee,
+      number: "3",
+      title: t("process.steps.step3.title"),
+      description: t("process.steps.step3.description"),
+    },
+  ]
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -77,23 +75,22 @@ export default function ProcessSection() {
           }`}
         >
           <h2 className="font-(family-name:--font-orbitron) text-[#1e71cd] text-xl md:text-2xl font-bold uppercase tracking-[0.2em] mb-4">
-            We Make
+            {t("process.weMake")}
           </h2>
           <h3 className="font-(family-name:--font-orbitron) text-4xl sm:text-5xl md:text-7xl font-extrabold text-foreground mb-8 tracking-tight">
-            PRESSURE WASHING<br />
-            <span className="text-[#1e71cd]">FAST & EASY</span>
+            {t("process.title")}<br />
+            <span className="text-[#1e71cd]">{t("process.fastAndEasy")}</span>
           </h3>
           
           <p className="max-w-3xl mx-auto text-xl text-foreground font-medium leading-relaxed mb-10">
-            When dirt, mold, mildew, and algae take over your property, it can feel overwhelming. 
-            Receive superior cleaning results instantly with our cutting-edge AI technology or professional on-site quotes.
+            {t("process.description")}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <Link href="/ai-estimate">
               <div className="group relative inline-flex items-center gap-3 px-8 py-4 bg-accent/10 border border-accent/30 rounded-2xl hover:bg-accent/20 transition-all duration-300 cursor-pointer">
                 <Sparkles className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
-                <span className="text-sm font-black text-primary uppercase tracking-widest">Try AI Estimate Now</span>
+                <span className="text-sm font-black text-primary uppercase tracking-widest">{t("process.tryAI")}</span>
                 <Zap className="w-4 h-4 text-primary fill-primary animate-pulse" />
               </div>
             </Link>
@@ -158,7 +155,7 @@ export default function ProcessSection() {
             className="group relative inline-flex items-center gap-4 px-12 py-6 bg-[#1e71cd] text-white font-bold rounded-2xl shadow-[0_20px_40px_rgba(30,113,205,0.3)] hover:bg-[#1e71cd]/90 hover:scale-105 transition-all duration-300 uppercase tracking-widest text-lg"
           >
             <ClipboardList className="w-6 h-6" />
-            Get A Fast Quote
+            {t("process.getFastQuote")}
             <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
           </a>
         </div>

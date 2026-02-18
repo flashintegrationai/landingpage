@@ -2,7 +2,7 @@
 
 import React from "react"
 import { motion } from "framer-motion"
-import { Star, Quote, Home, ChevronRight, Award, Users, TrendingUp } from "lucide-react"
+import { Star, Home, ChevronRight, Award, Users, TrendingUp } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -10,47 +10,62 @@ import Footer from "@/components/footer"
 import FloatingContact from "@/components/floating-contact"
 import QuoteModal from "@/components/quote-modal"
 import LegalModals from "@/components/legal-modals"
+import { useLanguage } from "@/context/language-context"
 
-const testimonials = [
+const testimonialsData = [
   {
     name: "Roxanne Mix",
-    date: "Jan 30, 2026",
-    content: "Elite Surface Systems is an honest and reliable company! I have used them several times for my house. The driveway looks brand new every time.",
+    dateKey: "jan30",
+    contentKey: "roxanne",
     rating: 5,
   },
   {
     name: "Marianne Molleur",
-    date: "Jan 29, 2026",
-    content: "Professional service, very satisfied with the results. They removed oil stains that I thought were permanent. Highly recommend!",
+    dateKey: "jan29",
+    contentKey: "marianne",
     rating: 5,
   },
   {
     name: "Blanca Blanco",
-    date: "Jan 28, 2026",
-    content: "Highly recommend Elite Surface Systems! They were on time and very Professional at their work. Did an Amazing job on my driveway and house. Very Happy Customer! Thank you.",
+    dateKey: "jan28",
+    contentKey: "blanca",
     rating: 5,
   },
   {
     name: "G. D.",
-    date: "Jan 20, 2026",
-    content: "It was a pleasure working with the team again. The quote was fair and the work was scheduled in a timely manner. The quality of the work was great! Can always count on them.",
+    dateKey: "jan20",
+    contentKey: "gd",
     rating: 5,
   },
   {
     name: "Maria Pravato",
-    date: "Jan 15, 2026",
-    content: "This was an incredible team. The team is awesome. They did a wonderful job. Everything they pressure washed looks brand new! Thank you so much.",
+    dateKey: "jan15",
+    contentKey: "maria",
     rating: 5,
   },
   {
     name: "Chris Matinides",
-    date: "Jan 7, 2026",
-    content: "Elite did an excellent job with my roof pressure washing. I am very satisfied and would highly recommend them to anyone looking for quality work.",
+    dateKey: "jan7",
+    contentKey: "chris",
     rating: 5,
   },
 ]
 
 export default function TestimonialsPage() {
+  const { t } = useLanguage()
+  
+  // Mapping the local testimonials data with translated content
+  const translatedTestimonials = testimonialsData.map((item, index) => {
+    // We already have testimonials in the common section of translations.ts
+    // Let's reuse them or use the same indices
+    const commonItems = t("testimonials.items")
+    return {
+      ...item,
+      content: commonItems[index]?.content || "",
+      date: commonItems[index]?.date || ""
+    }
+  })
+
   return (
     <div className="min-h-screen bg-background">
       <FloatingContact />
@@ -67,13 +82,13 @@ export default function TestimonialsPage() {
               </div>
               <div className="flex flex-col">
                 <span className="font-(family-name:--font-orbitron) text-xl font-black text-foreground uppercase tracking-tight">Elite Surface</span>
-                <span className="text-[8px] font-bold text-primary uppercase tracking-[0.3em]">Client Success Stories</span>
+                <span className="text-[8px] font-bold text-primary uppercase tracking-[0.3em]">{t("testimonialsPage.header.successStories")}</span>
               </div>
             </Link>
 
             <Link href="/">
               <Button variant="ghost" className="gap-2 font-bold uppercase tracking-widest text-xs">
-                <Home className="w-4 h-4" /> Back to Home
+                <Home className="w-4 h-4" /> {t("testimonialsPage.header.backHome")}
               </Button>
             </Link>
           </div>
@@ -84,9 +99,9 @@ export default function TestimonialsPage() {
       <div className="border-b border-border/30 bg-muted/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-primary transition-colors font-medium">Home</Link>
+            <Link href="/" className="hover:text-primary transition-colors font-medium">{t("testimonialsPage.breadcrumbs.home")}</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-foreground font-bold">Testimonials</span>
+            <span className="text-foreground font-bold">{t("testimonialsPage.breadcrumbs.testimonials")}</span>
           </div>
         </div>
       </div>
@@ -102,7 +117,7 @@ export default function TestimonialsPage() {
             className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary/5 border border-primary/20 mb-8"
           >
             <Star className="w-5 h-5 text-primary fill-primary" />
-            <span className="text-sm font-black uppercase tracking-[0.3em] text-primary">Client Testimonials</span>
+            <span className="text-sm font-black uppercase tracking-[0.3em] text-primary">{t("testimonialsPage.hero.badge")}</span>
           </motion.div>
 
           <motion.h1
@@ -111,7 +126,7 @@ export default function TestimonialsPage() {
             transition={{ delay: 0.1 }}
             className="font-(family-name:--font-orbitron) text-5xl md:text-7xl font-black text-foreground uppercase tracking-tighter mb-8"
           >
-            Trusted by <span className="text-primary italic">Professionals</span>
+            {t("testimonialsPage.hero.title")} <span className="text-primary italic">{t("testimonialsPage.hero.titleItalic")}</span>
           </motion.h1>
 
           <motion.p
@@ -120,8 +135,7 @@ export default function TestimonialsPage() {
             transition={{ delay: 0.2 }}
             className="max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground leading-relaxed mb-12"
           >
-            Don't just take our word for it. See what homeowners, property managers, and business owners 
-            have to say about working with Elite Surface Systems.
+            {t("testimonialsPage.hero.description")}
           </motion.p>
 
           {/* Stats Grid */}
@@ -136,7 +150,7 @@ export default function TestimonialsPage() {
                 <Star className="w-8 h-8 text-primary fill-primary" />
               </div>
               <div className="font-(family-name:--font-orbitron) text-4xl font-black text-foreground mb-2">5.0</div>
-              <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest">Average Rating</div>
+              <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest">{t("testimonialsPage.stats.avgRating")}</div>
             </div>
 
             <div className="p-8 bg-card border border-border rounded-3xl hover:border-primary/30 transition-all duration-300 hover:shadow-xl">
@@ -144,7 +158,7 @@ export default function TestimonialsPage() {
                 <Users className="w-8 h-8 text-green-500" />
               </div>
               <div className="font-(family-name:--font-orbitron) text-4xl font-black text-foreground mb-2">150+</div>
-              <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest">Happy Clients</div>
+              <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest">{t("testimonialsPage.stats.happyClients")}</div>
             </div>
 
             <div className="p-8 bg-card border border-border rounded-3xl hover:border-primary/30 transition-all duration-300 hover:shadow-xl">
@@ -152,7 +166,7 @@ export default function TestimonialsPage() {
                 <TrendingUp className="w-8 h-8 text-primary" />
               </div>
               <div className="font-(family-name:--font-orbitron) text-4xl font-black text-foreground mb-2">98%</div>
-              <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest">Satisfaction Rate</div>
+              <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest">{t("testimonialsPage.stats.satisfaction")}</div>
             </div>
           </motion.div>
         </div>
@@ -162,9 +176,9 @@ export default function TestimonialsPage() {
       <section className="relative py-16 pb-64">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {translatedTestimonials.map((testimonial, index) => (
               <motion.div
-                key={testimonial.name}
+                key={`${testimonial.name}-${index}`}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -220,15 +234,14 @@ export default function TestimonialsPage() {
               
               <div className="relative z-10">
                 <h3 className="font-(family-name:--font-orbitron) text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter mb-6">
-                  Ready to Join Our <span className="text-primary italic">Success Stories</span>?
+                  {t("testimonialsPage.cta.ready")} <span className="text-primary italic">{t("testimonialsPage.cta.successStories")}</span>?
                 </h3>
                 <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
-                  Experience the same exceptional service that earned us over 150 five-star reviews. 
-                  Let's transform your property today.
+                  {t("testimonialsPage.cta.description")}
                 </p>
                 <Link href="/">
-                  <Button className="h-20 px-12 bg-primary hover:bg-primary/90 text-white rounded-2xl text-xl font-black uppercase tracking-widest shadow-2xl shadow-primary/30">
-                    Get Your Free Estimate
+                  <Button className="h-20 px-12 bg-primary hover:bg-primary/90 text-white rounded-2xl text-xl font-black uppercase tracking-widest shadow-2xl shadow-primary/30 text-balance">
+                    {t("testimonialsPage.cta.getEstimate")}
                   </Button>
                 </Link>
               </div>
