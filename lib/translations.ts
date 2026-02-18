@@ -200,6 +200,13 @@ export const translations: Record<string, Record<string, any>> = {
             "Your message has been sent successfully. We'll get back to you within 24 hours.",
           button: "Send Another Message",
         },
+        errors: {
+          fileSize: "File size exceeds 5MB limit.",
+          emailExists: "This email is already registered.",
+          phoneExists: "This phone number is already registered.",
+          phoneInvalid: "Please enter a valid phone number.",
+          submissionFailed: "Submission failed. Please try again.",
+        },
       },
       services: {
         pressureWashing: "Pressure Washing",
@@ -826,6 +833,13 @@ export const translations: Record<string, Record<string, any>> = {
           description:
             "Su mensaje ha sido enviado con éxito. Le responderemos en menos de 24 horas.",
           button: "Enviar otro mensaje",
+        },
+        errors: {
+          fileSize: "El archivo excede el límite de 5MB.",
+          emailExists: "Este correo ya está registrado.",
+          phoneExists: "Este número de teléfono ya está registrado.",
+          phoneInvalid: "Introduzca un número de teléfono válido.",
+          submissionFailed: "Error al enviar. Intente de nuevo.",
         },
       },
       services: {

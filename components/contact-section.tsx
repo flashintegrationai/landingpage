@@ -2,10 +2,19 @@
 
 import React from "react";
 import { useEffect, useRef, useState } from "react";
-import { Send, CheckCircle, Loader2, Upload, X, Image as ImageIcon, Sparkles, ArrowRight } from "lucide-react";
+import { Send, CheckCircle, Loader2, Upload, X, Image as ImageIcon, Sparkles, ArrowRight, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { triggerConfetti } from "@/lib/confetti";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -67,9 +76,13 @@ const ServiceIcons = {
 export default function ContactSection() {
   const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
+  const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateContactData, setDuplicateContactData] = useState<any>(null);
 
   const [files, setFiles] = useState<File[]>([]);
 
@@ -83,6 +96,8 @@ export default function ContactSection() {
   ];
 
   useEffect(() => {
+    setMounted(true);
+    
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -101,7 +116,15 @@ export default function ContactSection() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
+      const newFiles = Array.from(e.target.files);
+      const oversizedFiles = newFiles.filter(file => file.size > 5 * 1024 * 1024);
+      
+      if (oversizedFiles.length > 0) {
+        toast.error(t("contact.form.errors.fileSize"));
+        return;
+      }
+
+      setFiles((prev) => [...prev, ...newFiles]);
     }
   };
 
@@ -109,22 +132,57 @@ export default function ContactSection() {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const validatePhone = (phone: string) => {
+    const digits = phone.replace(/\D/g, "");
+    return digits.length >= 10 && digits.length <= 15;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+
+    if (!validatePhone(phone)) {
+      toast.error(t("contact.form.errors.phoneInvalid"));
+      return;
+    }
+
     setIsSubmitting(true);
+    setFieldErrors({});
 
     try {
-      const formData = new FormData(e.currentTarget);
+      // 1. Check if email or phone exists in GHL
+      const [emailCheck, phoneCheck] = await Promise.all([
+        fetch(`/api/ghl/contacts?email=${encodeURIComponent(email)}`).then(r => r.json()),
+        fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phone)}`).then(r => r.json())
+      ]);
+
+      if (emailCheck.exists || phoneCheck.exists) {
+        const errors: any = {};
+        if (emailCheck.exists) {
+          errors.email = t("contact.form.errors.emailExists");
+          toast.error(t("contact.form.errors.emailExists"));
+        }
+        if (phoneCheck.exists) {
+          errors.phone = t("contact.form.errors.phoneExists");
+          toast.error(t("contact.form.errors.phoneExists"));
+        }
+        setFieldErrors(errors);
+        setIsSubmitting(false);
+        return;
+      }
+
       const name = formData.get("name") as string;
-      const phone = formData.get("phone") as string;
-      const email = formData.get("email") as string;
       const address = formData.get("address") as string;
       const servicesSubmited = formData.getAll("services") as string[];
       const message = formData.get("message") as string;
       
       let imageUrls: string[] = [];
 
-      // Upload Images if any
+      // 2. Upload Images if any
       if (files.length > 0) {
         for (const file of files) {
           const fileExt = file.name.split('.').pop();
@@ -148,7 +206,7 @@ export default function ContactSection() {
         }
       }
 
-      // Insert into Supabase
+      // 3. Insert into Supabase
       const { error: insertError } = await supabase
         .from('leads')
         .insert({
@@ -163,18 +221,68 @@ export default function ContactSection() {
         });
 
       if (insertError) {
-        console.error('Error inserting lead:', insertError);
-        // Fallback for simulation if table doesn't exist
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        console.error('Error inserting lead to Supabase:', insertError);
       }
 
+      // 4. Send to GHL
+      const ghlRes = await fetch("/api/ghl/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          source: "Website Contact Form",
+          tags: ["website-lead", ...servicesSubmited],
+          customFields: {
+            address,
+            services: servicesSubmited.join(", "),
+            message,
+            image_urls: imageUrls
+          }
+        })
+      });
+
+      const ghlData = await ghlRes.json();
+
+      if (!ghlRes.ok) {
+        console.error("GHL Error:", ghlData);
+        
+        // Handle GHL duplicate errors specifically
+        const errorMsg = (ghlData.error || ghlData.details?.message || "").toLowerCase();
+        if (errorMsg.includes("duplicated") || ghlData.code === "duplicated_contact") {
+           const meta = ghlData.details?.meta;
+           const matchingField = meta?.matchingField; 
+           
+           setDuplicateContactData({
+             field: matchingField || 'email',
+             name: meta?.contactName || 'Existing Contact',
+             id: meta?.contactId
+           });
+           setShowDuplicateModal(true);
+
+           if (matchingField === 'phone') {
+             setFieldErrors(prev => ({ ...prev, phone: t("contact.form.errors.phoneExists") }));
+           } else {
+             setFieldErrors(prev => ({ ...prev, email: t("contact.form.errors.emailExists") }));
+           }
+           setIsSubmitting(false);
+           return;
+        }
+        throw new Error(ghlData.error || "GHL creation failed");
+      }
+
+      // Success
       setIsSubmitting(false);
       setIsSubmitted(true);
       triggerConfetti();
-      setFiles([]); // Reset files
+      setFiles([]);
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast.error(t("contact.form.errors.submissionFailed"));
       setIsSubmitting(false);
+      // Notice: we DON'T set isSubmitted to true, and we DON'T reset files,
+      // so the user keeps their data in the inputs.
     }
   };
 
@@ -280,9 +388,15 @@ export default function ContactSection() {
                       name="phone"
                       type="tel"
                       required
+                      maxLength={15}
                       placeholder="(123) 456-7890"
-                      className="bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20"
+                      className={`bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20 ${fieldErrors.phone ? 'border-red-500/50' : ''}`}
                     />
+                    {fieldErrors.phone && (
+                      <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight animate-in fade-in slide-in-from-top-1">
+                        {fieldErrors.phone}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -296,8 +410,13 @@ export default function ContactSection() {
                     type="email"
                     required
                     placeholder="john@example.com"
-                    className="bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20"
+                    className={`bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20 ${fieldErrors.email ? 'border-red-500/50' : ''}`}
                   />
+                  {fieldErrors.email && (
+                    <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight animate-in fade-in slide-in-from-top-1">
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -447,6 +566,56 @@ export default function ContactSection() {
           </div>
         </div>
       </div>
+
+      {/* Duplicate Contact Modal */}
+      <Dialog open={showDuplicateModal} onOpenChange={setShowDuplicateModal}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <div className="mx-auto w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-6 h-6 text-yellow-500" />
+            </div>
+            <DialogTitle className="text-center text-xl font-bold font-(family-name:--font-orbitron)">
+              {t("contact.form.errors.emailExists")}
+            </DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              {duplicateContactData?.field === 'phone' 
+                ? t("contact.form.errors.phoneExists") 
+                : t("contact.form.errors.emailExists")}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {duplicateContactData && (
+            <div className="mt-4 p-4 rounded-xl bg-muted/50 border border-border space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-foreground/40 font-medium uppercase tracking-wider text-[10px]">
+                  Registered Name:
+                </span>
+                <span className="text-foreground font-semibold">
+                  {duplicateContactData.name}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-foreground/40 font-medium uppercase tracking-wider text-[10px]">
+                  Matching Field:
+                </span>
+                <span className="text-[#1e71cd] font-bold uppercase tracking-tight">
+                  {duplicateContactData.field}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="sm:justify-center mt-4">
+            <Button
+              type="button"
+              onClick={() => setShowDuplicateModal(false)}
+              className="bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white px-8 h-12 rounded-xl w-full sm:w-auto"
+            >
+              Understand
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

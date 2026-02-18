@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
 import { ThemeProvider } from '@/components/theme-provider'
 import { LanguageProvider } from "@/context/language-context"
+import { Toaster } from "sonner"
 import './globals.css'
 
 const inter = Inter({ 
@@ -85,6 +86,7 @@ export default function RootLayout({
         >
           <LanguageProvider>
             {children}
+            <Toaster position="top-center" richColors />
           </LanguageProvider>
         </ThemeProvider>
         <Analytics />

@@ -22,8 +22,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
-    // Remove the data:image/jpeg;base64, part
-    const base64Image = image.split(",")[1];
+    // Robust base64 extraction
+    let base64Image = image;
+    if (image.includes(",")) {
+      base64Image = image.split(",")[1];
+    }
+
+    if (!base64Image || base64Image.length < 10) {
+      return NextResponse.json(
+        { error: "Invalid image data" },
+        { status: 400 },
+      );
+    }
+
+    console.log(
+      "🚀 Starting OpenAI analysis, base64 length:",
+      base64Image.length,
+    );
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",

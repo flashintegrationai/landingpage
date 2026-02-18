@@ -22,6 +22,76 @@ async function getCustomFieldDefinitions(locationId: string, token: string) {
   }
 }
 
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const email = searchParams.get("email");
+    const phone = searchParams.get("phone");
+
+    if (!email && !phone) {
+      return NextResponse.json(
+        { error: "Email or phone is required" },
+        { status: 400 },
+      );
+    }
+
+    const token = process.env.GHL_ACCESS_TOKEN;
+    const locationId = process.env.GHL_LOCATION_ID;
+
+    if (!token || !locationId) {
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 },
+      );
+    }
+
+    const query = email || phone;
+    const response = await fetch(
+      `https://services.leadconnectorhq.com/contacts/search?locationId=${locationId}&query=${encodeURIComponent(query!)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Version: "2021-07-28",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: data.message || "Failed to search contact" },
+        { status: response.status },
+      );
+    }
+
+    let exists = false;
+    if (email) {
+      exists = data.contacts?.some(
+        (c: any) => c.email?.toLowerCase() === email.toLowerCase(),
+      );
+    } else if (phone) {
+      const cleanSearch = phone.replace(/\D/g, "");
+      exists = data.contacts?.some((c: any) => {
+        const cleanContactPhone = (c.phone || "").replace(/\D/g, "");
+        return (
+          cleanContactPhone.includes(cleanSearch) ||
+          cleanSearch.includes(cleanContactPhone)
+        );
+      });
+    }
+
+    return NextResponse.json({ exists });
+  } catch (error: any) {
+    console.error("GHL Search Error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
 // Helper to update contact via PUT (User's suggested approach)
 async function updateGHLContact(
   contactId: string,
@@ -169,16 +239,16 @@ export async function POST(req: Request) {
 
     // Create Contact payload
     const payload: any = {
-      firstName,
-      lastName,
-      name,
-      email: email || "",
+      firstName: firstName || "Contact",
+      lastName: lastName || "",
+      name: name || "New Contact",
+      email: email && email.trim() !== "" ? email : undefined,
       phone: formattedPhone,
       locationId: locationId,
       companyName: companyName || undefined,
-      tags: tags,
-      source: source,
-      customFields: processedFields,
+      tags: tags || [],
+      source: source || "Website",
+      customFields: processedFields.length > 0 ? processedFields : undefined,
     };
 
     console.log("🚀 Creating GHL Contact...");
@@ -207,6 +277,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error: createData.message || "Failed to create contact",
+          code: createData.code || "ghl_error",
           details: createData,
         },
         { status: createRes.status },
@@ -230,6 +301,83 @@ export async function POST(req: Request) {
     console.error("GHL API Route Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error", details: error.message },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const { contactId, notes, tags, customFields } = await req.json();
+
+    if (!contactId) {
+      return NextResponse.json(
+        { error: "Contact ID is required" },
+        { status: 400 },
+      );
+    }
+
+    const token = process.env.GHL_ACCESS_TOKEN;
+    const locationId = process.env.GHL_LOCATION_ID;
+
+    if (!token || !locationId) {
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 },
+      );
+    }
+
+    // Map custom field names to IDs if names were provided
+    let fieldsToUpdate = [];
+    if (customFields) {
+      const definitions = await getCustomFieldDefinitions(locationId, token);
+      const normalize = (s: string) =>
+        (s || "")
+          .toLowerCase()
+          .replace(/_/g, " ")
+          .replace("contact.", "")
+          .trim();
+      const defMap = new Map();
+      definitions.forEach((d: any) => {
+        if (d.key) defMap.set(normalize(d.key), d);
+        if (d.name) defMap.set(normalize(d.name), d);
+        if (d.fieldKey) defMap.set(normalize(d.fieldKey), d);
+      });
+
+      for (const [key, value] of Object.entries(customFields)) {
+        const def = defMap.get(normalize(key));
+        if (def) {
+          fieldsToUpdate.push({ id: def.id, value });
+        } else {
+          fieldsToUpdate.push({ key, value });
+        }
+      }
+    }
+
+    const response = await fetch(
+      `https://services.leadconnectorhq.com/contacts/${contactId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Version: "2021-07-28",
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          notes: notes ? [notes] : undefined,
+          tags: tags,
+          customFields: fieldsToUpdate.length > 0 ? fieldsToUpdate : undefined,
+        }),
+      },
+    );
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error: any) {
+    console.error("GHL PUT Error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

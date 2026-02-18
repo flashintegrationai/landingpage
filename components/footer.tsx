@@ -2,11 +2,22 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { Facebook, Instagram, Twitter, Youtube, ArrowUp } from "lucide-react"
+import { Facebook, Instagram, Youtube, ArrowUp } from "lucide-react"
 import WaveDivider from "./wave-divider"
 import { useQuoteModal } from "./quote-modal"
 import { triggerSingleConfetti } from "@/lib/confetti"
 import { useLanguage } from "@/context/language-context"
+
+const TiktokIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    className={className} 
+    fill="currentColor" 
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.03 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.98-.23-2.81.31-.72.42-1.24 1.16-1.31 1.97-.03.52.09 1.05.35 1.5.42.8 1.25 1.4 2.16 1.4 1.17.1 2.4-.4 2.96-1.4.15-.22.21-.49.23-.76.04-1.55.03-3.1.03-4.65V0c1.33.02 1.33.02 1.33.02z"/>
+  </svg>
+)
 
 export default function Footer() {
   const { t } = useLanguage()
@@ -32,7 +43,7 @@ export default function Footer() {
   const socialLinks = [
     { icon: Facebook, href: "#", label: "Facebook" },
     { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: TiktokIcon, href: "#", label: "TikTok" },
     { icon: Youtube, href: "#", label: "YouTube" },
   ]
 
