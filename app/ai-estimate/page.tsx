@@ -35,9 +35,9 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import Navbar from "@/components/navbar"
 import { useLanguage } from "@/context/language-context"
-import nextDynamic from "next/dynamic"
+import dynamic from "next/dynamic"
 
-const BackgroundEffects = nextDynamic(
+const BackgroundEffects = dynamic(
   () => import("@/components/background-effects"),
   { ssr: false }
 )
@@ -116,10 +116,17 @@ export default function AiEstimatePage() {
     setFieldErrors({})
 
     try {
-      // 1. Check if phone exists in GHL
-      const phoneCheck = await fetch(`/api/ghl/contacts?phone=${encodeURIComponent(leadData.phone)}`).then(r => r.json());
+      // 1. Clean phone number and check if exists in GHL
+      const phoneDigits = leadData.phone.replace(/[^\d]/g, "")
+      console.log("🔍 Checking phone in GHL:", phoneDigits);
       
+      const phoneCheckRes = await fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phoneDigits)}`);
+      const phoneCheck = await phoneCheckRes.json();
+      
+      if (!phoneCheckRes.ok) console.error("🔴 GHL Search Route Error:", phoneCheck);
+
       if (phoneCheck.exists) {
+        console.log("⚠️ Phone already exists in GHL");
         setFieldErrors({ phone: t("contact.form.errors.phoneExists") });
         setDuplicateContactData({
           field: 'phone',
@@ -130,74 +137,218 @@ export default function AiEstimatePage() {
         setIsSubmittingLead(false);
         return;
       }
-
-      // 2. Insert into Supabase for local backup
-      const { data: leadRecord, error: supabaseError } = await supabase
-        .from('leads')
-        .insert([
-          { 
-            name: leadData.name, // The table likely uses 'name' based on contact-section.tsx
-            phone: leadData.phone,
-            source: 'ai_estimator',
-            status: 'new',
-            notes: `AI Analysis started for image.`
-          }
-        ])
-        .select()
-
-      if (supabaseError) console.error("Supabase insert error:", supabaseError)
-
-      // 3. Create contact in GHL
-      const ghlRes = await fetch("/api/ghl/contacts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: leadData.name,
-          phone: leadData.phone,
-          source: "AI Estimate Tool",
-          tags: ["AI-Estimate-Started"]
-        }),
-      });
-
-      const ghlData = await ghlRes.json();
+      let imageUrls: string[] = [];
       
-      if (!ghlRes.ok) {
-        console.error("GHL Error:", ghlData);
-        // Robust error parsing
-        const rawError = ghlData.error || ghlData.details?.message || "";
-        const errorMsg = (Array.isArray(rawError) ? rawError[0] : rawError).toString().toLowerCase();
+      // 2. Upload Image to Supabase Storage (quoteuploads)
+      if (image) {
+        console.log("📤 Preparing image upload...");
+        try {
+          const res = await fetch(image);
+          const blob = await res.blob();
+          const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+          const file = new File([blob], fileName, { type: "image/jpeg" });
+          
+          const { error: uploadError } = await supabase.storage
+            .from('quoteuploads')
+            .upload(fileName, file);
 
-        if (errorMsg.includes("duplicated") || ghlData.code === "duplicated_contact") {
-           const meta = ghlData.details?.meta || ghlData.details;
-           setDuplicateContactData({
-             field: meta?.matchingField || 'phone',
-             name: meta?.contactName || leadData.name,
-             id: meta?.contactId || meta?.id
-           });
-           setShowDuplicateModal(true);
-           setFieldErrors({ phone: t("contact.form.errors.phoneExists") });
-           setIsSubmittingLead(false);
-           return;
+          if (!uploadError) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('quoteuploads')
+              .getPublicUrl(fileName);
+            imageUrls.push(publicUrl);
+            console.log("✅ Image uploaded:", publicUrl);
+          } else {
+            console.error("🔴 Supabase Storage Error:", uploadError.message);
+          }
+        } catch (storageError: any) {
+          console.error("🔴 Storage Processing Error:", storageError);
         }
-        throw new Error(errorMsg || "GHL Submission failed");
       }
 
-      const contactId = ghlData.contactId;
+      await proceedWithLead(imageUrls);
 
-      setActiveStep("analyzing")
-      if (image) analyzeImage(image, leadRecord?.[0]?.id, contactId)
     } catch (error: any) {
-      console.error(error)
-      // Even if GHL/Supabase fails, we still try to analyze the image for the user experience
-      setActiveStep("analyzing")
-      if (image) analyzeImage(image)
+      console.error("🔴 Critical Form Submit Error:", error);
+      toast.error(t("contact.form.errors.submissionFailed"));
     } finally {
       setIsSubmittingLead(false)
     }
   }
 
-  const analyzeImage = async (base64Image: string, leadId?: string, ghlContactId?: string) => {
+  const proceedWithLead = async (imageUrls: string[], contactId?: string) => {
+    setIsSubmittingLead(true);
+    try {
+      // 3. Insert into Supabase for local backup
+      console.log("📝 Inserting lead into Supabase...");
+      let createdLeadId: string | null = null;
+      try {
+        // Based on user: column is just 'name'. Removing 'servicio'/'notes' and other guesses to be safe.
+        const { data: leadDataRes, error: leadError } = await supabase
+          .from('leads')
+          .insert({ 
+            name: leadData.name,
+            phone: leadData.phone,
+            source: 'ai_estimator',
+            image_urls: imageUrls
+          }).select();
+
+        if (leadError) {
+          console.warn("⚠️ Supabase insert ('name') failed, trying legacy 'nombre':", leadError.message);
+          const { data: d2, error: error2 } = await supabase
+            .from('leads')
+            .insert({ 
+              nombre: leadData.name,
+              telefono: leadData.phone,
+              source: 'ai_estimator',
+              image_urls: imageUrls
+            }).select();
+          
+          if (!error2) {
+            createdLeadId = d2?.[0]?.id;
+            console.log("✅ Lead created via 'nombre'");
+          } else {
+             console.error("🔴 Supabase DB totally failed, but we continue to GHL.");
+          }
+        } else {
+          createdLeadId = leadDataRes?.[0]?.id;
+          console.log("✅ Lead created via 'name'");
+        }
+      } catch (dbError) {
+        console.error("🔴 Supabase DB Exception (skipping):", dbError);
+      }
+
+      // 4. Create contact in GHL or Update if existing
+      if (contactId) {
+        console.log("👤 Using existing GHL contact ID:", contactId);
+        setActiveStep("analyzing");
+        if (image) analyzeImage(image, createdLeadId, contactId, imageUrls[0]);
+      } else {
+        console.log("👤 Creating GHL contact...");
+        const ghlPayload = {
+          name: leadData.name,
+          phone: leadData.phone,
+          source: "AI Estimate Tool",
+          tags: ["AI-Estimate-Started"],
+          customFields: {
+            iaestimateimage_urls: imageUrls[0] || "",
+            iaestimateanalysisnotes: "AI Analysis Started"
+          }
+        };
+
+        try {
+          const ghlRes = await fetch("/api/ghl/contacts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(ghlPayload),
+          });
+
+          const ghlData = await ghlRes.json();
+          
+          if (!ghlRes.ok) {
+            console.error("🔴 GHL Creation Failure (initial):", ghlData);
+            const rawError = ghlData.error || ghlData.details?.message || ghlData.message || "";
+            const errorMsg = (Array.isArray(rawError) ? rawError[0] : (typeof rawError === 'object' ? JSON.stringify(rawError) : rawError)).toString().toLowerCase();
+
+            if (errorMsg.includes("duplicated") || ghlData.code === "duplicated_contact") {
+               const meta = ghlData.details?.meta || ghlData.details;
+               setDuplicateContactData({
+                 field: meta?.matchingField || 'phone',
+                 name: meta?.contactName || leadData.name,
+                 id: meta?.contactId || meta?.id
+               });
+               setShowDuplicateModal(true);
+               setFieldErrors({ phone: t("contact.form.errors.phoneExists") });
+               setIsSubmittingLead(false);
+               return;
+            }
+            
+            console.warn("⚠️ GHL failed with custom fields. Attempting bare minimum (Name + Phone)...");
+            const fallbackRes = await fetch("/api/ghl/contacts", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: leadData.name,
+                phone: leadData.phone,
+                source: "AI Estimate Tool (Fallback)"
+              }),
+            });
+            
+            if (!fallbackRes.ok) {
+              throw new Error("GHL totally failed even with bare minimum data.");
+            }
+            
+            const fallbackData = await fallbackRes.json();
+            console.log("✅ GHL Contact created via fallback ID:", fallbackData.contactId);
+            const cid = fallbackData.contactId;
+            setActiveStep("analyzing");
+            if (image) analyzeImage(image, createdLeadId, cid, imageUrls[0]);
+          } else {
+            console.log("✅ GHL Contact created ID:", ghlData.contactId);
+            const cid = ghlData.contactId;
+            setActiveStep("analyzing");
+            if (image) analyzeImage(image, createdLeadId, cid, imageUrls[0]);
+          }
+        } catch (ghlError: any) {
+          console.error("🔴 Critical GHL Error:", ghlError);
+          setActiveStep("analyzing");
+          if (image) analyzeImage(image, createdLeadId, undefined, imageUrls[0]);
+        }
+      }
+    } catch (err: any) {
+      console.error("🔴 proceedWithLead Error:", err);
+      toast.error(t("contact.form.errors.submissionFailed"));
+    } finally {
+      setIsSubmittingLead(false);
+    }
+  }
+
+  const handleSendAnotherRequest = async () => {
+    setShowDuplicateModal(false);
+    if (!image) return;
+
+    setIsSubmittingLead(true);
+    let imageUrls: string[] = [];
+    
+    // Upload image again or use previous if we had it (but handleLeadSubmit uploads it after duplicate check)
+    // Wait, handleLeadSubmit does duplicate check FIRST. 
+    // So if it's a duplicate, it hasn't uploaded the image yet.
+    
+    console.log("📤 Preparing image upload for existing contact...");
+    try {
+      const res = await fetch(image);
+      const blob = await res.blob();
+      const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+      const file = new File([blob], fileName, { type: "image/jpeg" });
+      
+      const { error: uploadError } = await supabase.storage
+        .from('quoteuploads')
+        .upload(fileName, file);
+
+      if (!uploadError) {
+        const { data: { publicUrl } } = supabase.storage
+          .from('quoteuploads')
+          .getPublicUrl(fileName);
+        imageUrls.push(publicUrl);
+        console.log("✅ Image uploaded:", publicUrl);
+        
+        // Proceed with analyzing and updating
+        await proceedWithLead(imageUrls, duplicateContactData?.id);
+      } else {
+        console.error("🔴 Supabase Storage Error:", uploadError.message);
+        toast.error("Failed to upload image. Please try again.");
+      }
+    } catch (storageError: any) {
+      console.error("🔴 Storage Processing Error:", storageError);
+      toast.error("An error occurred during image upload.");
+    } finally {
+      setIsSubmittingLead(false);
+    }
+  }
+
+  async function analyzeImage(base64Image: string, leadId?: string | null, contactId?: string, uploadedImageUrl?: string) {
     setIsAnalyzing(true)
+    console.log("🚀 Starting Image Analysis Workflow...");
     try {
       const response = await fetch("/api/analyze-surface", {
         method: "POST",
@@ -206,7 +357,13 @@ export default function AiEstimatePage() {
       })
 
       const data = await response.json()
-      if (!response.ok) throw new Error(data.error || "Analysis failed")
+      
+      if (!response.ok) {
+        if (data.error?.includes("API Key is missing")) {
+          throw new Error("OPENAI_API_KEY_MISSING")
+        }
+        throw new Error(data.error || "Analysis failed")
+      }
 
       setResult(data)
       setActiveStep("result")
@@ -215,41 +372,56 @@ export default function AiEstimatePage() {
 
       // Update Supabase
       if (leadId) {
-        await supabase
-          .from('leads')
-          .update({ 
-            notes: analysisNotes,
-            status: 'analyzed'
-          })
-          .eq('id', leadId)
+        try {
+          console.log("📝 Updating Supabase lead result...");
+          // Try all possible service/notes columns. Add 'name' as a last resort description if user has no notes column
+          const { error: upErr1 } = await supabase.from('leads').update({ servicio: analysisNotes }).eq('id', leadId);
+          if (upErr1) {
+             const { error: upErr2 } = await supabase.from('leads').update({ notes: analysisNotes }).eq('id', leadId);
+             if (upErr2) {
+               console.error("🔴 Supabase update failed: Column 'servicio' or 'notes' not found. Please add a 'notes' column to your 'leads' table in Supabase.");
+             }
+          }
+        } catch (dbErr) {
+          console.error("🔴 Supabase update exception:", dbErr);
+        }
       }
 
       // Update GHL with analysis results
-      if (ghlContactId) {
+      if (contactId) {
         try {
-          await fetch("/api/ghl/contacts", {
+          console.log("👤 Updating GHL contact with results...");
+          const updateRes = await fetch("/api/ghl/contacts", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              contactId: ghlContactId,
-              notes: analysisNotes,
-              tags: ["AI-Analyzed", data.detectedMaterial.replaceAll(" ", "-")],
+              contactId,
+              tags: ["AI-Analyzed", (data.detectedMaterial || "Surface").replaceAll(" ", "-")],
               customFields: {
-                 "surface_material": data.detectedMaterial,
-                 "estimated_area": `${data.estimatedSqFt} sqft`,
-                 "price_range": data.priceRange
+                iaestimatematerial: data.detectedMaterial,
+                aiestimatearea: `${data.estimatedSqFt} sqft`,
+                price_range: data.priceRange,
+                iaestimatecontamination: data.contaminationLevel,
+                iaestimateanalysisnotes: analysisNotes,
+                // Ensure photo is a string here too
+                iaestimateimage_urls: uploadedImageUrl || ""
               }
-            }),
+            })
           });
-        } catch (updateError) {
-          console.error("Failed to update GHL contact with results:", updateError);
+          if (!updateRes.ok) console.warn("⚠️ GHL contact update failed but result is shown to user.");
+        } catch (ghlErr) {
+          console.error("🔴 GHL update exception:", ghlErr);
         }
       }
 
       toast.success(t("aiEstimate.result.complete"))
     } catch (error: any) {
-      console.error(error)
-      toast.error(t("contact.form.errors.submissionFailed"))
+      console.error("🔴 analyzeImage Error:", error)
+      if (error.message === "OPENAI_API_KEY_MISSING") {
+        toast.error("OpenAI API Key is missing in .env file. Please add it and restart the server.")
+      } else {
+        toast.error(error.message || "Failed to analyze image. Please try again.")
+      }
       setActiveStep("idle")
     } finally {
       setIsAnalyzing(false)
@@ -373,7 +545,7 @@ export default function AiEstimatePage() {
               >
                 <div className="text-center mb-12">
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-bold text-[10px] mb-6 uppercase tracking-widest">
-                    <ShieldCheck size={14} /> Encrypted Session
+                    <ShieldCheck size={14} /> {t("aiEstimate.encryptedSession")}
                   </div>
                   <h3 className="font-(family-name:--font-orbitron) text-3xl font-black mb-4 uppercase tracking-tighter">{t("aiEstimate.form.claimTitle")} <span className="text-primary italic">{t("aiEstimate.form.claimEstimate")}</span></h3>
                   <p className="text-muted-foreground text-sm">{t("aiEstimate.form.description")}</p>
@@ -532,7 +704,7 @@ export default function AiEstimatePage() {
                   {[
                     { icon: Shield, label: t("hero.guaranteed") },
                     { icon: Droplets, label: t("hero.industrialGrade") },
-                    { icon: Zap, label: "Eco-Friendly" }
+                    { icon: Zap, label: t("aiEstimate.ecoFriendly") }
                   ].map((item, i) => (
                     <div key={i} className="bg-card/30 backdrop-blur-md border border-border p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-2">
                       <item.icon className="w-5 h-5 text-primary/60" />
@@ -562,10 +734,10 @@ export default function AiEstimatePage() {
               <AlertTriangle className="w-6 h-6 text-yellow-500" />
             </div>
             <DialogTitle className="text-center text-xl font-bold font-(family-name:--font-orbitron)">
-              {t("contact.form.errors.phoneExists")}
+              {t("contact.form.duplicateModal.title")}
             </DialogTitle>
             <DialogDescription className="text-center pt-2">
-              {t("contact.form.errors.phoneExists")}
+              {t("contact.form.duplicateModal.description")}
             </DialogDescription>
           </DialogHeader>
           
@@ -573,7 +745,7 @@ export default function AiEstimatePage() {
             <div className="mt-4 p-4 rounded-xl bg-muted/50 border border-border space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-foreground/40 font-medium uppercase tracking-wider text-[10px]">
-                  Registered Name:
+                  {t("contact.form.duplicateModal.registeredName")}:
                 </span>
                 <span className="text-foreground font-semibold">
                   {duplicateContactData.name}
@@ -581,7 +753,7 @@ export default function AiEstimatePage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-foreground/40 font-medium uppercase tracking-wider text-[10px]">
-                  Matching Field:
+                  {t("contact.form.duplicateModal.matchingField")}:
                 </span>
                 <span className="text-[#1e71cd] font-bold uppercase tracking-tight">
                   {duplicateContactData.field}
@@ -590,13 +762,23 @@ export default function AiEstimatePage() {
             </div>
           )}
 
-          <DialogFooter className="sm:justify-center mt-4">
+          <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:justify-center mt-4">
             <Button
               type="button"
+              variant="outline"
               onClick={() => setShowDuplicateModal(false)}
-              className="bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white px-8 h-12 rounded-xl w-full sm:w-auto font-bold"
+              className="border-[#1e71cd] text-[#1e71cd] hover:bg-[#1e71cd]/10 px-6 h-12 rounded-xl w-full sm:w-auto font-bold"
             >
-              Understand
+              {t("contact.form.duplicateModal.understand") || "Explorar"}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSendAnotherRequest}
+              disabled={isSubmittingLead}
+              className="bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white px-8 h-12 rounded-xl w-full sm:w-auto font-bold shadow-lg shadow-primary/20"
+            >
+              {isSubmittingLead ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {t("aiEstimate.form.sendAnother") || "Enviar otra solicitud"}
             </Button>
           </DialogFooter>
         </DialogContent>

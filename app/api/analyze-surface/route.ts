@@ -4,17 +4,22 @@ import dns from "node:dns";
 
 dns.setDefaultResultOrder("ipv4first");
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(req: Request) {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
-    console.log(
-      "Using API Key (Prefix):",
-      apiKey ? apiKey.substring(0, 7) + "..." : "MISSING",
-    );
+
+    if (!apiKey) {
+      console.error("🔴 OPENAI_API_KEY is missing in environment variables");
+      return NextResponse.json(
+        {
+          error:
+            "OpenAI API Key is missing. Please add OPENAI_API_KEY to your .env file.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const openai = new OpenAI({ apiKey });
 
     const { image } = await req.json();
 

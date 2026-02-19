@@ -157,7 +157,7 @@ export default function ContactSection() {
       // 1. Check if email or phone exists in GHL
       const [emailCheck, phoneCheck] = await Promise.all([
         fetch(`/api/ghl/contacts?email=${encodeURIComponent(email)}`).then(r => r.json()),
-        fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phone)}`).then(r => r.json())
+        fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phone.replace(/\D/g, ""))}`).then(r => r.json())
       ]);
 
       if (emailCheck.exists || phoneCheck.exists) {
@@ -190,7 +190,7 @@ export default function ContactSection() {
           const filePath = `${fileName}`;
 
           const { error: uploadError } = await supabase.storage
-            .from('quote_uploads')
+            .from('quoteuploads')
             .upload(filePath, file);
 
           if (uploadError) {
@@ -199,7 +199,7 @@ export default function ContactSection() {
           }
 
           const { data: { publicUrl } } = supabase.storage
-            .from('quote_uploads')
+            .from('quoteuploads')
             .getPublicUrl(filePath);
 
           imageUrls.push(publicUrl);
@@ -210,12 +210,11 @@ export default function ContactSection() {
       const { error: insertError } = await supabase
         .from('leads')
         .insert({
-          name,
-          phone,
+          nombre: name,
+          telefono: phone,
           email,
-          address,
-          services: servicesSubmited,
-          message,
+          direccion: address,
+          servicio: servicesSubmited.join(", ") + (message ? ` | Note: ${message}` : ""),
           image_urls: imageUrls,
           source: 'website_contact_form'
         });

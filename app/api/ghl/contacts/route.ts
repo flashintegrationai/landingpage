@@ -28,13 +28,6 @@ export async function GET(req: Request) {
     const email = searchParams.get("email");
     const phone = searchParams.get("phone");
 
-    if (!email && !phone) {
-      return NextResponse.json(
-        { error: "Email or phone is required" },
-        { status: 400 },
-      );
-    }
-
     const token = process.env.GHL_ACCESS_TOKEN;
     const locationId = process.env.GHL_LOCATION_ID;
 
@@ -45,43 +38,70 @@ export async function GET(req: Request) {
       );
     }
 
-    const query = email || phone;
-    const response = await fetch(
-      `https://services.leadconnectorhq.com/contacts/search?locationId=${locationId}&query=${encodeURIComponent(query!)}`,
-      {
+    if (!email && !phone) {
+      return NextResponse.json(
+        { error: "Email or phone is required" },
+        { status: 400 },
+      );
+    }
+
+    if (phone) {
+      // Clean phone for duplicate search
+      const cleanPhone = phone.replace(/\D/g, "");
+      const searchUrl = `https://services.leadconnectorhq.com/contacts/search/duplicate?locationId=${locationId}&number=${encodeURIComponent(cleanPhone)}`;
+      console.log("🔍 GHL Checking Duplicates:", searchUrl);
+
+      const response = await fetch(searchUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
           Version: "2021-07-28",
           Accept: "application/json",
         },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("🔴 GHL Duplicate Search Failed:", response.status, data);
+        // Fallback to regular search if duplicate search fails (optional, but safer)
+        return NextResponse.json(
+          { error: data.message || "Duplicate check failed", details: data },
+          { status: response.status },
+        );
+      }
+
+      // Check if any contact was found
+      const exists = !!data.contact;
+      return NextResponse.json({
+        exists,
+        contactName: data.contact?.name,
+        contactId: data.contact?.id,
+      });
+    }
+
+    // Default search for email if no phone
+    const searchUrl = `https://services.leadconnectorhq.com/contacts/search?locationId=${locationId}&query=${encodeURIComponent(email!)}`;
+    console.log("🔍 GHL Searching Email:", searchUrl);
+
+    const response = await fetch(searchUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Version: "2021-07-28",
+        Accept: "application/json",
       },
-    );
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
+      console.error("🔴 GHL Search Failed:", response.status, data);
       return NextResponse.json(
-        { error: data.message || "Failed to search contact" },
+        { error: data.message || "Failed to search contact", details: data },
         { status: response.status },
       );
     }
 
-    let exists = false;
-    if (email) {
-      exists = data.contacts?.some(
-        (c: any) => c.email?.toLowerCase() === email.toLowerCase(),
-      );
-    } else if (phone) {
-      const cleanSearch = phone.replace(/\D/g, "");
-      exists = data.contacts?.some((c: any) => {
-        const cleanContactPhone = (c.phone || "").replace(/\D/g, "");
-        return (
-          cleanContactPhone.includes(cleanSearch) ||
-          cleanSearch.includes(cleanContactPhone)
-        );
-      });
-    }
-
+    const exists = data.contacts && data.contacts.length > 0;
     return NextResponse.json({ exists });
   } catch (error: any) {
     console.error("GHL Search Error:", error);
@@ -93,6 +113,27 @@ export async function GET(req: Request) {
 }
 
 // Helper to update contact via PUT (User's suggested approach)
+// Helper to get contact by ID
+async function getContactById(contactId: string, token: string) {
+  try {
+    const response = await fetch(
+      `https://services.leadconnectorhq.com/contacts/${contactId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Version: "2021-07-28",
+          Accept: "application/json",
+        },
+      },
+    );
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (e) {
+    console.error("Error fetching contact:", e);
+    return null;
+  }
+}
+
 async function updateGHLContact(
   contactId: string,
   token: string,
@@ -251,7 +292,10 @@ export async function POST(req: Request) {
       customFields: processedFields.length > 0 ? processedFields : undefined,
     };
 
-    console.log("🚀 Creating GHL Contact...");
+    console.log(
+      "🚀 Creating GHL Contact with payload:",
+      JSON.stringify(payload, null, 2),
+    );
 
     // Step 2: Create Contact
     const createRes = await fetch(
@@ -270,14 +314,11 @@ export async function POST(req: Request) {
 
     const createData = await createRes.json();
     if (!createRes.ok) {
-      console.error(
-        "🔴 Create Contact Failed:",
-        JSON.stringify(createData, null, 2),
-      );
+      console.error("🔴 GHL Creation Failed:", createRes.status, createData);
       return NextResponse.json(
         {
           error: createData.message || "Failed to create contact",
-          code: createData.code || "ghl_error",
+          code: createData.code,
           details: createData,
         },
         { status: createRes.status },
@@ -331,6 +372,11 @@ export async function PUT(req: Request) {
     let fieldsToUpdate = [];
     if (customFields) {
       const definitions = await getCustomFieldDefinitions(locationId, token);
+      const currentContact = await getContactById(contactId, token);
+      const existingFields = currentContact?.contact?.customFields || [];
+      const existingFieldsMap = new Map();
+      existingFields.forEach((f: any) => existingFieldsMap.set(f.id, f.value));
+
       const normalize = (s: string) =>
         (s || "")
           .toLowerCase()
@@ -345,9 +391,24 @@ export async function PUT(req: Request) {
       });
 
       for (const [key, value] of Object.entries(customFields)) {
-        const def = defMap.get(normalize(key));
+        const normalizedKey = normalize(key);
+        const def = defMap.get(normalizedKey);
+
         if (def) {
-          fieldsToUpdate.push({ id: def.id, value });
+          let finalValue = value;
+          // Concatenation logic for image_urls
+          if (normalizedKey.includes("image urls")) {
+            const oldValue = existingFieldsMap.get(def.id);
+            if (
+              oldValue &&
+              typeof oldValue === "string" &&
+              oldValue !== value
+            ) {
+              // Append new URL with a delimiter
+              finalValue = `${oldValue}\n${value}`;
+            }
+          }
+          fieldsToUpdate.push({ id: def.id, value: finalValue });
         } else {
           fieldsToUpdate.push({ key, value });
         }

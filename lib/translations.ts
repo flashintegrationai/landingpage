@@ -1,6 +1,7 @@
 export const translations: Record<string, Record<string, any>> = {
   en: {
     nav: {
+      home: "Home",
       services: "Services",
       about: "About",
       gallery: "Gallery",
@@ -207,6 +208,14 @@ export const translations: Record<string, Record<string, any>> = {
           phoneInvalid: "Please enter a valid phone number.",
           submissionFailed: "Submission failed. Please try again.",
         },
+        duplicateModal: {
+          title: "Contact Already Exists",
+          description:
+            "This information is already associated with an existing contact in our system.",
+          registeredName: "Registered Name",
+          matchingField: "Matching Field",
+          understand: "Understand",
+        },
       },
       services: {
         pressureWashing: "Pressure Washing",
@@ -347,6 +356,8 @@ export const translations: Record<string, Record<string, any>> = {
       overpaying: "OVERPAYING",
       description:
         "Get an instant, laboratory-precise price range using our neural network. Avoid hidden technician costs and lock in your AI-Special Discount today.",
+      encryptedSession: "Encrypted Session",
+      ecoFriendly: "Eco-Friendly",
       stats: {
         scan: "3-Second Scan",
         overcharges: "0 Overcharges",
@@ -635,6 +646,7 @@ export const translations: Record<string, Record<string, any>> = {
   },
   es: {
     nav: {
+      home: "Inicio",
       services: "Servicios",
       about: "Nosotros",
       gallery: "Galería",
@@ -841,6 +853,14 @@ export const translations: Record<string, Record<string, any>> = {
           phoneInvalid: "Introduzca un número de teléfono válido.",
           submissionFailed: "Error al enviar. Intente de nuevo.",
         },
+        duplicateModal: {
+          title: "El Contacto Ya Existe",
+          description:
+            "Esta información ya está asociada con un contacto existente en nuestro sistema.",
+          registeredName: "Nombre Registrado",
+          matchingField: "Campo Coincidente",
+          understand: "Entendido",
+        },
       },
       services: {
         pressureWashing: "Lavado a Presión",
@@ -981,6 +1001,8 @@ export const translations: Record<string, Record<string, any>> = {
       overpaying: "PAGAR DE MÁS",
       description:
         "Obtenga un rango de precios instantáneo y preciso de laboratorio usando nuestra red neuronal. Evite costos ocultos y asegure su descuento especial de IA hoy.",
+      encryptedSession: "Sesión Encriptada",
+      ecoFriendly: "Ecológico",
       stats: {
         scan: "Escaneo en 3 Segundos",
         overcharges: "Sin Sobrecargos",
