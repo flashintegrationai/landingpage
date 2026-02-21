@@ -55,6 +55,11 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon32.png',
   },
+  verification: {
+    other: {
+      'facebook-domain-verification': ['xz5qnkw7eiyf1gizrs8skoq357s0dr'],
+    },
+  },
 }
 
 export const viewport: Viewport = {
