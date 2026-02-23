@@ -1,5 +1,6 @@
 "use client"
-
+import ServiceArea from "@/components/service-area"
+import FAQSection from "@/components/faq-section"
 import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { 
@@ -138,6 +139,7 @@ export default function AboutPage() {
               </div>
             </motion.div>
           </div>
+          <ServiceArea />
         </section>
 
         {/* Philosophy Section */}
@@ -201,6 +203,8 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
+                    
+        <FAQSection />
         </section>
 
         {/* Final CTA Section */}

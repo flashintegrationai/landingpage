@@ -70,6 +70,7 @@ export const viewport: Viewport = {
 }
 
 import QuoteModal from "@/components/quote-modal"
+import CookieConsent from "@/components/cookie-consent"
 
 export default function RootLayout({
   children,
@@ -94,6 +95,7 @@ export default function RootLayout({
           <LanguageProvider>
             {children}
             <QuoteModal />
+            <CookieConsent />
             <Toaster position="top-center" richColors />
           </LanguageProvider>
         </ThemeProvider>

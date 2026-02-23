@@ -714,6 +714,62 @@ export const translations: Record<string, Record<string, any>> = {
       privacyPolicy: "Privacy Policy",
       termsOfService: "Terms of Service",
     },
+    cookieConsent: {
+      message:
+        "We use cookies to enhance your experience and ensure our AI Estimate tool works perfectly.",
+      privacyPolicy: "Privacy Policy",
+      accept: "Accept",
+      decline: "Decline",
+    },
+    serviceArea: {
+      title: "Our Service Area",
+      subtitle: "Where We Restore",
+      description:
+        "Serving residential and commercial properties across South Florida with industrial-grade precision.",
+      cities: [
+        "Miami",
+        "Fort Lauderdale",
+        "Boca Raton",
+        "West Palm Beach",
+        "Coral Gables",
+        "Hollywood",
+        "Pompano Beach",
+        "Boynton Beach",
+        "Delray Beach",
+        "Jupiter",
+        "Davie",
+        "Sunrise",
+      ],
+      badge: "South Florida Localized",
+    },
+    faq: {
+      title: "Common Questions",
+      subtitle: "Expert Answers",
+      description:
+        "Everything you need to know about our professional restoration processes and policies.",
+      items: [
+        {
+          q: "Are your chemicals safe for my pets and landscaping?",
+          a: "Absolute. We use professional-grade, biodegradable SoftWash solutions that are safely neutralized. We pre-wet all surrounding flora and perform a thorough post-service rinse to ensure your yard stays healthy.",
+        },
+        {
+          q: "Do I need to be home during the service?",
+          a: "No, you don't. As long as we have access to a working exterior water spigot and the property is 'locked down' (all windows/doors shut and pets inside), our team can perform the full restoration while you go about your day.",
+        },
+        {
+          q: "How often should I have my house or roof washed in Florida?",
+          a: "Due to High humidity and organic growth rates in South Florida, we recommend a professional wash every 12-18 months for house siding and every 2-3 years for roofs to prevent structural degradation.",
+        },
+        {
+          q: "What payment methods do you accept?",
+          a: "We accept all major credit cards, Zelle, professional bank transfers, and corporate checks for commercial accounts. Payment is due upon completion of our multi-point inspection.",
+        },
+        {
+          q: "Is there a risk of water entering my home?",
+          a: "When properties are properly prepared (closed windows and functional seals), the risk is near zero. Our SoftWash technology uses low-pressure application, which is much safer for your home's envelope than traditional high-pressure washing.",
+        },
+      ],
+    },
     quoteModal: {
       ready: "Ready to Start?",
       title1: "CHOOSE YOUR",
@@ -1442,6 +1498,62 @@ export const translations: Record<string, Record<string, any>> = {
       serviceArea: "Área de servicio del sur de Florida",
       privacyPolicy: "Política de Privacidad",
       termsOfService: "Términos de Servicio",
+    },
+    cookieConsent: {
+      message:
+        "Utilizamos cookies para mejorar su experiencia y asegurar que nuestra herramienta de Estimación IA funcione perfectamente.",
+      privacyPolicy: "Política de Privacidad",
+      accept: "Aceptar",
+      decline: "Rechazar",
+    },
+    serviceArea: {
+      title: "Área de Servicio",
+      subtitle: "Dónde Trabajamos",
+      description:
+        "Atendiendo propiedades residenciales y comerciales en todo el sur de Florida con precisión de grado industrial.",
+      cities: [
+        "Miami",
+        "Fort Lauderdale",
+        "Boca Raton",
+        "West Palm Beach",
+        "Coral Gables",
+        "Hollywood",
+        "Pompano Beach",
+        "Boynton Beach",
+        "Delray Beach",
+        "Jupiter",
+        "Davie",
+        "Sunrise",
+      ],
+      badge: "Localizado en el Sur de Florida",
+    },
+    faq: {
+      title: "Preguntas Frecuentes",
+      subtitle: "Respuestas de Expertos",
+      description:
+        "Todo lo que necesita saber sobre nuestros procesos y políticas de restauración profesional.",
+      items: [
+        {
+          q: "¿Sus productos químicos son seguros para mis mascotas y mi jardín?",
+          a: "Totalmente. Utilizamos soluciones SoftWash biodegradables de grado profesional que se neutralizan de forma segura. Mojamos previamente toda la flora circundante y realizamos un enjuague exhaustivo después del servicio para asegurar que su jardín se mantenga saludable.",
+        },
+        {
+          q: "¿Necesito estar en casa durante el servicio?",
+          a: "No es necesario. Siempre que tengamos acceso a un grifo de agua exterior que funcione y la propiedad esté 'asegurada' (todas las ventanas/puertas cerradas y mascotas adentro), nuestro equipo puede realizar la restauración completa mientras usted sigue con su día.",
+        },
+        {
+          q: "¿Con qué frecuencia debo lavar mi casa o techo en Florida?",
+          a: "Debido a la alta humedad y las tasas de crecimiento orgánico en el sur de Florida, recomendamos un lavado profesional cada 12-18 meses para las paredes de la casa y cada 2-3 años para los techos para evitar la degradación estructural.",
+        },
+        {
+          q: "¿Qué métodos de pago aceptan?",
+          a: "Aceptamos las principales tarjetas de crédito, Zelle, transferencias bancarias profesionales y cheques corporativos para cuentas comerciales. El pago se realiza al finalizar nuestra inspección de múltiples puntos.",
+        },
+        {
+          q: "¿Existe el riesgo de que entre agua en mi casa?",
+          a: "Cuando las propiedades están debidamente preparadas (ventanas cerradas y sellos funcionales), el riesgo es casi nulo. Nuestra tecnología SoftWash utiliza una aplicación de baja presión, que es mucho más segura para la estructura de su hogar que el lavado a presión tradicional.",
+        },
+      ],
     },
     quoteModal: {
       ready: "¿Listo para Empezar?",

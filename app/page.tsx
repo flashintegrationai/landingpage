@@ -8,6 +8,7 @@ import ContactSection from "@/components/contact-section"
 import Footer from "@/components/footer"
 import FloatingContact from "@/components/floating-contact"
 import DiscountPopup from "@/components/discount-popup"
+
 import BackgroundEffects from "@/components/background-effects"
 
 export default function Home() {
