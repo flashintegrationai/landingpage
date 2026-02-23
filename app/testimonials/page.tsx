@@ -8,8 +8,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Footer from "@/components/footer"
 import FloatingContact from "@/components/floating-contact"
-import QuoteModal from "@/components/quote-modal"
-import LegalModals from "@/components/legal-modals"
 import { useLanguage } from "@/context/language-context"
 
 const testimonialsData = [
@@ -69,8 +67,6 @@ export default function TestimonialsPage() {
   return (
     <div className="min-h-screen bg-background">
       <FloatingContact />
-      <QuoteModal />
-      <LegalModals />
 
       {/* Elegant Header */}
       <header className="border-b border-border/50 backdrop-blur-xl bg-background/80 sticky top-0 z-50">

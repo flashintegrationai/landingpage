@@ -69,6 +69,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
 }
 
+import QuoteModal from "@/components/quote-modal"
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -91,6 +93,7 @@ export default function RootLayout({
         >
           <LanguageProvider>
             {children}
+            <QuoteModal />
             <Toaster position="top-center" richColors />
           </LanguageProvider>
         </ThemeProvider>

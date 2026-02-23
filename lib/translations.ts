@@ -493,76 +493,119 @@ export const translations: Record<string, Record<string, any>> = {
       lastUpdated: "Last updated: February 2026",
       sections: [
         {
-          title: "1. Comprehensive Information Collection",
+          title: "1. Data Collection Philosophy",
           content:
-            'At Elite Surface Systems, we are committed to safeguarding your personal data. We collect information that identifies, relates to, or describes you ("Personal Information") in the following contexts:',
+            "Elite Surface Systems operates on a principle of least-privileged data collection. We only collect the technical and personal information strictly necessary to provide elite-grade cleaning services and maintain professional communication.",
           subsections: [
             {
-              title: "Direct Identification",
+              title: "Information You Provide",
               items: [
-                "Full legal name and company name (if applicable).",
-                "Primary and secondary contact phone numbers.",
-                "Professional email addresses for project coordination.",
-              ],
-            },
-            {
-              title: "Service-Specific Data",
-              items: [
-                "Physical property address and specific service locations.",
-                "Digital photographs of areas requiring restoration.",
-                "Project-specific notes and accessibility details.",
+                "Full Name and Business Entity information.",
+                "Direct contact phone numbers for scheduling and job-site coordination.",
+                "Email addresses for invoicing, estimates, and critical service updates.",
+                "Physical property addresses for site analysis and equipment deployment.",
+                "Photographs of surfaces requiring treatment for AI-powered estimations.",
               ],
             },
           ],
         },
         {
-          title: "2. Strategic Use of Data",
+          title: "2. Strategic Information Usage",
           content:
-            "The information we collect is utilized to deliver the highest standard of industrial-grade surface restoration. Our data processing includes:",
+            "We utilize your data to engineer a seamless restoration experience. We do not engage in the sale, rental, or trade of your personal information to third-party data brokers.",
           items: [
             {
-              label: "Operational Execution",
-              desc: "Scheduling logistics, dispatching specialized crews, and ensuring our high-pressure equipment is configured correctly for your specific surface types.",
-            },
-            {
-              label: "Quality Assurance",
-              desc: 'Reviewing project history and "before-and-after" documentation to ensure our 100% satisfaction guarantee is met on every project.',
+              label: "Operational Logistics",
+              desc: "Mapping routes, calculating chemical ratios for your specific material type, and coordinating team deployment.",
             },
             {
               label: "Technical Support",
-              desc: "Providing long-term maintenance advice and surface protection recommendations tailored to your South Florida climate conditions.",
+              desc: "Maintaining a historical record of your property's surface condition to optimize long-term maintenance cycles.",
+            },
+            {
+              label: "Regulatory Compliance",
+              desc: "Ensuring all business operations meet Florida state and federal service industry regulations.",
             },
           ],
         },
         {
-          title: "3. Advanced Data Security Protocols",
+          title: "3. SMS & Messaging Policy (A2P Compliance)",
           content:
-            "We employ sophisticated technical and organizational measures designed to secure your personal information from accidental loss and unauthorized access.",
-          extraInfo:
-            "All digital records are encrypted at rest using AES-256 standards and transmitted via secure TLS (Transport Layer Security) channels. Our staff undergoes regular privacy training, and access to customer databases is controlled via strict multi-factor authentication (MFA) and least-privilege access principles.",
-        },
-        {
-          title: "4. Ethical Information Sharing",
-          content:
-            "Elite Surface Systems operates on a principle of absolute transparency. We do not monetize your data through sales or rentals to advertising networks. Sharing only occurs under these strict conditions:",
+            "By providing your mobile number, you explicitly consent to receive transactional and operational SMS/text messages from Elite Surface Systems. This is critical for real-time arrival notifications and confirming quote details.",
           items: [
-            "With infrastructure providers (like AWS or Vercel) necessary to host this digital platform.",
-            "With payment processors (like Stripe or Square) to securely handle transaction data.",
-            "When required by law to comply with a judicial proceeding or court order.",
+            {
+              label: "Zero Third-Party Sharing",
+              desc: "Mobile information will not be shared with third parties or affiliates for marketing or promotional purposes. All other categories exclude text messaging originator opt-in data and consent; this information will not be shared with any third parties.",
+            },
+            {
+              label: "Anti-Spam Commitment",
+              desc: "We do not send automated marketing blasts without explicit secondary opt-in. Messages are strictly human-to-human or triggered by your direct service requests.",
+            },
+            {
+              label: "Universal Opt-Out",
+              desc: "You may terminate messaging at any time by replying 'STOP'. Reply 'HELP' for technical assistance.",
+            },
           ],
         },
         {
-          title: "5. Global Standards & Compliance",
+          title: "4. Third-Party Integrations",
           content:
-            "While we primarily serve the South Florida region, we align our privacy practices with modern data protection principles. You maintain the right to:",
-          rights: [
-            "Access Records",
-            "Request Correction",
-            "Data Portability",
-            "Right to Erasure",
+            "To provide high-tech services, we integrate with industry-leading platforms. These partners are strictly vetted for data security compliance.",
+          items: [
+            {
+              label: "Communication Hubs",
+              desc: "We use GoHighLevel (GHL) and Twilio to manage professional communication and project tracking.",
+            },
+            {
+              label: "Digital Infrastructure",
+              desc: "Hosting via Vercel and database management via Supabase ensures encrypted, high-availability data storage.",
+            },
+            {
+              label: "Security Analysis",
+              desc: "We utilize Meta Pixels and Google Analytics solely to measure website performance and prevent fraudulent bot activity.",
+            },
           ],
-          contact:
-            "For all privacy-related inquiries, please contact our Data Compliance Officer at:",
+        },
+        {
+          title: "5. Data Security & Encryption",
+          content:
+            "Your property data is treated with professional-grade security. We implement SSL/TLS encryption for all data in transit and AES-256 encryption for data at rest.",
+          extraInfo:
+            "Access to client information is restricted to authorized technicians and management personnel involved in your specific project. We perform regular security audits to ensure your 'before-and-after' data remains confidential.",
+        },
+        {
+          title: "6. Cookies & Tracking",
+          content:
+            "Our platform uses cookies to maintain your session, remember your language preferences, and ensure the AI Estimate tool functions correctly.",
+          items: [
+            {
+              label: "Functional Cookies",
+              desc: "Necessary for the basic operation of the quote system.",
+            },
+            {
+              label: "Performance Cookies",
+              desc: "Allows us to identify slow-loading pages and improve the user experience for future clients.",
+            },
+          ],
+        },
+        {
+          title: "7. Data Retention",
+          content:
+            "We retain project records (including site photos and material analysis) for a period of up to 5 years. This allows us to honor multi-year warranties and track surface degradation patterns for better future results.",
+          extraInfo:
+            "You may request the permanent deletion of your project history at any time, provided all financial obligations are fulfilled.",
+        },
+        {
+          title: "8. Client Rights & Contacts",
+          content:
+            "Under various privacy frameworks (including CCPA principles), you maintain sovereign rights over your data.",
+          rights: [
+            "Right to Access",
+            "Right to Correction",
+            "Right to Deletion",
+            "Right to Opt-Out",
+          ],
+          contact: "For formal data requests, contact our privacy director:",
           email: "privacy@elitesurface.com",
         },
       ],
@@ -570,69 +613,90 @@ export const translations: Record<string, Record<string, any>> = {
     termsPage: {
       backHome: "Back to Home",
       title: "Terms of Service",
-      subtitle: "Standard Agreement for Professional Services",
+      subtitle: "Professional Standards for Elite Restorations",
       sections: [
         {
-          title: "1. Contractual Agreement",
+          title: "1. Service Acceptance",
           content:
-            "By engaging the services of Elite Surface Systems or utilizing this digital platform, you enter into a binding legal agreement. These terms govern all restoration, cleaning, and maintenance services provided by our technical crews. We reserve the exclusive right to modify these protocols to align with evolving industry standards and South Florida environmental regulations.",
+            "By accessing this website or approving a project estimate, you enter into a binding agreement with Elite Surface Systems. These terms ensure the safety of our technicians and the protection of your property.",
         },
         {
-          title: "2. Professional Estimation Standards",
+          title: "2. Estimates & Precision Pricing",
           content:
-            "Our precision estimates are engineered using advanced topographical site analysis. The Following conditions apply:",
-          subsections: [
-            {
-              title: "Validity Period",
-              content:
-                "Estimates remain fixed for a period of 30 calendar days. Beyond this window, a secondary calibration may be required to account for shifting material costs or environmental changes.",
-            },
-            {
-              title: "Scope Accuracy",
-              content:
-                "If subterranean conditions, hidden biological growth, or structural anomalies are discovered during execution that were not visible during estimation, a Change Order will be issued.",
-            },
+            "Our estimates are engineered based on visible surface area and material type at the time of inspection.",
+          items: [
+            "Estimates are valid for 30 calendar days.",
+            "Visual AI Estimates provide a professional range; final pricing is confirmed upon physical on-site calibration.",
+            "Hidden issues (e.g., subterranean plumbing leaks or internal wall rot) discovered during cleaning may require a scope adjustment.",
           ],
         },
         {
-          title: "3. Operational Safety & Site Prep",
+          title: "3. Site Preparation Requirements",
           content:
-            "To ensure an industrial-grade result while maintaining total site safety, the customer explicitly assumes the following responsibilities:",
+            "To achieve elite-level results, the client is responsible for the following site preparations prior to the crew's arrival:",
           steps: [
+            {
+              label: "Water Access",
+              content:
+                "Provide an uninterrupted supply of pressurized water via an exterior spigot.",
+            },
+            {
+              label: "Obstacle Removal",
+              content:
+                "Move vehicles, patio furniture, potted plants, and fragile decorations away from the treatment zone.",
+            },
+            {
+              label: "Safety Lockdown",
+              content:
+                "Keep all pets and children inside the property during the entire duration of the high-pressure and chemical treatment process.",
+            },
             {
               label: "Envelope Integrity",
               content:
-                "Ensuring all HVAC intakes, electrical panels, and fenestration systems are hermetically sealed prior to the arrival of high-pressure equipment.",
-            },
-            {
-              label: "Utility Access",
-              content:
-                "Providing an uninterrupted pressurized water supply exceeding 40 PSI at the exterior spigot during the entire duration of the restoration project.",
-            },
-            {
-              label: "Hazard Mitigation",
-              content:
-                "Removal of all mobile assets, including vehicles, delicate landscaping elements, and pets from the designated Exclusion Zone.",
+                "Ensure all windows and doors are tightly shut. We are not responsible for water entry through faulty seals or open windows.",
             },
           ],
         },
         {
-          title: "4. Liability Limitations",
+          title: "4. Property Condition & Limitations",
           content:
-            "Elite Surface Systems maintains comprehensive general liability and professional insurance. However, our liability is strictly excluded in cases involving:",
+            "Pressure washing and soft washing can reveal pre-existing damage that was previously hidden by dirt or organic growth.",
           items: [
-            "Pre-existing structural fatigue, including loose mortar, degraded sealant, or oxidized paint layers.",
-            "Water ingress resulting from defective architectural seals or non-compliant construction standards.",
-            "Post-service biological regrowth resulting from unique environmental shielding or lack of suggested maintenance.",
-            "Damage to sensitive flora if specific pre-wetting instructions provided in the service brief were not possible due to site restrictions.",
+            "We are not liable for loose mortar, oxidized paint, or degraded wood fibers that are removed during the necessary cleaning process.",
+            "Minor water ingress through non-compliant builder-grade thresholds is the responsibility of the owner.",
+            "Kill-rate for organic growth (mold/algae) is 99%, but we cannot control rapid regrowth caused by poor drainage or shade.",
           ],
         },
         {
-          title: "5. Financial Performance",
+          title: "5. Scheduling & Weather Policy",
           content:
-            "Remuneration is due in full upon the issuance of the Certificate of Completion. For projects exceeding $2,500, a mobilization fee of 30% may be required.",
+            "As a South Florida localized service, we are subject to extreme weather conditions.",
           extra:
-            "Elite Surface Systems utilizes bank-grade encrypted payment gateways for all digital transactions. Late payments exceeding 15 days will incur a standard professional service interest rate as permitted by Florida state law.",
+            "For the safety of our team and the quality of the chemical application, we may reschedule service due to high winds or lightning. We will notify you via SMS/Phone as soon as a weather delay is detected.",
+        },
+        {
+          title: "6. Payment & Financial Terms",
+          content:
+            "Payment is required in full upon completion of the service unless prior corporate billing terms have been established.",
+          items: [
+            "We accept major credit cards, Zelle, and professional bank transfers.",
+            "Late payments exceeding 7 days incur a 5% administrative fee.",
+            "For projects exceeding $2,000, a 25% mobilization deposit may be required.",
+          ],
+        },
+        {
+          title: "7. Media Release (Social Proof)",
+          content:
+            "Elite Surface Systems reserves the right to capture and use before-and-after photographs/videos of our work for marketing purposes.",
+          extra:
+            "We value your privacy: we will never display your address, license plates, or recognizable residents in any public marketing material without direct consent.",
+        },
+        {
+          title: "8. Liability Limitation",
+          content:
+            "Our total liability for any claim arising out of our services shall not exceed the total amount paid by the client for that specific service call.",
+          extra:
+            "We are fully licensed and insured for the peace of mind of every residential and commercial client we serve.",
         },
       ],
     },
@@ -642,6 +706,25 @@ export const translations: Record<string, Record<string, any>> = {
       quickLinks: "Quick Links",
       contactInfo: "Contact Information",
       rights: "All rights reserved.",
+      services: "Services",
+      company: "Company",
+      getInTouch: "Get In Touch",
+      callFreeQuote: "Call for a free quote",
+      serviceArea: "South Florida Service Area",
+      privacyPolicy: "Privacy Policy",
+      termsOfService: "Terms of Service",
+    },
+    quoteModal: {
+      ready: "Ready to Start?",
+      title1: "CHOOSE YOUR",
+      title2: "CONNECTION",
+      description:
+        "How would you prefer to get your free estimate? Our team is standing by.",
+      whatsapp: "WhatsApp Us",
+      whatsappSubText: "Fastest Response",
+      call: "Call Now",
+      callSubText: "Direct Line",
+      footer: "Elite Surface Systems • Premium Restoration",
     },
   },
   es: {
@@ -1138,76 +1221,120 @@ export const translations: Record<string, Record<string, any>> = {
       lastUpdated: "Última actualización: febrero de 2026",
       sections: [
         {
-          title: "1. Recopilación Integral de Información",
+          title: "1. Filosofía de Recopilación de Datos",
           content:
-            'En Elite Surface Systems, estamos comprometidos a salvaguardar sus datos personales. Recopilamos información que lo identifica, se relaciona con usted o lo describe ("Información Personal") en los siguientes contextos:',
+            "Elite Surface Systems opera bajo un principio de recopilación de datos de privilegio mínimo. Solo recopilamos la información técnica y personal estrictamente necesaria para proporcionar servicios de limpieza de grado elite y mantener una comunicación profesional.",
           subsections: [
             {
-              title: "Identificación Directa",
+              title: "Información que Usted Proporciona",
               items: [
-                "Nombre legal completo y nombre de la empresa (si corresponde).",
-                "Números de teléfono de contacto principales y secundarios.",
-                "Direcciones de correo electrónico profesionales para la coordinación de proyectos.",
-              ],
-            },
-            {
-              title: "Datos Específicos del Servicio",
-              items: [
-                "Dirección física de la propiedad y ubicaciones específicas del servicio.",
-                "Fotografías digitales de las áreas que requieren restauración.",
-                "Notas específicas del proyecto y detalles de accesibilidad.",
+                "Nombre legal completo e información de la entidad comercial.",
+                "Números de teléfono de contacto directo para programación y coordinación en el sitio de trabajo.",
+                "Direcciones de correo electrónico para facturación, presupuestos y actualizaciones críticas del servicio.",
+                "Direcciones físicas de la propiedad para análisis del sitio y despliegue de equipos.",
+                "Fotografías de las superficies que requieren tratamiento para estimaciones impulsadas por IA.",
               ],
             },
           ],
         },
         {
-          title: "2. Uso Estratégico de Datos",
+          title: "2. Uso Estratégico de la Información",
           content:
-            "La información que recopilamos se utiliza para ofrecer el más alto estándar de restauración de superficies de grado industrial. Nuestro procesamiento de datos incluye:",
+            "Utilizamos sus datos para diseñar una experiencia de restauración sin problemas. No participamos en la venta, alquiler o intercambio de su información personal con corredores de datos terceros.",
           items: [
             {
-              label: "Ejecución Operativa",
-              desc: "Logística de programación, despacho de equipos especializados y aseguramiento de que nuestro equipo de alta presión esté configurado correctamente para sus tipos de superficie específicos.",
-            },
-            {
-              label: "Garantía de Calidad",
-              desc: 'Revisión del historial del proyecto y documentación de "antes y después" para asegurar que se cumpla nuestra garantía de satisfacción del 100% en cada proyecto.',
+              label: "Logística Operativa",
+              desc: "Mapeo de rutas, cálculo de proporciones químicas para su tipo de material específico y coordinación del despliegue del equipo.",
             },
             {
               label: "Soporte Técnico",
-              desc: "Proporcionar asesoramiento de mantenimiento a largo plazo y recomendaciones de protección de superficies adaptadas a las condiciones climáticas del sur de Florida.",
+              desc: "Mantener un registro histórico de la condición de la superficie de su propiedad para optimizar los ciclos de mantenimiento a largo plazo.",
+            },
+            {
+              label: "Cumplimiento Regulatorio",
+              desc: "Asegurar que todas las operaciones comerciales cumplan con las regulaciones de la industria de servicios federales y del estado de Florida.",
             },
           ],
         },
         {
-          title: "3. Protocolos de Seguridad de Datos Avanzados",
+          title: "3. Política de SMS y Mensajería (Cumplimiento A2P)",
           content:
-            "Empleamos medidas técnicas y organizativas sofisticadas diseñadas para asegurar su información personal contra pérdidas accidentales y acceso no autorizado.",
-          extraInfo:
-            "Todos los registros digitales se cifran en reposo utilizando estándares AES-256 y se transmiten a través de canales seguros TLS (Transport Layer Security). Nuestro personal recibe capacitación regular sobre privacidad, y el acceso a las bases de datos de clientes se controla mediante una estricta autenticación de múltiples factores (MFA) y principios de acceso de mínimo privilegio.",
-        },
-        {
-          title: "4. Intercambio de Información Ético",
-          content:
-            "Elite Surface Systems opera bajo un principio de transparencia absoluta. No monetizamos sus datos a través de ventas o alquileres a redes publicitarias. El intercambio solo ocurre bajo estas estrictas condiciones:",
+            "Al proporcionar su número móvil, usted acepta explícitamente recibir mensajes SMS/texto transaccionales y operativos de Elite Surface Systems. Esto es fundamental para las notificaciones de llegada en tiempo real y la confirmación de detalles de cotización.",
           items: [
-            "Con proveedores de infraestructura (como AWS o Vercel) necesarios para alojar esta plataforma digital.",
-            "Con procesadores de pago (como Stripe o Square) para manejar de forma segura los datos de las transacciones.",
-            "Cuando lo exija la ley para cumplir con un procedimiento judicial o una orden judicial.",
+            {
+              label: "Cero Intercambio con Terceros",
+              desc: "La información móvil no se compartirá con terceros o afiliados con fines de marketing o promocionales. Todas las demás categorías excluyen los datos de aceptación y consentimiento del originador de mensajes de texto; esta información no se compartirá con ningún tercero.",
+            },
+            {
+              label: "Compromiso Anti-Spam",
+              desc: "No enviamos ráfagas de marketing automatizadas sin una aceptación secundaria explícita. Los mensajes son estrictamente de persona a persona o activados por sus solicitudes directas de servicio.",
+            },
+            {
+              label: "Baja Universal (Opt-Out)",
+              desc: "Puede finalizar la mensajería en cualquier momento respondiendo 'STOP'. Responda 'HELP' para asistencia técnica.",
+            },
           ],
         },
         {
-          title: "5. Estándares Globales y Cumplimiento",
+          title: "4. Integraciones de Terceros",
           content:
-            "Si bien servimos principalmente a la región del sur de Florida, alineamos nuestras prácticas de privacidad con los principios modernos de protección de datos. Usted mantiene el derecho a:",
+            "Para proporcionar servicios de alta tecnología, nos integramos con plataformas líderes en la industria. Estos socios son estrictamente examinados en cuanto al cumplimiento de la seguridad de datos.",
+          items: [
+            {
+              label: "Centros de Comunicación",
+              desc: "Utilizamos GoHighLevel (GHL) y Twilio para gestionar la comunicación profesional y el seguimiento de proyectos.",
+            },
+            {
+              label: "Infraestructura Digital",
+              desc: "El alojamiento a través de Vercel y la gestión de bases de datos a través de Supabase garantizan un almacenamiento de datos encriptado y de alta disponibilidad.",
+            },
+            {
+              label: "Análisis de Seguridad",
+              desc: "Utilizamos Meta Pixels y Google Analytics únicamente para medir el rendimiento del sitio web y prevenir la actividad fraudulenta de bots.",
+            },
+          ],
+        },
+        {
+          title: "5. Seguridad y Encriptación de Datos",
+          content:
+            "Los datos de su propiedad son tratados con seguridad de grado profesional. Implementamos encriptación SSL/TLS para todos los datos en tránsito y encriptación AES-256 para los datos en reposo.",
+          extraInfo:
+            "El acceso a la información del cliente está restringido a técnicos autorizados y personal de gestión involucrado en su proyecto específico. Realizamos auditorías de seguridad regulares para asegurar que sus datos de 'antes y después' permanezcan confidenciales.",
+        },
+        {
+          title: "6. Cookies y Seguimiento",
+          content:
+            "Nuestra plataforma utiliza cookies para mantener su sesión, recordar sus preferencias de idioma y asegurar que la herramienta de Estimación IA funcione correctamente.",
+          items: [
+            {
+              label: "Cookies Funcionales",
+              desc: "Necesarias para el funcionamiento básico del sistema de cotización.",
+            },
+            {
+              label: "Cookies de Rendimiento",
+              desc: "Nos permite identificar páginas de carga lenta y mejorar la experiencia del usuario para futuros clientes.",
+            },
+          ],
+        },
+        {
+          title: "7. Retención de Datos",
+          content:
+            "Retenemos los registros del proyecto (incluidas fotos del sitio y análisis de materiales) por un período de hasta 5 años. Esto nos permite honrar garantías de varios años y rastrear patrones de degradación de superficies para obtener mejores resultados futuros.",
+          extraInfo:
+            "Puede solicitar la eliminación permanente de su historial de proyectos en cualquier momento, siempre que se cumplan todas las obligaciones financieras.",
+        },
+        {
+          title: "8. Derechos del Cliente y Contactos",
+          content:
+            "Bajo varios marcos de privacidad, usted mantiene derechos soberanos sobre sus datos.",
           rights: [
-            "Acceder a Registros",
-            "Solicitar Corrección",
-            "Portabilidad de Datos",
-            "Derecho al Borrado",
+            "Derecho de Acceso",
+            "Derecho de Rectificación",
+            "Derecho de Supresión",
+            "Derecho de Oposición",
           ],
           contact:
-            "Para todas las consultas relacionadas con la privacidad, comuníquese con nuestro Oficial de Cumplimiento de Datos en:",
+            "Para solicitudes formales de datos, contacte a nuestro director de privacidad:",
           email: "privacy@elitesurface.com",
         },
       ],
@@ -1215,69 +1342,90 @@ export const translations: Record<string, Record<string, any>> = {
     termsPage: {
       backHome: "Volver al Inicio",
       title: "Términos de Servicio",
-      subtitle: "Acuerdo Estándar para Servicios Profesionales",
+      subtitle: "Estándares Profesionales para Restauraciones Elite",
       sections: [
         {
-          title: "1. Acuerdo Contractual",
+          title: "1. Aceptación del Servicio",
           content:
-            "Al contratar los servicios de Elite Surface Systems o utilizar esta plataforma digital, usted acepta un acuerdo legal vinculante. Estos términos rigen todos los servicios de restauración, limpieza y mantenimiento proporcionados por nuestros equipos técnicos. Nos reservamos el derecho exclusivo de modificar estos protocolos para alinearlos con los estándares cambiantes de la industria y las regulaciones ambientales del sur de Florida.",
+            "Al acceder a este sitio web o aprobar un presupuesto de proyecto, usted establece un acuerdo vinculante con Elite Surface Systems. Estos términos garantizan la seguridad de nuestros técnicos y la protección de su propiedad.",
         },
         {
-          title: "2. Estándares Profesionales de Presupuesto",
+          title: "2. Presupuestos y Precios de Precisión",
           content:
-            "Nuestros presupuestos de precisión se diseñan utilizando análisis topográficos avanzados del sitio. Se aplican las siguientes condiciones:",
-          subsections: [
-            {
-              title: "Periodo de Validez",
-              content:
-                "Los presupuestos permanecen fijos por un periodo de 30 días calendario. Más allá de este plazo, puede requerirse una calibración secundaria para tener en cuenta los cambios en los costos de materiales o cambios ambientales.",
-            },
-            {
-              title: "Precisión del Alcance",
-              content:
-                "Si durante la ejecución se descubren condiciones subterráneas, crecimiento biológico oculto o anomalías estructurales que no eran visibles durante el presupuesto, se emitirá una Orden de Cambio.",
-            },
+            "Nuestros presupuestos se diseñan en función del área de superficie visible y el tipo de material al momento de la inspección.",
+          items: [
+            "Los presupuestos son válidos por 30 días calendario.",
+            "Las Estimaciones IA visuales proporcionan un rango profesional; el precio final se confirma tras la calibración física en el sitio.",
+            "Los problemas ocultos (por ejemplo, fugas de plomería subterránea o podredumbre interna de las paredes) descubiertos durante la limpieza pueden requerir un ajuste del alcance.",
           ],
         },
         {
-          title: "3. Seguridad Operativa y Preparación del Sitio",
+          title: "3. Requisitos de Preparación del Sitio",
           content:
-            "Para garantizar un resultado de grado industrial manteniendo la seguridad total del sitio, el cliente asume explícitamente las siguientes responsabilidades:",
+            "Para lograr resultados de nivel elite, el cliente es responsable de las siguientes preparaciones del sitio antes de la llegada del equipo:",
           steps: [
+            {
+              label: "Acceso al Agua",
+              content:
+                "Proporcionar un suministro ininterrumpido de agua presurizada a través de una toma exterior.",
+            },
+            {
+              label: "Eliminación de Obstáculos",
+              content:
+                "Mover vehículos, muebles de patio, macetas y decoraciones frágiles fuera de la zona de tratamiento.",
+            },
+            {
+              label: "Cierre de Seguridad",
+              content:
+                "Mantener a todas las mascotas y niños dentro de la propiedad durante toda la duración del tratamiento de alta presión y químico.",
+            },
             {
               label: "Integridad del Envolvente",
               content:
-                "Asegurarse de que todas las entradas de HVAC, paneles eléctricos y sistemas de ventanas estén herméticamente sellados antes de la llegada del equipo de alta presión.",
-            },
-            {
-              label: "Acceso a Servicios Públicos",
-              content:
-                "Proporcionar un suministro de agua presurizada ininterrumpido que supere los 40 PSI en el grifo exterior durante toda la duración del proyecto de restauración.",
-            },
-            {
-              label: "Mitigación de Riesgos",
-              content:
-                "Retirada de todos los activos móviles, incluidos vehículos, elementos de paisajismo delicados y mascotas de la Zona de Exclusión designada.",
+                "Asegurarse de que todas las ventanas y puertas estén bien cerradas. No somos responsables del ingreso de agua a través de sellos defectuosos o ventanas abiertas.",
             },
           ],
         },
         {
-          title: "4. Limitaciones de Responsabilidad",
+          title: "4. Condición de la Propiedad y Limitaciones",
           content:
-            "Elite Surface Systems mantiene un seguro de responsabilidad general y profesional integral. Sin embargo, nuestra responsabilidad queda estrictamente excluida en casos que involucren:",
+            "El lavado a presión y el lavado suave pueden revelar daños preexistentes que antes estaban ocultos por la suciedad o el crecimiento orgánico.",
           items: [
-            "Fatiga estructural preexistente, incluyendo mortero suelto, sellador degradado o capas de pintura oxidadas.",
-            "Ingreso de agua resultante de sellos arquitectónicos defectuosos o estándares de construcción no conformes.",
-            "Regrecimiento biológico posterior al servicio resultante de un blindaje ambiental único o falta del mantenimiento sugerido.",
-            "Daños a la flora sensible si las instrucciones específicas de pre-mojado proporcionadas en el resumen del servicio no fueron posibles debido a restricciones del sitio.",
+            "No somos responsables del mortero suelto, la pintura oxidada o las fibras de madera degradadas que se eliminen durante el proceso de limpieza necesario.",
+            "El ingreso menor de agua a través de umbrales de construcción no conformes es responsabilidad del propietario.",
+            "La tasa de eliminación de crecimiento orgánico (moho/algas) es del 99%, pero no podemos controlar el rebrote rápido causado por el mal drenaje o la sombra.",
           ],
         },
         {
-          title: "5. Desempeño Financiero",
+          title: "5. Política de Programación y Clima",
           content:
-            "La remuneración debe pagarse en su totalidad tras la emisión del Certificado de Finalización. Para proyectos que superen los $2,500, se puede requerir una tarifa de movilización del 30%.",
+            "Como servicio localizado en el sur de Florida, estamos sujetos a condiciones climáticas extremas.",
           extra:
-            "Elite Surface Systems utiliza pasarelas de pago cifradas de grado bancario para todas las transacciones digitales. Los pagos atrasados que superen los 15 días incurrirán en una tasa de interés de servicio profesional estándar según lo permitido por la ley del estado de Florida.",
+            "Para la seguridad de nuestro equipo y la calidad de la aplicación química, podemos reprogramar el servicio debido a vientos fuertes o rayos. Le notificaremos por SMS/teléfono tan pronto como se detecte un retraso por clima.",
+        },
+        {
+          title: "6. Términos Financieros y de Pago",
+          content:
+            "El pago se requiere en su totalidad al finalizar el servicio, a menos que se hayan establecido términos de facturación corporativa previos.",
+          items: [
+            "Aceptamos las principales tarjetas de crédito, Zelle y transferencias bancarias profesionales.",
+            "Los pagos atrasados que superen los 7 días incurren en una tarifa administrativa del 5%.",
+            "Para proyectos que superen los $2,000, se puede requerir un depósito de movilización del 25%.",
+          ],
+        },
+        {
+          title: "7. Autorización de Medios (Prueba Social)",
+          content:
+            "Elite Surface Systems se reserva el derecho de capturar y utilizar fotografías/videos de antes y después de nuestro trabajo con fines de marketing.",
+          extra:
+            "Valoramos su privacidad: nunca mostraremos su dirección, placas de vehículos o residentes reconocibles en ningún material de marketing público sin consentimiento directo.",
+        },
+        {
+          title: "8. Limitación de Responsabilidad",
+          content:
+            "Nuestra responsabilidad total por cualquier reclamo que surja de nuestros servicios no excederá el monto total pagado por el cliente por esa visita de servicio específica.",
+          extra:
+            "Estamos totalmente licenciados y asegurados para la tranquilidad de cada cliente residencial y comercial que servimos.",
         },
       ],
     },
@@ -1294,6 +1442,18 @@ export const translations: Record<string, Record<string, any>> = {
       serviceArea: "Área de servicio del sur de Florida",
       privacyPolicy: "Política de Privacidad",
       termsOfService: "Términos de Servicio",
+    },
+    quoteModal: {
+      ready: "¿Listo para Empezar?",
+      title1: "ELIJA SU",
+      title2: "CONEXIÓN",
+      description:
+        "¿Cómo prefiere obtener su presupuesto gratis? Nuestro equipo está listo.",
+      whatsapp: "Escríbanos por WhatsApp",
+      whatsappSubText: "Respuesta más rápida",
+      call: "Llamar Ahora",
+      callSubText: "Línea Directa",
+      footer: "Elite Surface Systems • Restauración Premium",
     },
   },
 };
