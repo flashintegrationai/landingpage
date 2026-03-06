@@ -88,7 +88,7 @@ export default function ContactSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string; smsConsent?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string; smsConsent?: string; services?: string }>({});
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateContactData, setDuplicateContactData] = useState<any>(null);
 
@@ -125,10 +125,25 @@ export default function ContactSection() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      const oversizedFiles = newFiles.filter(file => file.size > 5 * 1024 * 1024);
       
+      // Validate file types
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/heic'];
+      const invalidTypeFiles = newFiles.filter(file => !allowedTypes.includes(file.type));
+      if (invalidTypeFiles.length > 0) {
+        toast.error(t("contact.form.errors.fileType"));
+        return;
+      }
+
+      // Validate file size (5MB max per file)
+      const oversizedFiles = newFiles.filter(file => file.size > 5 * 1024 * 1024);
       if (oversizedFiles.length > 0) {
         toast.error(t("contact.form.errors.fileSize"));
+        return;
+      }
+
+      // Validate total file count (max 5)
+      if (files.length + newFiles.length > 5) {
+        toast.error(t("contact.form.errors.maxFilesExceeded"));
         return;
       }
 
@@ -138,6 +153,19 @@ export default function ContactSection() {
 
   const removeFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    e.target.value = formatted;
+    if (fieldErrors.phone) setFieldErrors(prev => ({ ...prev, phone: undefined }));
   };
 
   const validatePhone = (phone: string) => {
@@ -153,14 +181,33 @@ export default function ContactSection() {
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
     const smsConsent = formData.get("smsConsent");
+    const selectedServices = formData.getAll("services") as string[];
 
-    if (!smsConsent) {
-      toast.error("Please agree to receive SMS communications to proceed.");
-      return;
-    }
+    // Validate all fields before submitting
+    const errors: { email?: string; phone?: string; smsConsent?: string; services?: string } = {};
+    let hasErrors = false;
 
     if (!validatePhone(phone)) {
-      toast.error(t("contact.form.errors.phoneInvalid"));
+      errors.phone = t("contact.form.errors.phoneInvalid");
+      hasErrors = true;
+    }
+
+    if (selectedServices.length === 0) {
+      errors.services = t("contact.form.errors.servicesRequired");
+      hasErrors = true;
+    }
+
+    if (!smsConsent) {
+      errors.smsConsent = t("contact.form.errors.smsRequired");
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      setFieldErrors(errors);
+      // Show toast for first error found
+      if (errors.phone) toast.error(errors.phone);
+      else if (errors.services) toast.error(errors.services);
+      else if (errors.smsConsent) toast.error(errors.smsConsent);
       return;
     }
 
@@ -171,7 +218,7 @@ export default function ContactSection() {
       // 1. Check if email or phone exists in GHL
       const [emailCheck, phoneCheck] = await Promise.all([
         fetch(`/api/ghl/contacts?email=${encodeURIComponent(email)}`).then(r => r.json()),
-        fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phone.replace(/\D/g, ""))}`).then(r => r.json())
+        fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phone.replace(/\D/g, ""))}`).then(r => r.json()),
       ]);
 
       if (emailCheck.exists || phoneCheck.exists) {
@@ -406,8 +453,9 @@ export default function ContactSection() {
                       name="phone"
                       type="tel"
                       required
-                      maxLength={15}
+                      maxLength={14}
                       placeholder="(123) 456-7890"
+                      onChange={handlePhoneChange}
                       className={`bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20 ${fieldErrors.phone ? 'border-red-500/50' : ''}`}
                     />
                     {fieldErrors.phone && (
@@ -466,8 +514,10 @@ export default function ContactSection() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-foreground/80 text-lg font-bold">{t("contact.form.selectServices")}</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <Label className="text-foreground/80 text-lg font-bold">
+                    {t("contact.form.selectServices")} <span className="text-red-500">*</span>
+                  </Label>
+                  <div className={`grid grid-cols-2 sm:grid-cols-3 gap-4 rounded-2xl transition-all ${fieldErrors.services ? 'ring-2 ring-red-500/30 p-1' : ''}`}>
                     {services.map((service) => {
                       const Icon = service.icon;
                       return (
@@ -480,6 +530,7 @@ export default function ContactSection() {
                             name="services"
                             value={service.label}
                             className="sr-only"
+                            onChange={() => setFieldErrors(prev => ({ ...prev, services: undefined }))}
                           />
                           <div className="text-foreground/80 group-hover:text-[#1e71cd] group-has-checked:text-[#1e71cd] transition-colors duration-300">
                             <Icon />
@@ -498,6 +549,11 @@ export default function ContactSection() {
                       );
                     })}
                   </div>
+                  {fieldErrors.services && (
+                    <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight animate-in fade-in slide-in-from-top-1">
+                      {fieldErrors.services}
+                    </p>
+                  )}
                 </div>
 
                 {/* File Upload Section (Optional) */}
