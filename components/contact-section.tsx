@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -87,7 +88,7 @@ export default function ContactSection() {
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string; smsConsent?: string }>({});
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateContactData, setDuplicateContactData] = useState<any>(null);
 
@@ -140,7 +141,7 @@ export default function ContactSection() {
   };
 
   const validatePhone = (phone: string) => {
-    const digits = phone.replace(/\D/g, "");
+      const digits = phone.replace(/\D/g, "");
     return digits.length >= 10 && digits.length <= 15;
   };
 
@@ -151,6 +152,12 @@ export default function ContactSection() {
     
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
+    const smsConsent = formData.get("smsConsent");
+
+    if (!smsConsent) {
+      toast.error("Please agree to receive SMS communications to proceed.");
+      return;
+    }
 
     if (!validatePhone(phone)) {
       toast.error(t("contact.form.errors.phoneInvalid"));
@@ -240,10 +247,11 @@ export default function ContactSection() {
           phone,
           email,
           source: "Website Contact Form",
-          tags: ["website-lead", ...servicesSubmited],
+          tags: ["website-lead", ...(smsConsent ? ["sms-opt-in"] : []), ...servicesSubmited],
           customFields: {
             address,
             languagePreference,
+            smsConsent: smsConsent ? "Yes" : "No",
             services: servicesSubmited.join(", "),
             message,
             image_urls: imageUrls
@@ -554,6 +562,25 @@ export default function ContactSection() {
                     placeholder={t("contact.form.messagePlaceholder")}
                     className="w-full px-4 py-3 bg-background/50 border border-input rounded-xl text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-1 focus:ring-[#1e71cd]/20 focus:outline-none resize-none"
                   />
+                </div>
+
+                <div className="flex items-start space-x-3 p-4 bg-background/30 border border-input rounded-xl transition-colors hover:border-[#1e71cd]/30 group cursor-pointer" onClick={() => document.getElementById("smsConsent")?.click()}>
+                  <Checkbox 
+                    id="smsConsent" 
+                    name="smsConsent" 
+                    required 
+                    className="mt-1 data-[state=checked]:bg-[#1e71cd] data-[state=checked]:border-[#1e71cd]" 
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <div className="space-y-1 leading-none">
+                    <Label
+                      htmlFor="smsConsent"
+                      className="text-xs text-foreground/70 leading-relaxed cursor-pointer group-hover:text-foreground/90 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {t("contact.form.smsConsent")}
+                    </Label>
+                  </div>
                 </div>
 
                 <Button
