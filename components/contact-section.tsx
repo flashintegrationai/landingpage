@@ -8,6 +8,13 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -74,7 +81,7 @@ const ServiceIcons = {
 };
 
 export default function ContactSection() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -177,6 +184,7 @@ export default function ContactSection() {
 
       const name = formData.get("name") as string;
       const address = formData.get("address") as string;
+      const languagePreference = formData.get("languagePreference") as string;
       const servicesSubmited = formData.getAll("services") as string[];
       const message = formData.get("message") as string;
       
@@ -235,6 +243,7 @@ export default function ContactSection() {
           tags: ["website-lead", ...servicesSubmited],
           customFields: {
             address,
+            languagePreference,
             services: servicesSubmited.join(", "),
             message,
             image_urls: imageUrls
@@ -429,6 +438,21 @@ export default function ContactSection() {
                     placeholder="123 Main St, Miami, FL"
                     className="bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="languagePreference" className="text-foreground/80">
+                    {t("contact.form.languagePreference")}
+                  </Label>
+                  <Select name="languagePreference" defaultValue={language === "en" ? "English" : "Spanish"}>
+                    <SelectTrigger className="bg-background/50 border-input text-foreground focus:border-[#1e71cd] focus:ring-[#1e71cd]/20">
+                      <SelectValue placeholder={t("contact.form.languagePreference")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="English">{t("contact.form.englishOption")}</SelectItem>
+                      <SelectItem value="Spanish">{t("contact.form.spanishOption")}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-4">
