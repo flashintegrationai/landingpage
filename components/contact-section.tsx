@@ -239,24 +239,26 @@ export default function ContactSection() {
       }
 
       // 4. Send to GHL
+      const ghlPayload = {
+        name,
+        phone,
+        email,
+        source: "Website Contact Form",
+        tags: ["website-lead", ...(smsConsent ? ["sms-opt-in"] : []), ...servicesSubmited],
+        customFields: {
+          address,
+          languagePreference,
+          smsConsent: smsConsent ? "Yes" : "No",
+          services: servicesSubmited.join(", "),
+          message,
+          image_urls: imageUrls
+        }
+      };
+      console.log("📤 GHL Payload being sent:", JSON.stringify(ghlPayload, null, 2));
       const ghlRes = await fetch("/api/ghl/contacts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          email,
-          source: "Website Contact Form",
-          tags: ["website-lead", ...(smsConsent ? ["sms-opt-in"] : []), ...servicesSubmited],
-          customFields: {
-            address,
-            languagePreference,
-            smsConsent: smsConsent ? "Yes" : "No",
-            services: servicesSubmited.join(", "),
-            message,
-            image_urls: imageUrls
-          }
-        })
+        body: JSON.stringify(ghlPayload)
       });
 
       const ghlData = await ghlRes.json();
