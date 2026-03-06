@@ -250,7 +250,7 @@ export default function ContactSection() {
           tags: ["website-lead", ...(smsConsent ? ["sms-opt-in"] : []), ...servicesSubmited],
           customFields: {
             address,
-            languagePreference,
+            language:languagePreference,
             smsConsent: smsConsent ? "Yes" : "No",
             services: servicesSubmited.join(", "),
             message,
