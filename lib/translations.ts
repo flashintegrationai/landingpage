@@ -207,9 +207,13 @@ export const translations: Record<string, Record<string, any>> = {
         },
         errors: {
           fileSize: "File size exceeds 5MB limit.",
+          fileType: "Invalid file type. Please upload JPG, PNG, or WebP images only.",
+          maxFilesExceeded: "You can upload a maximum of 5 files.",
           emailExists: "This email is already registered.",
           phoneExists: "This phone number is already registered.",
           phoneInvalid: "Please enter a valid phone number.",
+          servicesRequired: "Please select at least one service.",
+          smsRequired: "Please agree to receive SMS communications to proceed.",
           submissionFailed: "Submission failed. Please try again.",
         },
         duplicateModal: {
@@ -995,9 +999,13 @@ export const translations: Record<string, Record<string, any>> = {
         },
         errors: {
           fileSize: "El archivo excede el límite de 5MB.",
+          fileType: "Tipo de archivo no válido. Solo se permiten imágenes JPG, PNG o WebP.",
+          maxFilesExceeded: "Puede subir un máximo de 5 archivos.",
           emailExists: "Este correo ya está registrado.",
           phoneExists: "Este número de teléfono ya está registrado.",
           phoneInvalid: "Introduzca un número de teléfono válido.",
+          servicesRequired: "Por favor seleccione al menos un servicio.",
+          smsRequired: "Por favor acepte recibir comunicaciones por SMS para continuar.",
           submissionFailed: "Error al enviar. Intente de nuevo.",
         },
         duplicateModal: {
