@@ -187,10 +187,10 @@ export default function AiEstimatePage() {
         const { data: leadDataRes, error: leadError } = await supabase
           .from('leads')
           .insert({ 
-            name: leadData.name,
-            phone: leadData.phone,
+            full_name: leadData.name,
+            phone_number: leadData.phone,
             source: 'ai_estimator',
-            image_urls: imageUrls
+            notes: imageUrls.length > 0 ? `Images: ${imageUrls.join(", ")}` : ""
           }).select();
 
         if (leadError) {
@@ -231,8 +231,8 @@ export default function AiEstimatePage() {
           source: "AI Estimate Tool",
           tags: ["AI-Estimate-Started"],
           customFields: {
-            iaestimateimage_urls: imageUrls[0] || "",
-            iaestimateanalysisnotes: "AI Analysis Started"
+            "Image of the area to be cleaned": imageUrls,
+            "AI Analysis Started": "AI Analysis Started" // Using a generic key or it will just be ignored if not found
           }
         };
 

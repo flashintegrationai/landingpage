@@ -20,6 +20,7 @@ const orbitron = Orbitron({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://elitesurface.com'),
   title: 'Elite Surface Systems | Professional Pressure Washing Services',
   description: 'Elite Surface Systems delivers cutting-edge pressure washing technology for residential and commercial properties. South Florida\'s #1 choice for high-tech surface restoration.',
   keywords: ['pressure washing', 'power washing', 'surface cleaning', 'commercial cleaning', 'residential cleaning', 'Elite Surface Systems', 'South Florida cleaning'],

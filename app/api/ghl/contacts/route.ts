@@ -80,7 +80,7 @@ export async function GET(req: Request) {
     }
 
     // Default search for email if no phone
-    const searchUrl = `https://services.leadconnectorhq.com/contacts/search?locationId=${locationId}&query=${encodeURIComponent(email!)}`;
+    const searchUrl = `https://services.leadconnectorhq.com/contacts/?locationId=${locationId}&query=${encodeURIComponent(email!)}`;
     console.log("🔍 GHL Searching Email:", searchUrl);
 
     const response = await fetch(searchUrl, {
@@ -141,14 +141,20 @@ async function updateGHLContact(
 ) {
   if (customFields.length === 0) return;
 
-  console.log("========== GHL IMAGE DEBUG ==========");
+  // For GHL V2, custom fields in PUT often need 'value' or 'field_value'
+  // Using newline separator to help GHL treat them as separate links/files
+  const processedFields = customFields.map((field) => ({
+    id: field.id,
+    value: Array.isArray(field.value) ? field.value.join("\n") : field.value,
+  }));
+
+  console.log("========== GHL IMAGE UPDATE DEBUG ==========");
   console.log("Contact ID:", contactId);
-  customFields.forEach((field) => {
-    console.log("Custom Field ID:", field.id);
-    console.log("Value being sent:", field.value);
-    console.log("Value type:", typeof field.value);
+  processedFields.forEach((field) => {
+    console.log("Field ID:", field.id);
+    console.log("Field Value being sent:", JSON.stringify(field.value));
   });
-  console.log("=====================================");
+  console.log("==========================================");
 
   try {
     const response = await fetch(
@@ -161,7 +167,7 @@ async function updateGHLContact(
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ customFields }),
+        body: JSON.stringify({ customFields: processedFields }),
       },
     );
 
@@ -169,7 +175,7 @@ async function updateGHLContact(
     if (!response.ok) {
       console.error("🔴 GHL PUT Update Error:", JSON.stringify(data, null, 2));
     } else {
-      console.log("🟢 GHL Contact Updated Successfully");
+      console.log("🟢 GHL Contact Updated Successfully", data);
     }
   } catch (e) {
     console.error("GHL PUT Exception:", e);
@@ -238,11 +244,10 @@ export async function POST(req: Request) {
               : [value];
 
             if (urls.length > 0) {
-              // GHL V2 PUT often expects a single string for File Upload fields
-              // We'll send the first one as requested by the user's logic
+              // GHL V2 often expects an array of strings for File Upload fields
               deferredFields.push({
                 id: def.id,
-                value: urls[0],
+                value: urls, // Send the whole array of URLs
               });
             }
           } else {
@@ -408,9 +413,17 @@ export async function PUT(req: Request) {
               finalValue = `${oldValue}\n${value}`;
             }
           }
+
+          // Using newline for better GHL multi-URL support
+          if (def.dataType === "FILE_UPLOAD") {
+            finalValue = Array.isArray(finalValue)
+              ? finalValue.join("\n")
+              : finalValue;
+          }
+
           fieldsToUpdate.push({ id: def.id, value: finalValue });
         } else {
-          fieldsToUpdate.push({ key, value });
+          fieldsToUpdate.push({ key, value: value });
         }
       }
     }

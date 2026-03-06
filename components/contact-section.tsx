@@ -7,13 +7,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -93,6 +87,23 @@ export default function ContactSection() {
   const [duplicateContactData, setDuplicateContactData] = useState<any>(null);
 
   const [files, setFiles] = useState<File[]>([]);
+  const [prefLanguage, setPrefLanguage] = useState(language === "en" ? "English" : "Spanish");
+  const [phone, setPhone] = useState("");
+
+  const formatPhoneNumber = (value: string) => {
+    if (!value) return value;
+    const phoneNumber = value.replace(/[^\d]/g, "");
+    const phoneNumberLength = phoneNumber.length;
+    if (phoneNumberLength < 4) return phoneNumber;
+    if (phoneNumberLength < 7) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    }
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+  };
+
+  useEffect(() => {
+    setPrefLanguage(language === "en" ? "English" : "Spanish");
+  }, [language]);
 
   const services = [
     { label: t("contact.services.pressureWashing"), icon: ServiceIcons.PressureWashing },
@@ -140,9 +151,9 @@ export default function ContactSection() {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const validatePhone = (phone: string) => {
-      const digits = phone.replace(/\D/g, "");
-    return digits.length >= 10 && digits.length <= 15;
+  const validatePhone = (phoneStr: string) => {
+    const digits = phoneStr.replace(/\D/g, "");
+    return digits.length === 10;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -160,7 +171,7 @@ export default function ContactSection() {
     }
 
     if (!validatePhone(phone)) {
-      toast.error(t("contact.form.errors.phoneInvalid"));
+      toast.error(t("contact.form.errors.phoneInvalid") || "Please enter a valid 10-digit US phone number.");
       return;
     }
 
@@ -225,13 +236,11 @@ export default function ContactSection() {
       const { error: insertError } = await supabase
         .from('leads')
         .insert({
-          nombre: name,
-          telefono: phone,
-          email,
-          direccion: address,
-          servicio: servicesSubmited.join(", ") + (message ? ` | Note: ${message}` : ""),
-          image_urls: imageUrls,
-          source: 'website_contact_form'
+          full_name: name,
+          phone_number: phone,
+          source: 'website_contact_form',
+          smsConcent: smsConsent ? "Yes" : "No",
+          notes: `Email: ${email}\nAddress: ${address}\nServices: ${servicesSubmited.join(", ")}${message ? `\nMessage: ${message}` : ""}${imageUrls.length > 0 ? `\nImages: ${imageUrls.join(", ")}` : ""}`
         });
 
       if (insertError) {
@@ -251,7 +260,7 @@ export default function ContactSection() {
           smsConsent: smsConsent ? "Yes" : "No",
           services: servicesSubmited.join(", "),
           message,
-          image_urls: imageUrls
+          "Image of the area to be cleaned": imageUrls
         }
       };
       console.log("📤 GHL Payload being sent:", JSON.stringify(ghlPayload, null, 2));
@@ -406,8 +415,9 @@ export default function ContactSection() {
                       name="phone"
                       type="tel"
                       required
-                      maxLength={15}
                       placeholder="(123) 456-7890"
+                      value={phone}
+                      onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                       className={`bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20 ${fieldErrors.phone ? 'border-red-500/50' : ''}`}
                     />
                     {fieldErrors.phone && (
@@ -450,19 +460,38 @@ export default function ContactSection() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="languagePreference" className="text-foreground/80">
+                <div className="space-y-3">
+                  <Label className="text-foreground/80 font-medium">
                     {t("contact.form.languagePreference")}
                   </Label>
-                  <Select name="languagePreference" defaultValue={language === "en" ? "English" : "Spanish"}>
-                    <SelectTrigger className="bg-background/50 border-input text-foreground focus:border-[#1e71cd] focus:ring-[#1e71cd]/20">
-                      <SelectValue placeholder={t("contact.form.languagePreference")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="English">{t("contact.form.englishOption")}</SelectItem>
-                      <SelectItem value="Spanish">{t("contact.form.spanishOption")}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <RadioGroup 
+                    name="languagePreference" 
+                    value={prefLanguage}
+                    onValueChange={setPrefLanguage}
+                    className="flex flex-wrap items-center gap-6"
+                   >
+                    <div className="flex items-center space-x-3 group cursor-pointer bg-background/50 border border-[#1e71cd]/10 px-4 py-3 rounded-xl hover:border-[#1e71cd]/30 transition-all duration-200">
+                      <RadioGroupItem value="English" id="lang-en" className="border-[#1e71cd]/40 text-[#1e71cd]" />
+                      <Label htmlFor="lang-en" className="flex items-center gap-2 cursor-pointer font-bold text-xs uppercase tracking-widest text-foreground/70 group-hover:text-foreground transition-colors">
+                        <svg className="w-5 h-3.5 rounded-xs shadow-sm border border-border/10" viewBox="0 0 741 390">
+                          <rect width="741" height="390" fill="#b22234"/>
+                          <path d="M0 30h741M0 90h741M0 150h741M0 210h741M0 270h741M0 330h741" stroke="#fff" strokeWidth="30"/>
+                          <rect width="296" height="210" fill="#3c3b6e"/>
+                        </svg>
+                        {t("contact.form.englishOption")}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-3 group cursor-pointer bg-background/50 border border-[#1e71cd]/10 px-4 py-3 rounded-xl hover:border-[#1e71cd]/30 transition-all duration-200">
+                      <RadioGroupItem value="Spanish" id="lang-es" className="border-[#1e71cd]/40 text-[#1e71cd]" />
+                      <Label htmlFor="lang-es" className="flex items-center gap-2 cursor-pointer font-bold text-xs uppercase tracking-widest text-foreground/70 group-hover:text-foreground transition-colors">
+                        <svg className="w-5 h-3.5 rounded-xs shadow-sm border border-border/10" viewBox="0 0 750 500">
+                          <rect width="750" height="500" fill="#c60b1e"/>
+                          <rect width="750" height="250" y="125" fill="#ffc400"/>
+                        </svg>
+                        {t("contact.form.spanishOption")}
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
 
                 <div className="space-y-4">
@@ -489,9 +518,9 @@ export default function ContactSection() {
                           </span>
                           
                           {/* Selected Indicator Checkmark */}
-                          <div className="absolute top-3 right-3 opacity-0 group-has-checked:opacity-100 transition-all scale-50 group-has-checked:scale-100">
-                             <div className="bg-[#1e71cd] rounded-full p-1 shadow-lg">
-                                <CheckCircle className="w-3.5 h-3.5 text-white" />
+                          <div className="absolute top-2 right-2 opacity-0 group-has-checked:opacity-100 transition-all scale-75 group-has-checked:scale-100">
+                             <div className="bg-[#1e71cd] rounded-full p-1.5 shadow-lg ring-2 ring-white/20">
+                                <CheckCircle className="w-4 h-4 text-white" />
                              </div>
                           </div>
                         </label>
@@ -566,18 +595,18 @@ export default function ContactSection() {
                   />
                 </div>
 
-                <div className="flex items-start space-x-3 p-4 bg-background/30 border border-input rounded-xl transition-colors hover:border-[#1e71cd]/30 group cursor-pointer" onClick={() => document.getElementById("smsConsent")?.click()}>
+                <div className="flex items-start space-x-3 p-4 bg-background border border-[#1e71cd]/20 rounded-xl transition-all duration-300 hover:border-[#1e71cd]/40 hover:bg-[#1e71cd]/5 group cursor-pointer shadow-sm shadow-[#1e71cd]/5" onClick={() => document.getElementById("smsConsent")?.click()}>
                   <Checkbox 
                     id="smsConsent" 
                     name="smsConsent" 
                     required 
-                    className="mt-1 data-[state=checked]:bg-[#1e71cd] data-[state=checked]:border-[#1e71cd]" 
+                    className="mt-1 h-5 w-5 border-[#1e71cd]/40 data-[state=checked]:bg-[#1e71cd] data-[state=checked]:border-[#1e71cd] transition-all duration-200" 
                     onClick={(e) => e.stopPropagation()}
                   />
                   <div className="space-y-1 leading-none">
                     <Label
                       htmlFor="smsConsent"
-                      className="text-xs text-foreground/70 leading-relaxed cursor-pointer group-hover:text-foreground/90 transition-colors"
+                      className="text-[11px] sm:text-xs text-foreground/80 leading-relaxed cursor-pointer group-hover:text-foreground transition-colors font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {t("contact.form.smsConsent")}

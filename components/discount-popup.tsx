@@ -14,12 +14,23 @@ export default function DiscountPopup() {
   const router = useRouter()
 
   useEffect(() => {
-    // Show popup after 15 seconds
-    const timer = setTimeout(() => {
-      setIsOpen(true)
-    }, 15000)
-
-    return () => clearTimeout(timer)
+    // Determine if we should show the popup based on visit count and last dismissal
+    const VISIT_KEY = "promo_visit_count"
+    const DISMISSED_KEY = "promo_last_dismissed_visit"
+    
+    const currentVisit = parseInt(localStorage.getItem(VISIT_KEY) || "0") + 1
+    localStorage.setItem(VISIT_KEY, currentVisit.toString())
+    
+    const lastDismissedVisit = parseInt(localStorage.getItem(DISMISSED_KEY) || "-10")
+    const shouldShowThisVisit = (currentVisit - lastDismissedVisit) >= 3
+    
+    if (shouldShowThisVisit) {
+      // Show popup after 15 seconds
+      const timer = setTimeout(() => {
+        setIsOpen(true)
+      }, 15000)
+      return () => clearTimeout(timer)
+    }
   }, [])
 
   useEffect(() => {
@@ -41,10 +52,20 @@ export default function DiscountPopup() {
 
   const handleClose = () => {
     setIsOpen(false)
+    // Save the visit count when the user dismissed it
+    const VISIT_KEY = "promo_visit_count"
+    const DISMISSED_KEY = "promo_last_dismissed_visit"
+    const currentVisit = localStorage.getItem(VISIT_KEY) || "1"
+    localStorage.setItem(DISMISSED_KEY, currentVisit)
   }
 
   const handleClaim = () => {
     setIsOpen(false)
+    // When they claim it, we also mark it as "dismissed" for now to follow the same 3-visit rule
+    const VISIT_KEY = "promo_visit_count"
+    const DISMISSED_KEY = "promo_last_dismissed_visit"
+    const currentVisit = localStorage.getItem(VISIT_KEY) || "1"
+    localStorage.setItem(DISMISSED_KEY, currentVisit)
     router.push("/ai-estimate")
   }
 
