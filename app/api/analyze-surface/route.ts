@@ -21,19 +21,25 @@ export async function POST(req: Request) {
 
     const openai = new OpenAI({ apiKey });
 
-    const { image } = await req.json();
+    const { images } = await req.json();
 
-    if (!image) {
-      return NextResponse.json({ error: "No image provided" }, { status: 400 });
+    if (!images || !Array.isArray(images) || images.length === 0) {
+      return NextResponse.json({ error: "No images provided" }, { status: 400 });
     }
 
-    // Robust base64 extraction
-    let base64Image = image;
-    if (image.includes(",")) {
-      base64Image = image.split(",")[1];
+    // Robust base64 extraction & validation
+    const validBase64Images: string[] = [];
+    for (const img of images) {
+      let base64Image = img;
+      if (img.includes(",")) {
+        base64Image = img.split(",")[1];
+      }
+      if (base64Image && base64Image.length >= 10) {
+        validBase64Images.push(base64Image);
+      }
     }
 
-    if (!base64Image || base64Image.length < 10) {
+    if (validBase64Images.length === 0) {
       return NextResponse.json(
         { error: "Invalid image data" },
         { status: 400 },
@@ -41,22 +47,37 @@ export async function POST(req: Request) {
     }
 
     console.log(
-      "🚀 Starting OpenAI analysis, base64 length:",
-      base64Image.length,
+      "🚀 Starting OpenAI analysis for", validBase64Images.length, "images"
     );
+
+    const userMessages: any[] = [
+        {
+            type: "text",
+            text: "Analyze these surfaces for an estimate. Give one unified result containing the aggregated square footage, and a single overall price range.",
+        }
+    ];
+
+    validBase64Images.forEach((base64) => {
+        userMessages.push({
+            type: "image_url",
+            image_url: {
+                url: `data:image/jpeg;base64,${base64}`,
+            },
+        });
+    });
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: `You are an expert in pressure washing and surface restoration. Analyze the provided image of a surface (driveway, house wall, roof, deck, etc.) and provide an estimate for cleaning.
+          content: `You are an expert in pressure washing and surface restoration. Analyze the provided images of surfaces (driveway, house wall, roof, deck, etc.) and provide an estimate for cleaning.
           Return ONLY a JSON object with the following fields:
-          - detectedMaterial: A short string (e.g., "Concrete Paver", "Vinyl Siding", "Asphalt").
-          - contaminationLevel: "Low", "Medium", or "High".
-          - estimatedSqFt: An approximate number (e.g., 850).
-          - confidenceScore: A percentage (e.g., 98.4).
-          - priceRange: A string (e.g., "$350 - $450").
+          - detectedMaterial: A short string (e.g., "Concrete Paver", "Vinyl Siding", "Asphalt") representing all images. You can combine (e.g., "Concrete and Asphalt" if multiple).
+          - contaminationLevel: "Low", "Medium", or "High" representing the overall level of the images combined.
+          - estimatedSqFt: An approximate number (e.g., 850) that is the total square footage of ALL images combined.
+          - confidenceScore: A percentage (e.g., 98.4) indicating your confidence in the material detection for all images combined.
+          - priceRange: A string (e.g., "$350 - $450") summarizing the total combined cost of cleaning all surfaces across all images.
           
           Base the price on South Florida standards:
           - House Washing: $0.15 - $0.25 per sq ft.
@@ -67,18 +88,7 @@ export async function POST(req: Request) {
         },
         {
           role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Analyze this surface for an estimate.",
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`,
-              },
-            },
-          ],
+          content: userMessages,
         },
       ],
       response_format: { type: "json_object" },

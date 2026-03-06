@@ -38,7 +38,7 @@ interface AnalysisResult {
 
 export default function AiEstimateSection() {
   const { t } = useLanguage()
-  const [image, setImage] = useState<string | null>(null)
+  const [images, setImages] = useState<string[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [leadData, setLeadData] = useState({ name: "", phone: "" })
@@ -46,19 +46,35 @@ export default function AiEstimateSection() {
   const [activeStep, setActiveStep] = useState<"idle" | "form" | "analyzing" | "result">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("Image too large. Please use an image under 10MB.")
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
+      if (files.length > 5) {
+        toast.error("Please select up to 5 images max.")
         return
       }
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImage(reader.result as string)
-        setActiveStep("form")
+      
+      const oversized = files.some(file => file.size > 10 * 1024 * 1024)
+      if (oversized) {
+        toast.error("One or more images are too large. Please use images under 10MB each.")
+        return
       }
-      reader.readAsDataURL(file)
+
+      const readFiles: string[] = []
+      
+      for (const file of files) {
+          const promise = new Promise<string>((resolve) => {
+              const reader = new FileReader()
+              reader.onloadend = () => {
+                  resolve(reader.result as string)
+              }
+              reader.readAsDataURL(file)
+          })
+          readFiles.push(await promise)
+      }
+      
+      setImages(readFiles)
+      setActiveStep("form")
     }
   }
 
@@ -79,7 +95,7 @@ export default function AiEstimateSection() {
             phone_number: leadData.phone, 
             source: 'ai_estimator',
             status: 'new',
-            notes: `AI Analysis started for image.`
+            notes: `AI Analysis started for ${images.length} image(s).`
           }
         ])
         .select()
@@ -87,23 +103,23 @@ export default function AiEstimateSection() {
       if (error) console.error("Supabase insert error:", error)
 
       setActiveStep("analyzing")
-      if (image) analyzeImage(image, leadRecord?.[0]?.id)
+      if (images.length > 0) analyzeImages(images, leadRecord?.[0]?.id)
     } catch (error: any) {
       console.error(error)
       setActiveStep("analyzing")
-      if (image) analyzeImage(image)
+      if (images.length > 0) analyzeImages(images)
     } finally {
       setIsSubmittingLead(false)
     }
   }
 
-  const analyzeImage = async (base64Image: string, leadId?: string) => {
+  const analyzeImages = async (base64Images: string[], leadId?: string) => {
     setIsAnalyzing(true)
     try {
       const response = await fetch("/api/analyze-surface", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image }),
+        body: JSON.stringify({ images: base64Images }),
       })
 
       const data = await response.json()
@@ -124,7 +140,7 @@ export default function AiEstimateSection() {
       toast.success("Analysis complete!")
     } catch (error: any) {
       console.error(error)
-      toast.error(error.message || "Failed to analyze image. Please try again.")
+      toast.error(error.message || "Failed to analyze images. Please try again.")
       setActiveStep("idle")
     } finally {
       setIsAnalyzing(false)
@@ -132,7 +148,7 @@ export default function AiEstimateSection() {
   }
 
   const handleRetry = () => {
-    setImage(null)
+    setImages([])
     setResult(null)
     setActiveStep("idle")
     if (fileInputRef.current) fileInputRef.current.value = ""
@@ -307,16 +323,24 @@ export default function AiEstimateSection() {
 
             {activeStep === "analyzing" && (
               <div className="relative aspect-video rounded-[3rem] overflow-hidden border border-primary/20 shadow-2xl">
-                {image && <Image src={image} alt="Processing" fill className="object-cover opacity-60 contrast-125 saturate-50" />}
+                {images.length > 0 && <Image src={images[0]} alt="Processing" fill className="object-cover opacity-60 contrast-125 saturate-50" />}
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center">
                    <motion.div 
                      animate={{ top: ["0%", "100%", "0%"] }}
                      transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
                      className="absolute inset-x-0 h-1 bg-primary shadow-[0_0_30px_rgba(30,113,205,1)] z-10"
                    />
-                   <div className="p-10 bg-black/80 rounded-[2.5rem] border border-white/10 flex flex-col items-center gap-4">
-                     <BrainCircuit className="w-10 h-10 text-primary animate-pulse" />
-                     <span className="text-white font-black uppercase tracking-[0.4em] text-[10px]">{t("aiEstimate.analyzing.mapping")}</span>
+                   <div className="p-10 bg-black/80 rounded-[2.5rem] border border-white/10 flex flex-col items-center gap-4 text-center">
+                     <BrainCircuit className="w-10 h-10 text-primary animate-pulse mx-auto" />
+                     {images.length > 1 ? (
+                        <span className="text-white font-black uppercase tracking-[0.2em] text-[10px]">
+                            Analyzing {images.length} Images...
+                        </span>
+                     ) : (
+                        <span className="text-white font-black uppercase tracking-[0.4em] text-[10px]">
+                            {t("aiEstimate.analyzing.mapping")}
+                        </span>
+                     )}
                    </div>
                 </div>
               </div>
@@ -331,7 +355,7 @@ export default function AiEstimateSection() {
               >
                 {/* Analyzed Image with Logo Overlay */}
                 <div className="relative aspect-video rounded-[3rem] overflow-hidden border border-primary/30 shadow-2xl">
-                  {image && <Image src={image} alt="Analyzed Surface" fill className="object-cover" />}
+                  {images.length > 0 && <Image src={images[0]} alt="Analyzed Surface" fill className="object-cover" />}
                   <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
                   <div className="absolute inset-0 flex items-center justify-center p-12">
                      <div className="relative w-full max-w-md aspect-square">
@@ -342,9 +366,16 @@ export default function AiEstimateSection() {
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                     <span className="text-green-500 text-xs font-black uppercase tracking-widest">{t("aiEstimate.result.complete")}</span>
                   </div>
-                  <div className="absolute top-8 right-8 px-5 py-3 rounded-2xl bg-primary/20 backdrop-blur-xl border border-primary/30 flex items-center gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                    <span className="text-primary text-xs font-black uppercase tracking-widest">{result?.confidenceScore}% {t("aiEstimate.result.match")}</span>
+                  <div className="absolute top-8 right-8 px-5 py-3 rounded-2xl bg-primary/20 backdrop-blur-xl border border-primary/30 flex text-right flex-col gap-1 items-end justify-center">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                        <span className="text-primary text-xs font-black uppercase tracking-widest">{result?.confidenceScore}% {t("aiEstimate.result.match")}</span>
+                    </div>
+                    {images.length > 1 && (
+                        <span className="text-primary/70 text-[10px] font-bold uppercase tracking-widest">
+                            Based on {images.length} photos
+                        </span>
+                    )}
                   </div>
                 </div>
 
@@ -440,6 +471,7 @@ export default function AiEstimateSection() {
 
       <input 
         type="file" 
+        multiple
         ref={fileInputRef}
         onChange={handleFileChange}
         accept="image/*"
