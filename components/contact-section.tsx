@@ -166,28 +166,9 @@ export default function ContactSection() {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-<<<<<<< HEAD
   const validatePhone = (phoneStr: string) => {
     const digits = phoneStr.replace(/\D/g, "");
     return digits.length === 10;
-=======
-  const formatPhoneNumber = (value: string) => {
-    const digits = value.replace(/\D/g, "");
-    if (digits.length <= 3) return digits;
-    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
-    e.target.value = formatted;
-    if (fieldErrors.phone) setFieldErrors(prev => ({ ...prev, phone: undefined }));
-  };
-
-  const validatePhone = (phone: string) => {
-      const digits = phone.replace(/\D/g, "");
-    return digits.length >= 10 && digits.length <= 15;
->>>>>>> 8602fbe0ac2ed495fb133f8c00f80ea5e2d09169
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -205,30 +186,7 @@ export default function ContactSection() {
     let hasErrors = false;
 
     if (!validatePhone(phone)) {
-<<<<<<< HEAD
       toast.error(t("contact.form.errors.phoneInvalid") || "Please enter a valid 10-digit US phone number.");
-=======
-      errors.phone = t("contact.form.errors.phoneInvalid");
-      hasErrors = true;
-    }
-
-    if (selectedServices.length === 0) {
-      errors.services = t("contact.form.errors.servicesRequired");
-      hasErrors = true;
-    }
-
-    if (!smsConsent) {
-      errors.smsConsent = t("contact.form.errors.smsRequired");
-      hasErrors = true;
-    }
-
-    if (hasErrors) {
-      setFieldErrors(errors);
-      // Show toast for first error found
-      if (errors.phone) toast.error(errors.phone);
-      else if (errors.services) toast.error(errors.services);
-      else if (errors.smsConsent) toast.error(errors.smsConsent);
->>>>>>> 8602fbe0ac2ed495fb133f8c00f80ea5e2d09169
       return;
     }
 
@@ -472,15 +430,9 @@ export default function ContactSection() {
                       name="phone"
                       type="tel"
                       required
-<<<<<<< HEAD
                       placeholder="(123) 456-7890"
                       value={phone}
                       onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
-=======
-                      maxLength={14}
-                      placeholder="(123) 456-7890"
-                      onChange={handlePhoneChange}
->>>>>>> 8602fbe0ac2ed495fb133f8c00f80ea5e2d09169
                       className={`bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20 ${fieldErrors.phone ? 'border-red-500/50' : ''}`}
                     />
                     {fieldErrors.phone && (
