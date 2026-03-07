@@ -33,12 +33,12 @@ export default function QuoteModal() {
   const { isOpen, closeModal } = useQuoteModal()
 
   const handleWhatsApp = () => {
-    window.open("https://wa.me/19544703554", "_blank")
+    window.open("https://wa.me/12392654398", "_blank")
     closeModal()
   }
 
   const handleCall = () => {
-    window.location.href = "tel:+19544703554"
+    window.location.href = "tel:+12392654398"
     closeModal()
   }
 
