@@ -665,6 +665,17 @@ export default function ContactSection() {
                   </Link>
                   {t("contact.form.privacy").split("{{link}}")[1]}
                 </p>
+
+                <p className="text-center text-xs text-foreground/40">
+                  {t("contact.form.terms").split("{{link}}")[0]}
+                  <Link
+                    href="/terms"
+                    className="underline hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {t("contact.form.termsLink")}
+                  </Link>
+                  {t("contact.form.terms").split("{{link}}")[1]}
+                </p>
               </form>
             )}
           </div>
