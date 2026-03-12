@@ -16,7 +16,10 @@ import {
   ChevronRight,
   Shield,
   Droplets,
-  AlertTriangle
+  AlertTriangle,
+  Plus,
+  X,
+  Images
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -52,7 +55,7 @@ interface AnalysisResult {
 
 export default function AiEstimatePage() {
   const { t } = useLanguage()
-  const [image, setImage] = useState<string | null>(null)
+  const [images, setImages] = useState<string[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [leadData, setLeadData] = useState({ name: "", phone: "" })
@@ -62,6 +65,7 @@ export default function AiEstimatePage() {
   const [duplicateContactData, setDuplicateContactData] = useState<any>(null)
   const [activeStep, setActiveStep] = useState<"idle" | "form" | "analyzing" | "result">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const addMoreRef = useRef<HTMLInputElement>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -81,20 +85,62 @@ export default function AiEstimatePage() {
     return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error(t("contact.form.errors.fileSize") || "Image too large. Please use an image under 10MB.")
-        return
-      }
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImage(reader.result as string)
-        setActiveStep("form")
-      }
-      reader.readAsDataURL(file)
+  const readFilesToBase64 = async (files: File[]): Promise<string[]> => {
+    const result: string[] = []
+    for (const file of files) {
+      const b64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+      })
+      result.push(b64)
     }
+    return result
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+    if (files.length > 5) {
+      toast.error("Por favor selecciona un máximo de 5 imágenes.")
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      return
+    }
+    const oversized = files.some(f => f.size > 10 * 1024 * 1024)
+    if (oversized) {
+      toast.error(t("contact.form.errors.fileSize") || "Image too large. Please use images under 10MB each.")
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      return
+    }
+    const b64List = await readFilesToBase64(files)
+    setImages(b64List)
+    setActiveStep("form")
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const handleAddMore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+    if (images.length + files.length > 5) {
+      toast.error(`Puedes subir hasta 5 imágenes. Ya tienes ${images.length}.`)
+      if (addMoreRef.current) addMoreRef.current.value = ""
+      return
+    }
+    const oversized = files.some(f => f.size > 10 * 1024 * 1024)
+    if (oversized) {
+      toast.error("Una o más imágenes son demasiado grandes. Usa imágenes de menos de 10MB.")
+      if (addMoreRef.current) addMoreRef.current.value = ""
+      return
+    }
+    const newB64 = await readFilesToBase64(files)
+    setImages(prev => [...prev, ...newB64])
+    if (addMoreRef.current) addMoreRef.current.value = ""
+  }
+
+  const handleRemoveImage = (index: number) => {
+    const updated = images.filter((_, i) => i !== index)
+    setImages(updated)
+    if (updated.length === 0) setActiveStep("idle")
   }
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
@@ -139,30 +185,32 @@ export default function AiEstimatePage() {
       }
       let imageUrls: string[] = [];
       
-      // 2. Upload Image to Supabase Storage (quoteuploads)
-      if (image) {
-        console.log("📤 Preparing image upload...");
-        try {
-          const res = await fetch(image);
-          const blob = await res.blob();
-          const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
-          const file = new File([blob], fileName, { type: "image/jpeg" });
-          
-          const { error: uploadError } = await supabase.storage
-            .from('quoteuploads')
-            .upload(fileName, file);
-
-          if (!uploadError) {
-            const { data: { publicUrl } } = supabase.storage
+      // 2. Upload Images to Supabase Storage (quoteuploads)
+      if (images.length > 0) {
+        console.log(`📤 Uploading ${images.length} image(s)...`);
+        for (const imgB64 of images) {
+          try {
+            const res = await fetch(imgB64);
+            const blob = await res.blob();
+            const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+            const file = new File([blob], fileName, { type: "image/jpeg" });
+            
+            const { error: uploadError } = await supabase.storage
               .from('quoteuploads')
-              .getPublicUrl(fileName);
-            imageUrls.push(publicUrl);
-            console.log("✅ Image uploaded:", publicUrl);
-          } else {
-            console.error("🔴 Supabase Storage Error:", uploadError.message);
+              .upload(fileName, file);
+
+            if (!uploadError) {
+              const { data: { publicUrl } } = supabase.storage
+                .from('quoteuploads')
+                .getPublicUrl(fileName);
+              imageUrls.push(publicUrl);
+              console.log("✅ Image uploaded:", publicUrl);
+            } else {
+              console.error("🔴 Supabase Storage Error:", uploadError.message);
+            }
+          } catch (storageError: any) {
+            console.error("🔴 Storage Processing Error:", storageError);
           }
-        } catch (storageError: any) {
-          console.error("🔴 Storage Processing Error:", storageError);
         }
       }
 
@@ -222,7 +270,7 @@ export default function AiEstimatePage() {
       if (contactId) {
         console.log("👤 Using existing GHL contact ID:", contactId);
         setActiveStep("analyzing");
-        if (image) analyzeImage(image, createdLeadId, contactId, imageUrls[0]);
+        if (images.length > 0) analyzeImages(images, createdLeadId, contactId, imageUrls.join(", "));
       } else {
         console.log("👤 Creating GHL contact...");
         const ghlPayload = {
@@ -231,7 +279,7 @@ export default function AiEstimatePage() {
           source: "AI Estimate Tool",
           tags: ["AI-Estimate-Started"],
           customFields: {
-            "Image of the area to be cleaned": imageUrls,
+            "Image of the area to be cleaned": imageUrls.join(", "),
             "AI Analysis Started": "AI Analysis Started" // Using a generic key or it will just be ignored if not found
           }
         };
@@ -282,17 +330,17 @@ export default function AiEstimatePage() {
             console.log("✅ GHL Contact created via fallback ID:", fallbackData.contactId);
             const cid = fallbackData.contactId;
             setActiveStep("analyzing");
-            if (image) analyzeImage(image, createdLeadId, cid, imageUrls[0]);
+            if (images.length > 0) analyzeImages(images, createdLeadId, cid, imageUrls.join(", "));
           } else {
             console.log("✅ GHL Contact created ID:", ghlData.contactId);
             const cid = ghlData.contactId;
             setActiveStep("analyzing");
-            if (image) analyzeImage(image, createdLeadId, cid, imageUrls[0]);
+            if (images.length > 0) analyzeImages(images, createdLeadId, cid, imageUrls.join(", "));
           }
         } catch (ghlError: any) {
           console.error("🔴 Critical GHL Error:", ghlError);
           setActiveStep("analyzing");
-          if (image) analyzeImage(image, createdLeadId, undefined, imageUrls[0]);
+          if (images.length > 0) analyzeImages(images, createdLeadId, undefined, imageUrls.join(", "));
         }
       }
     } catch (err: any) {
@@ -305,55 +353,53 @@ export default function AiEstimatePage() {
 
   const handleSendAnotherRequest = async () => {
     setShowDuplicateModal(false);
-    if (!image) return;
+    if (images.length === 0) return;
 
     setIsSubmittingLead(true);
     let imageUrls: string[] = [];
     
-    // Upload image again or use previous if we had it (but handleLeadSubmit uploads it after duplicate check)
-    // Wait, handleLeadSubmit does duplicate check FIRST. 
-    // So if it's a duplicate, it hasn't uploaded the image yet.
-    
-    console.log("📤 Preparing image upload for existing contact...");
-    try {
-      const res = await fetch(image);
-      const blob = await res.blob();
-      const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
-      const file = new File([blob], fileName, { type: "image/jpeg" });
-      
-      const { error: uploadError } = await supabase.storage
-        .from('quoteuploads')
-        .upload(fileName, file);
-
-      if (!uploadError) {
-        const { data: { publicUrl } } = supabase.storage
-          .from('quoteuploads')
-          .getPublicUrl(fileName);
-        imageUrls.push(publicUrl);
-        console.log("✅ Image uploaded:", publicUrl);
+    console.log(`📤 Uploading ${images.length} image(s) for existing contact...`);
+    for (const imgB64 of images) {
+      try {
+        const res = await fetch(imgB64);
+        const blob = await res.blob();
+        const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+        const file = new File([blob], fileName, { type: "image/jpeg" });
         
-        // Proceed with analyzing and updating
-        await proceedWithLead(imageUrls, duplicateContactData?.id);
-      } else {
-        console.error("🔴 Supabase Storage Error:", uploadError.message);
-        toast.error("Failed to upload image. Please try again.");
+        const { error: uploadError } = await supabase.storage
+          .from('quoteuploads')
+          .upload(fileName, file);
+
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('quoteuploads')
+            .getPublicUrl(fileName);
+          imageUrls.push(publicUrl);
+          console.log("✅ Image uploaded:", publicUrl);
+        } else {
+          console.error("🔴 Supabase Storage Error:", uploadError.message);
+        }
+      } catch (storageError: any) {
+        console.error("🔴 Storage Processing Error:", storageError);
       }
-    } catch (storageError: any) {
-      console.error("🔴 Storage Processing Error:", storageError);
-      toast.error("An error occurred during image upload.");
-    } finally {
-      setIsSubmittingLead(false);
     }
+
+    if (imageUrls.length > 0) {
+      await proceedWithLead(imageUrls, duplicateContactData?.id);
+    } else {
+      toast.error("Failed to upload images. Please try again.");
+    }
+    setIsSubmittingLead(false);
   }
 
-  async function analyzeImage(base64Image: string, leadId?: string | null, contactId?: string, uploadedImageUrl?: string) {
+  async function analyzeImages(base64Images: string[], leadId?: string | null, contactId?: string, uploadedImageUrl?: string) {
     setIsAnalyzing(true)
-    console.log("🚀 Starting Image Analysis Workflow...");
+    console.log(`🚀 Starting AI Analysis for ${base64Images.length} image(s)...`);
     try {
       const response = await fetch("/api/analyze-surface", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image }),
+        body: JSON.stringify({ images: base64Images }),
       })
 
       const data = await response.json()
@@ -429,15 +475,16 @@ export default function AiEstimatePage() {
   }
 
   const handleRetry = () => {
-    setImage(null)
+    setImages([])
     setResult(null)
     setActiveStep("idle")
     if (fileInputRef.current) fileInputRef.current.value = ""
+    if (addMoreRef.current) addMoreRef.current.value = ""
   }
 
   const handleWhatsApp = () => {
     const message = `Hi! I used your AI Estimate tool and got a range of ${result?.priceRange} for my ${result?.detectedMaterial}. I'd like to book this service.`
-    const whatsappUrl = `https://wa.me/19544703554?text=${encodeURIComponent(message)}`
+    const whatsappUrl = `https://wa.me/12392654398?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
@@ -543,6 +590,61 @@ export default function AiEstimatePage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-card/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-8 md:p-16 shadow-2xl relative overflow-hidden"
               >
+                {/* Image Thumbnail Grid */}
+                {images.length > 0 && (
+                  <div className="mb-10">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+                        {images.length} foto{images.length > 1 ? "s" : ""} seleccionada{images.length > 1 ? "s" : ""}
+                      </span>
+                      {images.length < 5 && (
+                        <button
+                          type="button"
+                          onClick={() => addMoreRef.current?.click()}
+                          disabled={isSubmittingLead}
+                          className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Plus className="w-3 h-3" /> Agregar más
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex gap-3 flex-wrap">
+                      {images.map((img, i) => (
+                        <div
+                          key={i}
+                          className="relative rounded-2xl overflow-hidden border-2 border-border shrink-0"
+                          style={{ width: 80, height: 80 }}
+                        >
+                          <Image src={img} alt={`Foto ${i + 1}`} fill className="object-cover" />
+                          {!isSubmittingLead && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(i)}
+                              className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 hover:bg-red-500 text-white flex items-center justify-center transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                          <div className="absolute bottom-0 inset-x-0 bg-black/50 text-white text-[8px] font-black text-center py-0.5">
+                            #{i + 1}
+                          </div>
+                        </div>
+                      ))}
+                      {images.length < 5 && (
+                        <button
+                          type="button"
+                          disabled={isSubmittingLead}
+                          onClick={() => addMoreRef.current?.click()}
+                          className="relative rounded-2xl border-2 border-dashed border-primary/30 hover:border-primary flex items-center justify-center transition-all text-primary/40 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-primary/30 disabled:hover:text-primary/40"
+                          style={{ width: 80, height: 80 }}
+                        >
+                          <Plus className="w-6 h-6" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="text-center mb-12">
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-bold text-[10px] mb-6 uppercase tracking-widest">
                     <ShieldCheck size={14} /> {t("aiEstimate.encryptedSession")}
@@ -617,7 +719,12 @@ export default function AiEstimatePage() {
                   className="absolute inset-x-0 h-1 bg-primary shadow-[0_0_30px_rgba(30,113,205,0.8)] z-20"
                 />
                 
-                {image && <Image src={image} alt="Processing" fill className="object-cover opacity-20" />}
+                {images.length > 0 && <Image src={images[0]} alt="Processing" fill className="object-cover opacity-20" />}
+                {images.length > 1 && (
+                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-[9px] font-black uppercase tracking-widest">
+                    Analizando {images.length} fotos...
+                  </div>
+                )}
                 
                 <div className="relative z-30 flex flex-col items-center gap-6">
                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center animate-pulse p-4 border border-white/20">
@@ -644,13 +751,18 @@ export default function AiEstimatePage() {
                     {/* Visual Analysis */}
                     <div className="space-y-6">
                       <div className="relative aspect-square md:aspect-video rounded-2xl overflow-hidden border border-border group shadow-inner">
-                        {image && <Image src={image} alt="Analyzed" fill className="object-cover" />}
+                        {images.length > 0 && <Image src={images[0]} alt="Analyzed" fill className="object-cover" />}
                         <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-all duration-300" />
                         
                         <div className="absolute top-4 right-4 bg-background/80 backdrop-blur-md px-3 py-1 rounded-full border border-border flex items-center gap-2">
                            <div className="w-2 h-2 bg-emerald-500 rounded-full" />
                            <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">{result?.confidenceScore}% {t("aiEstimate.result.match")}</span>
                         </div>
+                        {images.length > 1 && (
+                          <div className="absolute bottom-4 left-4 bg-primary/20 backdrop-blur-md px-3 py-1 rounded-full border border-primary/30">
+                            <span className="text-primary text-[9px] font-black uppercase tracking-widest">Basado en {images.length} fotos</span>
+                          </div>
+                        )}
                       </div>
                       
                       <div className="grid grid-cols-2 gap-3">
@@ -719,8 +831,17 @@ export default function AiEstimatePage() {
 
         <input 
           type="file" 
+          multiple
           ref={fileInputRef}
           onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
+        <input
+          type="file"
+          multiple
+          ref={addMoreRef}
+          onChange={handleAddMore}
           accept="image/*"
           className="hidden"
         />

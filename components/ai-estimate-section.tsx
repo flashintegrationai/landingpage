@@ -18,7 +18,10 @@ import {
   Clock,
   DollarSign,
   Target,
-  BrainCircuit
+  BrainCircuit,
+  Plus,
+  X,
+  Images
 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -45,37 +48,64 @@ export default function AiEstimateSection() {
   const [isSubmittingLead, setIsSubmittingLead] = useState(false)
   const [activeStep, setActiveStep] = useState<"idle" | "form" | "analyzing" | "result">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const addMoreRef = useRef<HTMLInputElement>(null)
+
+  const readFilesToBase64 = async (files: File[]): Promise<string[]> => {
+    const result: string[] = []
+    for (const file of files) {
+      const b64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+      })
+      result.push(b64)
+    }
+    return result
+  }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    if (files.length > 0) {
-      if (files.length > 5) {
-        toast.error("Please select up to 5 images max.")
-        return
-      }
-      
-      const oversized = files.some(file => file.size > 10 * 1024 * 1024)
-      if (oversized) {
-        toast.error("One or more images are too large. Please use images under 10MB each.")
-        return
-      }
-
-      const readFiles: string[] = []
-      
-      for (const file of files) {
-          const promise = new Promise<string>((resolve) => {
-              const reader = new FileReader()
-              reader.onloadend = () => {
-                  resolve(reader.result as string)
-              }
-              reader.readAsDataURL(file)
-          })
-          readFiles.push(await promise)
-      }
-      
-      setImages(readFiles)
-      setActiveStep("form")
+    if (files.length === 0) return
+    if (files.length > 5) {
+      toast.error("Please select up to 5 images max.")
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      return
     }
+    const oversized = files.some(file => file.size > 10 * 1024 * 1024)
+    if (oversized) {
+      toast.error("One or more images are too large. Please use images under 10MB each.")
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      return
+    }
+    const b64List = await readFilesToBase64(files)
+    setImages(b64List)
+    setActiveStep("form")
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const handleAddMore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+    if (images.length + files.length > 5) {
+      toast.error(`Puedes subir hasta 5 imágenes. Ya tienes ${images.length}.`)
+      if (addMoreRef.current) addMoreRef.current.value = ""
+      return
+    }
+    const oversized = files.some(f => f.size > 10 * 1024 * 1024)
+    if (oversized) {
+      toast.error("Una o más imágenes son demasiado grandes. Usa imágenes de menos de 10MB.")
+      if (addMoreRef.current) addMoreRef.current.value = ""
+      return
+    }
+    const newB64 = await readFilesToBase64(files)
+    setImages(prev => [...prev, ...newB64])
+    if (addMoreRef.current) addMoreRef.current.value = ""
+  }
+
+  const handleRemoveImage = (index: number) => {
+    const updated = images.filter((_, i) => i !== index)
+    setImages(updated)
+    if (updated.length === 0) setActiveStep("idle")
   }
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
@@ -156,7 +186,7 @@ export default function AiEstimateSection() {
 
   const handleWhatsApp = () => {
     const message = `Hi! I used your AI Estimate tool and got a range of ${result?.priceRange} for my ${result?.detectedMaterial}. I'd like to book this service.`
-    const whatsappUrl = `https://wa.me/19544703554?text=${encodeURIComponent(message)}`
+    const whatsappUrl = `https://wa.me/12392654398?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
@@ -267,6 +297,61 @@ export default function AiEstimateSection() {
                 <div className="absolute top-0 right-0 p-10 text-primary/5 pointer-events-none">
                   <ShieldAlert size={140} />
                 </div>
+
+                {/* Image Thumbnail Grid */}
+                {images.length > 0 && (
+                  <div className="mb-10">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+                        {images.length} foto{images.length > 1 ? "s" : ""} seleccionada{images.length > 1 ? "s" : ""}
+                      </span>
+                      {images.length < 5 && (
+                        <button
+                          type="button"
+                          onClick={() => addMoreRef.current?.click()}
+                          disabled={isSubmittingLead}
+                          className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Plus className="w-3 h-3" /> Agregar más
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex gap-3 flex-wrap">
+                      {images.map((img, i) => (
+                        <div
+                          key={i}
+                          className="relative rounded-2xl overflow-hidden border-2 border-border shrink-0"
+                          style={{ width: 80, height: 80 }}
+                        >
+                          <Image src={img} alt={`Foto ${i + 1}`} fill className="object-cover" />
+                          {!isSubmittingLead && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(i)}
+                              className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 hover:bg-red-500 text-white flex items-center justify-center transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                          <div className="absolute bottom-0 inset-x-0 bg-black/50 text-white text-[8px] font-black text-center py-0.5">
+                            #{i + 1}
+                          </div>
+                        </div>
+                      ))}
+                      {images.length < 5 && (
+                        <button
+                          type="button"
+                          disabled={isSubmittingLead}
+                          onClick={() => addMoreRef.current?.click()}
+                          className="relative rounded-2xl border-2 border-dashed border-primary/30 hover:border-primary flex items-center justify-center transition-all text-primary/40 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-primary/30 disabled:hover:text-primary/40"
+                          style={{ width: 80, height: 80 }}
+                        >
+                          <Plus className="w-6 h-6" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="text-center mb-12">
                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary font-black text-[10px] mb-6 uppercase tracking-widest border border-primary/20">
@@ -474,6 +559,14 @@ export default function AiEstimateSection() {
         multiple
         ref={fileInputRef}
         onChange={handleFileChange}
+        accept="image/*"
+        className="hidden"
+      />
+      <input
+        type="file"
+        multiple
+        ref={addMoreRef}
+        onChange={handleAddMore}
         accept="image/*"
         className="hidden"
       />
