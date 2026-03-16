@@ -19,7 +19,7 @@ export const translations: Record<string, Record<string, any>> = {
       revitalize: "Revitalize Your",
       propertyToday: "Property Today",
       description:
-        "Elite Surface Systems is the #1 choice for high-tech surface restoration. Increase your property value and curb appeal with our",
+        "Elite Cleaning Surface is the #1 choice for high-tech surface restoration. Increase your property value and curb appeal with our",
       industrialSoftWash: " industrial-grade soft washing.",
       googleRating: "5.0 Google Rating",
       guaranteed: "100% Guaranteed",
@@ -139,13 +139,13 @@ export const translations: Record<string, Record<string, any>> = {
     },
     features: {
       title: "Why Choose",
-      subtitle: "Elite Surface Systems",
+      subtitle: "Elite Cleaning Surface",
       description:
         "We combine precision engineering with advanced cleaning technology to deliver results that last.",
       whyChooseUs: "Why Choose Us",
       theEliteDifference: "THE ELITE DIFFERENCE",
       notAllServices:
-        "Not all pressure washing services are created equal. See how Elite Surface Systems sets the gold standard.",
+        "Not all pressure washing services are created equal. See how Elite Cleaning Surface sets the gold standard.",
       independentWashers: "Indep. Washers",
       establishedWashers: "Estab. Washers",
       elite: "Elite",
@@ -194,7 +194,7 @@ export const translations: Record<string, Record<string, any>> = {
         dragAndDrop: "or drag and drop here (JPG, PNG)",
         additionalDetails: "Additional Details",
         messagePlaceholder: "Tell us more about your project...",
-        smsConsent: "I agree to receive SMS messages from Elite Surface Systems regarding my estimate and service updates. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out, HELP for help. *",
+        smsConsent: "I agree to receive SMS messages from Elite Cleaning Surface regarding my estimate, appointments, service reminders, and customer support. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out, HELP for help.",
         submit: "Get Free Quote",
         sending: "Sending...",
         privacy: "By submitting this form, you agree to our {{link}}.",
@@ -266,7 +266,7 @@ export const translations: Record<string, Record<string, any>> = {
       title: "Testimonials",
       subtitle: "What Our Clients Say",
       description:
-        "Don't just take our word for it. Hear from the residential and commercial clients who trust Elite Surface Systems.",
+        "Don't just take our word for it. Hear from the residential and commercial clients who trust Elite Cleaning Surface.",
       averageRating: "Average Rating",
       reviews: "Reviews",
       items: [
@@ -274,7 +274,7 @@ export const translations: Record<string, Record<string, any>> = {
           name: "Roxanne Mix",
           date: "Jan 30, 2026",
           content:
-            "Elite Surface Systems is an honest and reliable company! I have used them several times for my house. The driveway looks brand new every time.",
+            "Elite Cleaning Surface is an honest and reliable company! I have used them several times for my house. The driveway looks brand new every time.",
         },
         {
           name: "Marianne Molleur",
@@ -286,7 +286,7 @@ export const translations: Record<string, Record<string, any>> = {
           name: "Blanca Blanco",
           date: "Jan 28, 2026",
           content:
-            "Highly recommend Elite Surface Systems! They were on time and very Professional at their work. Did an Amazing job on my driveway and house. Very Happy Customer! Thank you.",
+            "Highly recommend Elite Cleaning Surface! They were on time and very Professional at their work. Did an Amazing job on my driveway and house. Very Happy Customer! Thank you.",
         },
         {
           name: "G. D.",
@@ -313,7 +313,7 @@ export const translations: Record<string, Record<string, any>> = {
       subtitle: "The Future of",
       surfaceCleaning: "Surface Cleaning",
       description:
-        "At Elite Surface Systems, we combine cutting-edge technology with years of expertise to deliver unmatched pressure washing results. Our team is committed to transforming your property while protecting the environment.",
+        "At Elite Cleaning Surface, we combine cutting-edge technology with years of expertise to deliver unmatched pressure washing results. Our team is committed to transforming your property while protecting the environment.",
       readyToStart: "Ready to start?",
       features: [
         "State-of-the-art pressure washing equipment",
@@ -421,7 +421,7 @@ export const translations: Record<string, Record<string, any>> = {
         title1: "Not Just Cleaning.",
         title2: "Complete Restoration.",
         description:
-          "At Elite Surface Systems, we believe your property is an investment that deserves professional-grade preservation, not just a temporary wash.",
+          "At Elite Cleaning Surface, we believe your property is an investment that deserves professional-grade preservation, not just a temporary wash.",
         ctaAI: "TRY AI ESTIMATE",
         ctaCapabilities: "OUR CAPABILITIES",
         imageBadge: "Industrial Precision",
@@ -481,7 +481,7 @@ export const translations: Record<string, Record<string, any>> = {
         title: "Trusted by",
         titleItalic: "Professionals",
         description:
-          "Don't just take our word for it. See what homeowners, property managers, and business owners have to say about working with Elite Surface Systems.",
+          "Don't just take our word for it. See what homeowners, property managers, and business owners have to say about working with Elite Cleaning Surface.",
         badge: "Client Testimonials",
       },
       stats: {
@@ -499,13 +499,13 @@ export const translations: Record<string, Record<string, any>> = {
     },
     privacyPage: {
       backHome: "Back to Home",
-      title: "Privacy Policy",
+      title: "Elite Cleaning Surface | Privacy Policy",
       lastUpdated: "Last updated: February 2026",
       sections: [
         {
           title: "1. Data Collection Philosophy",
           content:
-            "Elite Surface Systems operates on a principle of least-privileged data collection. We only collect the technical and personal information strictly necessary to provide elite-grade cleaning services and maintain professional communication.",
+            "Elite Cleaning Surface operates on a principle of least-privileged data collection. We only collect the technical and personal information strictly necessary to provide elite-grade cleaning services and maintain professional communication.",
           subsections: [
             {
               title: "Information You Provide",
@@ -541,7 +541,7 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "3. SMS & Messaging Policy (A2P Compliance)",
           content:
-            "By providing your mobile number, you explicitly consent to receive transactional and operational SMS/text messages from Elite Surface Systems. This is critical for real-time arrival notifications and confirming quote details.",
+            "By providing your mobile number and checking the consent checkbox on our website form at https://www.elitecleaningsurfaces.com, you explicitly consent to receive SMS messages from Elite Cleaning Surface related to your estimate, appointment scheduling, service reminders, and customer support. The checkbox is unchecked by default and must be manually checked by the user before the form can be submitted. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out or HELP for assistance.",
           items: [
             {
               label: "Zero Third-Party Sharing",
@@ -549,11 +549,11 @@ export const translations: Record<string, Record<string, any>> = {
             },
             {
               label: "Anti-Spam Commitment",
-              desc: "We do not send automated marketing blasts without explicit secondary opt-in. Messages are strictly human-to-human or triggered by your direct service requests.",
+              desc: "We do not send automated marketing blasts without explicit opt-in. Messages are strictly triggered by your direct service requests.",
             },
             {
               label: "Universal Opt-Out",
-              desc: "You may terminate messaging at any time by replying 'STOP'. Reply 'HELP' for technical assistance.",
+              desc: "You may terminate messaging at any time by replying STOP. Reply HELP for assistance.",
             },
           ],
         },
@@ -616,19 +616,19 @@ export const translations: Record<string, Record<string, any>> = {
             "Right to Opt-Out",
           ],
           contact: "For formal data requests, contact our privacy director:",
-          email: "privacy@elitesurface.com",
+          email: "privacy@elitecleaningsurfaces.com",
         },
       ],
     },
     termsPage: {
       backHome: "Back to Home",
-      title: "Terms of Service",
+      title: "Elite Cleaning Surface | Terms of Service",
       subtitle: "Professional Standards for Elite Restorations",
       sections: [
         {
           title: "1. Service Acceptance",
           content:
-            "By accessing this website or approving a project estimate, you enter into a binding agreement with Elite Surface Systems. These terms ensure the safety of our technicians and the protection of your property.",
+            "By accessing this website or approving a project estimate, you enter into a binding agreement with Elite Cleaning Surface. These terms ensure the safety of our technicians and the protection of your property.",
         },
         {
           title: "2. Estimates & Precision Pricing",
@@ -697,9 +697,7 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "7. Media Release (Social Proof)",
           content:
-            "Elite Surface Systems reserves the right to capture and use before-and-after photographs/videos of our work for marketing purposes.",
-          extra:
-            "We value your privacy: we will never display your address, license plates, or recognizable residents in any public marketing material without direct consent.",
+            "Elite Cleaning Surface reserves the right to capture and use before-and-after photographs and videos of our work for marketing purposes. We will never display your address, license plates, or recognizable residents in any public marketing material without direct consent.",
         },
         {
           title: "8. Liability Limitation",
@@ -711,15 +709,13 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "9. SMS Communications",
           content:
-            "You may receive SMS messages related to your pressure washing estimate, appointment scheduling, and service updates. Message frequency may vary. Message and data rates may apply.",
-          extra:
-            "Reply STOP to unsubscribe or HELP for assistance.",
+            "By checking the SMS consent checkbox on our website form at https://www.elitecleaningsurfaces.com, you agree to receive SMS messages from Elite Cleaning Surface related to your pressure washing estimate, appointment scheduling, service reminders, and customer support. The checkbox is unchecked by default and must be manually selected before submitting the form. Message frequency may vary. Message and data rates may apply. Reply STOP to unsubscribe or HELP for assistance. We do not use purchased or third-party contact lists.",
         },
       ],
     },
     footer: {
       description:
-        "Elite Surface Systems delivers cutting-edge pressure washing technology for residential and commercial properties.",
+        "Elite Cleaning Surface delivers cutting-edge pressure washing technology for residential and commercial properties.",
       quickLinks: "Quick Links",
       contactInfo: "Contact Information",
       rights: "All rights reserved.",
@@ -797,7 +793,7 @@ export const translations: Record<string, Record<string, any>> = {
       whatsappSubText: "Fastest Response",
       call: "Call Now",
       callSubText: "Direct Line",
-      footer: "Elite Surface Systems • Premium Restoration",
+      footer: "Elite Cleaning Surface • Premium Restoration",
     },
   },
   es: {
@@ -820,7 +816,7 @@ export const translations: Record<string, Record<string, any>> = {
       revitalize: "Revitalice su",
       propertyToday: "Propiedad Hoy",
       description:
-        "Elite Surface Systems es la opción #1 para la restauración de superficies de alta tecnología. Aumente el valor de su propiedad y su atractivo exterior con nuestro",
+        "Elite Cleaning Surface es la opción #1 para la restauración de superficies de alta tecnología. Aumente el valor de su propiedad y su atractivo exterior con nuestro",
       industrialSoftWash: " lavado suave de grado industrial.",
       googleRating: "Calificación 5.0 en Google",
       guaranteed: "100% Garantizado",
@@ -940,13 +936,13 @@ export const translations: Record<string, Record<string, any>> = {
     },
     features: {
       title: "Por qué elegir",
-      subtitle: "Elite Surface Systems",
+      subtitle: "Elite Cleaning Surface",
       description:
         "Combinamos ingeniería de precisión con tecnología de limpieza avanzada para ofrecer resultados duraderos.",
       whyChooseUs: "Por Qué Elegirnos",
       theEliteDifference: "LA DIFERENCIA ELITE",
       notAllServices:
-        "No todos los servicios de lavado a presión son iguales. Vea cómo Elite Surface Systems establece el estándar de oro.",
+        "No todos los servicios de lavado a presión son iguales. Vea cómo Elite Cleaning Surface establece el estándar de oro.",
       independentWashers: "Indep. Washers",
       establishedWashers: "Estab. Washers",
       elite: "Elite",
@@ -995,7 +991,7 @@ export const translations: Record<string, Record<string, any>> = {
         dragAndDrop: "o arrastre y suelte aquí (JPG, PNG)",
         additionalDetails: "Detalles Adicionales",
         messagePlaceholder: "Cuéntenos más sobre su proyecto...",
-        smsConsent: "Acepto recibir mensajes SMS de Elite Surface Systems sobre mi cotización y actualizaciones del servicio. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos. Responda STOP para cancelar la suscripción o HELP para obtener ayuda. *",
+        smsConsent: "Acepto recibir mensajes SMS de Elite Cleaning Surface sobre mi cotización y actualizaciones del servicio. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos. Responda STOP para cancelar la suscripción o HELP para obtener ayuda. *",
         submit: "Obtener Cotización Gratis",
         sending: "Enviando...",
         privacy: "Al enviar este formulario, acepta nuestra {{link}}.",
@@ -1067,7 +1063,7 @@ export const translations: Record<string, Record<string, any>> = {
       title: "Reseñas",
       subtitle: "Lo Que Dicen Nuestros Clientes",
       description:
-        "No se limite a creer en nuestra palabra. Escuche a los clientes residenciales y comerciales que confían en Elite Surface Systems.",
+        "No se limite a creer en nuestra palabra. Escuche a los clientes residenciales y comerciales que confían en Elite Cleaning Surface.",
       averageRating: "Calificación Promedio",
       reviews: "Reseñas",
       items: [
@@ -1075,7 +1071,7 @@ export const translations: Record<string, Record<string, any>> = {
           name: "Roxanne Mix",
           date: "30 de Enero, 2026",
           content:
-            "¡Elite Surface Systems es una empresa honesta y confiable! Los he usado varias veces para mi casa. La entrada parece nueva cada vez.",
+            "¡Elite Cleaning Surface es una empresa honesta y confiable! Los he usado varias veces para mi casa. La entrada parece nueva cada vez.",
         },
         {
           name: "Marianne Molleur",
@@ -1087,7 +1083,7 @@ export const translations: Record<string, Record<string, any>> = {
           name: "Blanca Blanco",
           date: "28 de Enero, 2026",
           content:
-            "¡Recomiendo encarecidamente a Elite Surface Systems! Fueron puntuales y muy profesionales en su trabajo. Hicieron un trabajo increíble. ¡Clienta muy feliz! Gracias.",
+            "¡Recomiendo encarecidamente a Elite Cleaning Surface! Fueron puntuales y muy profesionales en su trabajo. Hicieron un trabajo increíble. ¡Clienta muy feliz! Gracias.",
         },
         {
           name: "G. D.",
@@ -1114,7 +1110,7 @@ export const translations: Record<string, Record<string, any>> = {
       subtitle: "El Futuro de la",
       surfaceCleaning: "Limpieza de Superficies",
       description:
-        "En Elite Surface Systems, combinamos tecnología de punta con años de experiencia para ofrecer resultados de lavado a presión inigualables. Nuestro equipo se compromete a transformar su propiedad protegiendo el medio ambiente.",
+        "En Elite Cleaning Surface, combinamos tecnología de punta con años de experiencia para ofrecer resultados de lavado a presión inigualables. Nuestro equipo se compromete a transformar su propiedad protegiendo el medio ambiente.",
       readyToStart: "¿Listo para empezar?",
       features: [
         "Equipo de lavado a presión de última generación",
@@ -1222,7 +1218,7 @@ export const translations: Record<string, Record<string, any>> = {
         title1: "No Solo Limpieza.",
         title2: "Restauración Completa.",
         description:
-          "En Elite Surface Systems, creemos que su propiedad es una inversión que merece una preservación de grado profesional, no solo un lavado temporal.",
+          "En Elite Cleaning Surface, creemos que su propiedad es una inversión que merece una preservación de grado profesional, no solo un lavado temporal.",
         ctaAI: "PROBAR ESTIMADO IA",
         ctaCapabilities: "NUESTRAS CAPACIDADES",
         imageBadge: "Precisión Industrial",
@@ -1282,7 +1278,7 @@ export const translations: Record<string, Record<string, any>> = {
         title: "Confiado por",
         titleItalic: "Profesionales",
         description:
-          "No se limite a creer en nuestra palabra. Vea lo que los propietarios, administradores de propiedades y dueños de negocios tienen que decir sobre trabajar con Elite Surface Systems.",
+          "No se limite a creer en nuestra palabra. Vea lo que los propietarios, administradores de propiedades y dueños de negocios tienen que decir sobre trabajar con Elite Cleaning Surface.",
         badge: "Testimonios de Clientes",
       },
       stats: {
@@ -1306,7 +1302,7 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "1. Filosofía de Recopilación de Datos",
           content:
-            "Elite Surface Systems opera bajo un principio de recopilación de datos de privilegio mínimo. Solo recopilamos la información técnica y personal estrictamente necesaria para proporcionar servicios de limpieza de grado elite y mantener una comunicación profesional.",
+            "Elite Cleaning Surface opera bajo un principio de recopilación de datos de privilegio mínimo. Solo recopilamos la información técnica y personal estrictamente necesaria para proporcionar servicios de limpieza de grado elite y mantener una comunicación profesional.",
           subsections: [
             {
               title: "Información que Usted Proporciona",
@@ -1342,7 +1338,7 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "3. Política de SMS y Mensajería (Cumplimiento A2P)",
           content:
-            "Al proporcionar su número móvil, usted acepta explícitamente recibir mensajes SMS/texto transaccionales y operativos de Elite Surface Systems. Esto es fundamental para las notificaciones de llegada en tiempo real y la confirmación de detalles de cotización.",
+            "Al proporcionar su número móvil, usted acepta explícitamente recibir mensajes SMS/texto transaccionales y operativos de Elite Cleaning Surface. Esto es fundamental para las notificaciones de llegada en tiempo real y la confirmación de detalles de cotización.",
           items: [
             {
               label: "Cero Intercambio con Terceros",
@@ -1430,7 +1426,7 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "1. Aceptación del Servicio",
           content:
-            "Al acceder a este sitio web o aprobar un presupuesto de proyecto, usted establece un acuerdo vinculante con Elite Surface Systems. Estos términos garantizan la seguridad de nuestros técnicos y la protección de su propiedad.",
+            "Al acceder a este sitio web o aprobar un presupuesto de proyecto, usted establece un acuerdo vinculante con Elite Cleaning Surface. Estos términos garantizan la seguridad de nuestros técnicos y la protección de su propiedad.",
         },
         {
           title: "2. Presupuestos y Precios de Precisión",
@@ -1499,7 +1495,7 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "7. Autorización de Medios (Prueba Social)",
           content:
-            "Elite Surface Systems se reserva el derecho de capturar y utilizar fotografías/videos de antes y después de nuestro trabajo con fines de marketing.",
+            "Elite Cleaning Surface se reserva el derecho de capturar y utilizar fotografías/videos de antes y después de nuestro trabajo con fines de marketing.",
           extra:
             "Valoramos su privacidad: nunca mostraremos su dirección, placas de vehículos o residentes reconocibles en ningún material de marketing público sin consentimiento directo.",
         },
@@ -1599,7 +1595,7 @@ export const translations: Record<string, Record<string, any>> = {
       whatsappSubText: "Respuesta más rápida",
       call: "Llamar Ahora",
       callSubText: "Línea Directa",
-      footer: "Elite Surface Systems • Restauración Premium",
+      footer: "Elite Cleaning Surface • Restauración Premium",
     },
   },
 };

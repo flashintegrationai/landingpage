@@ -79,7 +79,7 @@ export default function AboutSection() {
                 <div className="relative w-full h-full rounded-3xl overflow-hidden bg-muted flex items-center justify-center">
                   <Image
                     src="/images/whatsapp-image-2026-01-28-at-11.png"
-                    alt="Elite Surface Systems Equipment"
+                    alt="Elite Cleaning Surface Equipment"
                     width={400}
                     height={400}
                     className="object-contain drop-shadow-[0_0_60px_rgba(30,113,205,0.3)] animate-[pulse_4s_ease-in-out_infinite]"

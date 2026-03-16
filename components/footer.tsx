@@ -78,7 +78,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="block mb-8">
               <span className="font-(family-name:--font-orbitron) text-xl md:text-2xl font-black tracking-widest text-foreground dark:text-white uppercase hover:text-primary transition-colors leading-tight">
-                ELITE SURFACE SYSTEMS
+                Elite Cleaning Surface
               </span>
             </Link>
             <p className="text-muted-foreground dark:text-white/70 leading-relaxed mb-8 text-lg">
@@ -156,7 +156,7 @@ export default function Footer() {
                 onClick={handleQuoteClick}
                 className="hover:text-primary dark:hover:text-white transition-colors cursor-pointer"
               >
-                info@elitesurface.com
+                info@elitecleaningsurfaces.com
               </p>
               <p className="mt-2 text-muted-foreground dark:text-white/60">{t("footer.serviceArea")}</p>
             </div>
@@ -169,7 +169,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-sm text-muted-foreground dark:text-white/40 font-medium tracking-wide">
-              © {new Date().getFullYear()} Elite Surface Systems. {t("footer.rights")}
+              © 2026 Elite Cleaning Surface. All rights reserved.
             </div>
             <div className="flex items-center gap-8">
               <Link

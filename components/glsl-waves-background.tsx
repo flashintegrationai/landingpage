@@ -162,7 +162,7 @@ const GLSLWavesBackground = ({
                 // Blue water gradient based on position
                 float heightFactor = (vPosition.y + 50.0) / 100.0;
                 
-                // Elite Surface blue: #1e71cd = rgb(30, 113, 205) = (0.118, 0.443, 0.804)
+                // Elite Cleaning Surface blue: #1e71cd = rgb(30, 113, 205) = (0.118, 0.443, 0.804)
                 vec3 deepBlue = vec3(0.05, 0.2, 0.5);      // Darker blue for depth
                 vec3 midBlue = vec3(0.118, 0.443, 0.804);  // Brand blue #1e71cd
                 vec3 lightBlue = vec3(0.3, 0.6, 0.95);     // Lighter blue highlights

@@ -74,10 +74,10 @@ export default function TestimonialsPage() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 group">
               <div className="relative w-12 h-12">
-                <Image src="/logoremovebj.png" width={100} height={100} alt="Elite Surface Systems" className="object-contain" />
+                <Image src="/logoremovebj.png" width={100} height={100} alt="Elite Cleaning Surface" className="object-contain" />
               </div>
               <div className="flex flex-col">
-                <span className="font-(family-name:--font-orbitron) text-xl font-black text-foreground uppercase tracking-tight">Elite Surface</span>
+                <span className="font-(family-name:--font-orbitron) text-xl font-black text-foreground uppercase tracking-tight">Elite Cleaning Surface</span>
                 <span className="text-[8px] font-bold text-primary uppercase tracking-[0.3em]">{t("testimonialsPage.header.successStories")}</span>
               </div>
             </Link>

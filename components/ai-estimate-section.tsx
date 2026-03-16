@@ -444,7 +444,7 @@ export default function AiEstimateSection() {
                   <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
                   <div className="absolute inset-0 flex items-center justify-center p-12">
                      <div className="relative w-full max-w-md aspect-square">
-                        <Image src="/images/logo.png" alt="Elite Surface Systems" fill className="object-contain drop-shadow-[0_0_40px_rgba(30,113,205,0.5)]" />
+                        <Image src="/images/logo.png" alt="Elite Cleaning Surface" fill className="object-contain drop-shadow-[0_0_40px_rgba(30,113,205,0.5)]" />
                      </div>
                   </div>
                   <div className="absolute bottom-8 left-8 px-5 py-3 rounded-2xl bg-green-500/20 backdrop-blur-xl border border-green-500/30 flex items-center gap-3">
