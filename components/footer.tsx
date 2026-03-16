@@ -147,7 +147,7 @@ export default function Footer() {
               className="p-6 rounded-3xl bg-foreground/5 dark:bg-white/5 border border-border dark:border-white/10 mb-6 group hover:border-[#1e71cd]/50 transition-colors cursor-pointer"
             >
               <div className="font-(family-name:--font-orbitron) text-2xl font-black text-[#1e71cd] mb-1 group-hover:scale-105 transition-transform">
-                (123) 456-7890
+                (239) 265-4398
               </div>
               <div className="text-sm text-muted-foreground dark:text-white/50 font-medium uppercase tracking-widest">{t("footer.callFreeQuote")}</div>
             </div>
