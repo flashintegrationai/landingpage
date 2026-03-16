@@ -64,14 +64,14 @@ export default function Navbar() {
               <div className="relative w-20 h-20 md:w-28 md:h-28 transition-transform duration-300 group-hover:scale-105">
                 <Image
                   src="/logoremovebj.png"
-                  alt="Elite Surface Systems Logo"
+                  alt="Elite Cleaning Surface Logo"
                   fill
                   className="object-contain"
                   priority
                 />
               </div>
               <span className="hidden sm:block font-(family-name:--font-orbitron) text-lg md:text-xl font-black tracking-widest text-foreground uppercase">
-                ELITE SURFACE
+                ELITE CLEANING SURFACE
               </span>
             </Link>
 

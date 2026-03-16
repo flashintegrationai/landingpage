@@ -114,7 +114,7 @@ export default function DiscountPopup() {
                 >
                   <img 
                     src="/logoremovebj.png" 
-                    alt="Elite Surface Logo" 
+                    alt="Elite Cleaning Surface Logo" 
                     className="w-40 h-40 md:w-40 md:h-40 object-contain drop-shadow-md"
                   />
                   <div className="absolute -top-3 -right-3 bg-yellow-400 text-black text-xs font-black px-2 py-1 rounded-md shadow-lg rotate-12">

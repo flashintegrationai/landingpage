@@ -21,30 +21,30 @@ const orbitron = Orbitron({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://elitesurface.com'),
-  title: 'Elite Surface Systems | Professional Pressure Washing Services',
-  description: 'Elite Surface Systems delivers cutting-edge pressure washing technology for residential and commercial properties. South Florida\'s #1 choice for high-tech surface restoration.',
-  keywords: ['pressure washing', 'power washing', 'surface cleaning', 'commercial cleaning', 'residential cleaning', 'Elite Surface Systems', 'South Florida cleaning'],
+  title: 'Elite Cleaning Surface | Professional Pressure Washing Services',
+  description: 'Elite Cleaning Surface delivers cutting-edge pressure washing technology for residential and commercial properties. South Florida\'s #1 choice for high-tech surface restoration.',
+  keywords: ['pressure washing', 'power washing', 'surface cleaning', 'commercial cleaning', 'residential cleaning', 'Elite Cleaning Surface', 'South Florida cleaning'],
   authors: [{ name: 'Bryan De Jesus Rosa Tavarez', url: 'https://bento.me/bryandejesusrt' }],
   creator: 'Bryan De Jesus Rosa Tavarez',
-  publisher: 'Elite Surface Systems',
+  publisher: 'Elite Cleaning Surface',
   openGraph: {
-    title: 'Elite Surface Systems | Professional Pressure Washing',
+    title: 'Elite Cleaning Surface | Professional Pressure Washing',
     description: 'Expert industrial-grade surface restoration for residential and commercial properties.',
     type: 'website',
     url: 'https://elitesurface.com',
-    siteName: 'Elite Surface Systems',
+    siteName: 'Elite Cleaning Surface',
     images: [
       {
         url: '/images/whatsapp-image-2026-01-28-at-11.png',
         width: 1200,
         height: 630,
-        alt: 'Elite Surface Systems Logo',
+        alt: 'Elite Cleaning Surface Logo',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Elite Surface Systems | Professional Pressure Washing',
+    title: 'Elite Cleaning Surface | Professional Pressure Washing',
     description: 'Expert industrial-grade surface restoration for residential and commercial properties.',
     images: ['/images/whatsapp-image-2026-01-28-at-11.png'],
     creator: '@bryandejesusrt',

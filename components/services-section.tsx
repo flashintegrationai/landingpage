@@ -325,7 +325,7 @@ function ServiceModalContent({ service, handleQuoteClick, t }: { service: any, h
           <div className="flex items-center gap-2 mt-1">
             <span className="w-8 h-1 bg-[#1e71cd] rounded-full" />
             <DialogDescription className="text-white/60 text-[10px] md:text-xs font-black uppercase tracking-[0.4em]">
-              Elite Surface Systems Professional Restoration
+              Elite Cleaning Surface Professional Restoration
             </DialogDescription>
           </div>
         </div>
