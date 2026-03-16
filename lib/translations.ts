@@ -194,11 +194,13 @@ export const translations: Record<string, Record<string, any>> = {
         dragAndDrop: "or drag and drop here (JPG, PNG)",
         additionalDetails: "Additional Details",
         messagePlaceholder: "Tell us more about your project...",
-        smsConsent: "By checking this box, you agree to receive SMS messages from Elite Surface Systems regarding your quote request, appointment scheduling, service updates, and reminders. Message and data rates may apply. Reply STOP to opt out. *",
+        smsConsent: "I agree to receive SMS messages from Elite Surface Systems regarding my estimate and service updates. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out, HELP for help. *",
         submit: "Get Free Quote",
         sending: "Sending...",
         privacy: "By submitting this form, you agree to our {{link}}.",
         privacyLink: "privacy policy",
+        terms: "You can also review our {{link}}.",
+        termsLink: "terms of service",
         success: {
           title: "Thank You!",
           description:
@@ -706,6 +708,13 @@ export const translations: Record<string, Record<string, any>> = {
           extra:
             "We are fully licensed and insured for the peace of mind of every residential and commercial client we serve.",
         },
+        {
+          title: "9. SMS Communications",
+          content:
+            "You may receive SMS messages related to your pressure washing estimate, appointment scheduling, and service updates. Message frequency may vary. Message and data rates may apply.",
+          extra:
+            "Reply STOP to unsubscribe or HELP for assistance.",
+        },
       ],
     },
     footer: {
@@ -986,11 +995,13 @@ export const translations: Record<string, Record<string, any>> = {
         dragAndDrop: "o arrastre y suelte aquí (JPG, PNG)",
         additionalDetails: "Detalles Adicionales",
         messagePlaceholder: "Cuéntenos más sobre su proyecto...",
-        smsConsent: "Al marcar esta casilla, acepta recibir mensajes SMS de Elite Surface Systems con respecto a su solicitud de cotización, programación de citas, actualizaciones de servicio y recordatorios. Pueden aplicarse tarifas de mensajes y datos. Responda STOP para cancelar su suscripción. *",
+        smsConsent: "Acepto recibir mensajes SMS de Elite Surface Systems sobre mi cotización y actualizaciones del servicio. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos. Responda STOP para cancelar la suscripción o HELP para obtener ayuda. *",
         submit: "Obtener Cotización Gratis",
         sending: "Enviando...",
         privacy: "Al enviar este formulario, acepta nuestra {{link}}.",
         privacyLink: "política de privacidad",
+        terms: "También puede consultar nuestros {{link}}.",
+        termsLink: "términos de servicio",
         success: {
           title: "¡Gracias!",
           description:
@@ -1498,6 +1509,13 @@ export const translations: Record<string, Record<string, any>> = {
             "Nuestra responsabilidad total por cualquier reclamo que surja de nuestros servicios no excederá el monto total pagado por el cliente por esa visita de servicio específica.",
           extra:
             "Estamos totalmente licenciados y asegurados para la tranquilidad de cada cliente residencial y comercial que servimos.",
+        },
+        {
+          title: "9. Comunicaciones por SMS",
+          content:
+            "Puede recibir mensajes SMS relacionados con su presupuesto de lavado a presión, la programación de citas y las actualizaciones del servicio. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos.",
+          extra:
+            "Responda STOP para cancelar la suscripción o HELP para recibir ayuda.",
         },
       ],
     },
