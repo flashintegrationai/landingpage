@@ -164,7 +164,7 @@ export default function AboutSection() {
               <div className="px-6 py-4 rounded-2xl bg-linear-to-br from-primary/20 to-transparent border border-primary/30">
                 <div className="text-sm text-foreground/60 mb-1">{t("about.readyToStart")}</div>
                 <div className="font-(family-name:--font-orbitron) text-xl font-bold text-foreground">
-                  Call (123) 456-7890
+                  Call (239) 265-4398
                 </div>
               </div>
             </div>

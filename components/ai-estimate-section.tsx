@@ -382,7 +382,7 @@ export default function AiEstimateSection() {
                       <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input 
                         type="tel"
-                        placeholder="(123) 456-7890" 
+                        placeholder="(239) 265-4398" 
                         required
                         className="h-16 pl-14 bg-background border-border rounded-2xl focus:border-primary focus:ring-primary/10 transition-all font-bold"
                         value={leadData.phone}

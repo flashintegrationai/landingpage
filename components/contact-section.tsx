@@ -430,7 +430,7 @@ export default function ContactSection() {
                       name="phone"
                       type="tel"
                       required
-                      placeholder="(123) 456-7890"
+                      placeholder="(239) 265-4398"
                       value={phone}
                       onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                       className={`bg-background/50 border-input text-foreground placeholder:text-foreground/40 focus:border-[#1e71cd] focus:ring-[#1e71cd]/20 ${fieldErrors.phone ? 'border-red-500/50' : ''}`}
