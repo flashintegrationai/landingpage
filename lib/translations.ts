@@ -541,7 +541,7 @@ export const translations: Record<string, Record<string, any>> = {
         {
           title: "3. SMS & Messaging Policy (A2P Compliance)",
           content:
-            "By providing your mobile number and checking the consent checkbox on our website form at https://www.elitecleaningsurfaces.com, you explicitly consent to receive SMS messages from Elite Cleaning Surface related to your estimate, appointment scheduling, service reminders, and customer support. The checkbox is unchecked by default and must be manually checked by the user before the form can be submitted. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out or HELP for assistance.",
+            "By providing your mobile number and manually checking the standalone SMS consent checkbox on our website form at https://www.elitecleaningsurfaces.com, operated by Elite Cleaning Surface under Tineo Capital Holding, you explicitly consent to receive SMS messages from Elite Cleaning Surface related to your estimate, appointment scheduling, service reminders, and customer support. The consent checkbox is unchecked by default and must be manually checked by the user before the form can be submitted. It is separate from the Privacy Policy and Terms of Service agreement. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out or HELP for assistance. Consent is recorded with timestamp and phone number in our CRM system.",
           items: [
             {
               label: "Zero Third-Party Sharing",
