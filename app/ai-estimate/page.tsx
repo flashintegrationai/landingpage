@@ -53,12 +53,18 @@ interface AnalysisResult {
   priceRange: string
 }
 
+interface LeadData {
+  name: string
+  phone: string
+  address: string
+}
+
 export default function AiEstimatePage() {
   const { t } = useLanguage()
   const [images, setImages] = useState<string[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [result, setResult] = useState<AnalysisResult | null>(null)
-  const [leadData, setLeadData] = useState({ name: "", phone: "" })
+  const [leadData, setLeadData] = useState<LeadData>({ name: "", phone: "", address: "" })
   const [isSubmittingLead, setIsSubmittingLead] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ phone?: string }>({})
   const [showDuplicateModal, setShowDuplicateModal] = useState(false)
@@ -153,7 +159,7 @@ export default function AiEstimatePage() {
       return
     }
 
-    if (!leadData.name || !leadData.phone) {
+    if (!leadData.name || !leadData.phone || !leadData.address) {
       toast.error(t("contact.form.errors.submissionFailed"))
       return
     }
@@ -238,7 +244,7 @@ export default function AiEstimatePage() {
             full_name: leadData.name,
             phone_number: leadData.phone,
             source: 'ai_estimator',
-            notes: imageUrls.length > 0 ? `Images: ${imageUrls.join(", ")}` : ""
+            notes: `Address: ${leadData.address}${imageUrls.length > 0 ? ` | Images: ${imageUrls.join(", ")}` : ""}`
           }).select();
 
         if (leadError) {
@@ -279,6 +285,7 @@ export default function AiEstimatePage() {
           source: "AI Estimate Tool",
           tags: ["AI-Estimate-Started"],
           customFields: {
+            iaestimateaddress: leadData.address,
             "Image of the area to be cleaned": imageUrls.join(", "),
             "AI Analysis Started": "AI Analysis Started" // Using a generic key or it will just be ignored if not found
           }
@@ -399,7 +406,10 @@ export default function AiEstimatePage() {
       const response = await fetch("/api/analyze-surface", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images: base64Images }),
+        body: JSON.stringify({
+          images: base64Images,
+          address: leadData.address,
+        }),
       })
 
       const data = await response.json()
@@ -448,6 +458,7 @@ export default function AiEstimatePage() {
                 aiestimatearea: `${data.estimatedSqFt} sqft`,
                 price_range: data.priceRange,
                 iaestimatecontamination: data.contaminationLevel,
+                iaestimateaddress: leadData.address,
                 iaestimateanalysisnotes: analysisNotes,
                 // Ensure photo is a string here too
                 iaestimateimage_urls: uploadedImageUrl || ""
@@ -692,6 +703,20 @@ export default function AiEstimatePage() {
                           {fieldErrors.phone}
                         </p>
                       )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Property address</Label>
+                    <div className="relative group">
+                      <Input
+                        type="text"
+                        placeholder="Street, City, ZIP"
+                        required
+                        className="h-14 px-4 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all"
+                        value={leadData.address}
+                        onChange={e => setLeadData({ ...leadData, address: e.target.value })}
+                      />
                     </div>
                   </div>
 
