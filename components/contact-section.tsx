@@ -85,6 +85,8 @@ export default function ContactSection() {
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string; smsConsent?: string; services?: string }>({});
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateContactData, setDuplicateContactData] = useState<any>(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [submittedFormData, setSubmittedFormData] = useState<any>(null);
 
   const [files, setFiles] = useState<File[]>([]);
   const [prefLanguage, setPrefLanguage] = useState(language === "en" ? "English" : "Spanish");
@@ -130,8 +132,105 @@ export default function ContactSection() {
       observer.observe(sectionRef.current);
     }
 
+    // Preload GHL booking script on component mount for faster loading
+    const scriptId = "ghl_embed_script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://apighlv.elitecleaningsurfaces.com/js/form_embed.js";
+      script.type = "text/javascript";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
     return () => observer.disconnect();
   }, []);
+
+  // Populate booking form with saved contact data when modal opens
+  useEffect(() => {
+    if (showBookingModal && mounted && submittedFormData) {
+      // Store form data in window for the GHL widget to access
+      (window as any).__ghlBookingData = {
+        name: submittedFormData.name,
+        phone: submittedFormData.phone.replace(/\D/g, ""), // Remove formatting
+        email: submittedFormData.email,
+        address: submittedFormData.address,
+        services: submittedFormData.services,
+      };
+      
+      // Also store in localStorage as backup
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('ghl_booking_prefill', JSON.stringify({
+          name: submittedFormData.name,
+          phone: submittedFormData.phone.replace(/\D/g, ""),
+          email: submittedFormData.email,
+          address: submittedFormData.address,
+          services: submittedFormData.services,
+        }));
+      }
+
+      // Wait a bit for the iframe to load, then try to fill the form
+      const timer = setTimeout(() => {
+        const iframe = document.getElementById("PhQ7q4iIMz6LUvtmegB6_booking_calendar_modal") as HTMLIFrameElement;
+        if (iframe && iframe.contentWindow) {
+          // Try multiple times to fill the form with a slight delay
+          for (let i = 1; i <= 3; i++) {
+            setTimeout(() => {
+              if (iframe.contentWindow) {
+                // Method 1: Direct window object access
+                try {
+                  const iframeWindow = iframe.contentWindow;
+                  (iframeWindow as any).__ghlBookingData = {
+                    name: submittedFormData.name,
+                    phone: submittedFormData.phone.replace(/\D/g, ""),
+                    email: submittedFormData.email,
+                    address: submittedFormData.address,
+                  };
+                } catch (e) {
+                  // Iframe may be cross-origin, silently continue
+                }
+
+                // Method 2: Access form inputs directly if possible
+                try {
+                  const inputs = iframe.contentDocument?.querySelectorAll('input, textarea');
+                  if (inputs) {
+                    inputs.forEach((input: any) => {
+                      const type = input.type || input.tagName.toLowerCase();
+                      if (input.name || input.placeholder) {
+                        const name = (input.name || input.placeholder).toLowerCase();
+                        
+                        if (name.includes('name')) {
+                          input.value = submittedFormData.name;
+                          input.dispatchEvent(new Event('input', { bubbles: true }));
+                          input.dispatchEvent(new Event('change', { bubbles: true }));
+                        } else if (name.includes('phone') || name.includes('mobile')) {
+                          input.value = submittedFormData.phone.replace(/\D/g, "");
+                          input.dispatchEvent(new Event('input', { bubbles: true }));
+                          input.dispatchEvent(new Event('change', { bubbles: true }));
+                        } else if (name.includes('email')) {
+                          input.value = submittedFormData.email;
+                          input.dispatchEvent(new Event('input', { bubbles: true }));
+                          input.dispatchEvent(new Event('change', { bubbles: true }));
+                        } else if (name.includes('address')) {
+                          input.value = submittedFormData.address;
+                          input.dispatchEvent(new Event('input', { bubbles: true }));
+                          input.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                      }
+                    });
+                  }
+                } catch (e) {
+                  // Cross-origin or other errors, continue silently
+                }
+              }
+            }, 300 * i);
+          }
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showBookingModal, mounted, submittedFormData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -316,6 +415,13 @@ export default function ContactSection() {
 
       // Success
       setIsSubmitting(false);
+      setSubmittedFormData({
+        name,
+        phone,
+        email,
+        address,
+        services: servicesSubmited,
+      });
       setIsSubmitted(true);
       triggerConfetti();
       setFiles([]);
@@ -395,16 +501,24 @@ export default function ContactSection() {
                 <h3 className="font-(family-name:--font-orbitron) text-2xl font-bold text-foreground mb-4">
                   {t("contact.form.success.title")}
                 </h3>
-                <p className="text-foreground/60 mb-6">
+                <p className="text-foreground/60 mb-8">
                   {t("contact.form.success.description")}
                 </p>
-                <Button
-                  onClick={() => setIsSubmitted(false)}
-                  variant="outline"
-                  className="border-input bg-background hover:bg-accent hover:text-accent-foreground"
-                >
-                  {t("contact.form.success.button")}
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    onClick={() => setShowBookingModal(true)}
+                    className="bg-[#1e71cd] hover:bg-[#1e71cd]/90 text-white px-8 h-12 rounded-xl hover:scale-[1.02] transition-all shadow-lg shadow-[#1e71cd]/20"
+                  >
+                    Schedule Appointment
+                  </Button>
+                  <Button
+                    onClick={() => setIsSubmitted(false)}
+                    variant="outline"
+                    className="border-input bg-background hover:bg-accent hover:text-accent-foreground px-8 h-12 rounded-xl"
+                  >
+                    {t("contact.form.success.button")}
+                  </Button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -729,6 +843,43 @@ export default function ContactSection() {
               Understand
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Booking Modal */}
+      <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
+        <DialogContent className="sm:max-w-5xl bg-card border-border p-4 md:p-6 max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="font-(family-name:--font-orbitron) text-xl uppercase tracking-wide">
+              Ready to Schedule?
+            </DialogTitle>
+            <DialogDescription>
+              Select your preferred date and time below to book your service appointment
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+            <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+              <p className="text-[11px] leading-relaxed text-amber-900 dark:text-amber-200 font-semibold">
+                ✓ Your information from the contact form has been pre-filled. Please complete any remaining details and select your preferred appointment time below.
+              </p>
+            </div>
+
+            <div className="relative rounded-xl overflow-hidden border border-border">
+              <iframe
+                src={`https://apighlv.elitecleaningsurfaces.com/widget/booking/PhQ7q4iIMz6LUvtmegB6${submittedFormData ? `?name=${encodeURIComponent(submittedFormData.name)}&phone=${encodeURIComponent(submittedFormData.phone.replace(/\D/g, ''))}&email=${encodeURIComponent(submittedFormData.email)}` : ''}`}
+                style={{
+                  width: "100%",
+                  border: "none",
+                  overflow: "auto",
+                  height: "72vh",
+                  minHeight: "650px",
+                }}
+                scrolling="yes"
+                id="PhQ7q4iIMz6LUvtmegB6_booking_calendar_modal"
+                className="rounded-xl"
+              />
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </section>

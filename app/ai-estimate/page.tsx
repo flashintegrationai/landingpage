@@ -51,6 +51,15 @@ interface AnalysisResult {
   estimatedSqFt: number
   confidenceScore: number
   priceRange: string
+  pricingDebug?: {
+    normalizedAddress: string
+    propertyType: "Business" | "Residential"
+    zoneTier: "premium" | "higher" | "standard"
+    serviceCategory: string
+    locationMultiplier: number
+    imageCount: number
+    source: "google_maps" | "fallback"
+  }
 }
 
 interface LeadData {
@@ -69,6 +78,9 @@ export default function AiEstimatePage() {
   const [fieldErrors, setFieldErrors] = useState<{ phone?: string }>({})
   const [showDuplicateModal, setShowDuplicateModal] = useState(false)
   const [duplicateContactData, setDuplicateContactData] = useState<any>(null)
+  const [showGalleryModal, setShowGalleryModal] = useState(false)
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState(0)
+  const [showBookingModal, setShowBookingModal] = useState(false)
   const [activeStep, setActiveStep] = useState<"idle" | "form" | "analyzing" | "result">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
   const addMoreRef = useRef<HTMLInputElement>(null)
@@ -78,7 +90,30 @@ export default function AiEstimatePage() {
     setMounted(true)
   }, [])
 
+  // Load GHL booking script when booking modal is opened
+  useEffect(() => {
+    if (showBookingModal && mounted) {
+      const scriptId = "ghl_embed_script"
+      
+      // Check if script already loaded
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script")
+        script.id = scriptId
+        script.src = "https://apighlv.elitecleaningsurfaces.com/js/form_embed.js"
+        script.type = "text/javascript"
+        script.async = true
+        document.body.appendChild(script)
+      }
+    }
+  }, [showBookingModal, mounted])
+
   if (!mounted) return null
+
+  const getText = (key: string, fallback: string) => {
+    const value = t(key)
+    if (!value || value === key) return fallback
+    return value
+  }
 
   const formatPhoneNumber = (value: string) => {
     if (!value) return value
@@ -102,6 +137,51 @@ export default function AiEstimatePage() {
       result.push(b64)
     }
     return result
+  }
+
+  // Compress image to reduce payload size and improve performance
+  const compressImage = async (base64Image: string, maxWidth: number = 1920, maxHeight: number = 1920, quality: number = 0.8): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement("canvas")
+        let { width, height } = img
+
+        // Calculate new dimensions while maintaining aspect ratio
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width)
+            width = maxWidth
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height)
+            height = maxHeight
+          }
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext("2d")
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height)
+        }
+
+        const compressedBase64 = canvas.toDataURL("image/jpeg", quality)
+        resolve(compressedBase64)
+      }
+      img.src = base64Image
+    })
+  }
+
+  const compressImages = async (base64Images: string[]): Promise<string[]> => {
+    const compressed: string[] = []
+    for (const img of base64Images) {
+      const compressedImg = await compressImage(img, 1920, 1920, 0.8)
+      compressed.push(compressedImg)
+    }
+    return compressed
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +231,7 @@ export default function AiEstimatePage() {
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Simple phone validation (10 digits)
     const phoneDigits = leadData.phone.replace(/[^\d]/g, "")
     if (phoneDigits.length < 10) {
@@ -159,7 +239,7 @@ export default function AiEstimatePage() {
       return
     }
 
-    if (!leadData.name || !leadData.phone || !leadData.address) {
+    if (!leadData.name || !leadData.phone || !leadData.address.trim()) {
       toast.error(t("contact.form.errors.submissionFailed"))
       return
     }
@@ -170,61 +250,60 @@ export default function AiEstimatePage() {
     try {
       // 1. Clean phone number and check if exists in GHL
       const phoneDigits = leadData.phone.replace(/[^\d]/g, "")
-      console.log("🔍 Checking phone in GHL:", phoneDigits);
-      
-      const phoneCheckRes = await fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phoneDigits)}`);
-      const phoneCheck = await phoneCheckRes.json();
-      
-      if (!phoneCheckRes.ok) console.error("🔴 GHL Search Route Error:", phoneCheck);
+      console.log("🔍 Checking phone in GHL:", phoneDigits)
+
+      const phoneCheckRes = await fetch(`/api/ghl/contacts?phone=${encodeURIComponent(phoneDigits)}`)
+      const phoneCheck = await phoneCheckRes.json()
+
+      if (!phoneCheckRes.ok) console.error("🔴 GHL Search Route Error:", phoneCheck)
 
       if (phoneCheck.exists) {
-        console.log("⚠️ Phone already exists in GHL");
-        setFieldErrors({ phone: t("contact.form.errors.phoneExists") });
+        console.log("⚠️ Phone already exists in GHL")
+        setFieldErrors({ phone: t("contact.form.errors.phoneExists") })
         setDuplicateContactData({
-          field: 'phone',
+          field: "phone",
           name: phoneCheck.contactName || leadData.name,
-          id: phoneCheck.contactId
-        });
-        setShowDuplicateModal(true);
-        setIsSubmittingLead(false);
-        return;
+          id: phoneCheck.contactId,
+        })
+        setShowDuplicateModal(true)
+        setIsSubmittingLead(false)
+        return
       }
-      let imageUrls: string[] = [];
-      
+      const imageUrls: string[] = []
+
       // 2. Upload Images to Supabase Storage (quoteuploads)
       if (images.length > 0) {
-        console.log(`📤 Uploading ${images.length} image(s)...`);
+        console.log(`📤 Uploading ${images.length} image(s)...`)
         for (const imgB64 of images) {
           try {
-            const res = await fetch(imgB64);
-            const blob = await res.blob();
-            const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
-            const file = new File([blob], fileName, { type: "image/jpeg" });
-            
+            const res = await fetch(imgB64)
+            const blob = await res.blob()
+            const fileName = `ai_estimate_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`
+            const file = new File([blob], fileName, { type: "image/jpeg" })
+
             const { error: uploadError } = await supabase.storage
-              .from('quoteuploads')
-              .upload(fileName, file);
+              .from("quoteuploads")
+              .upload(fileName, file)
 
             if (!uploadError) {
-              const { data: { publicUrl } } = supabase.storage
-                .from('quoteuploads')
-                .getPublicUrl(fileName);
-              imageUrls.push(publicUrl);
-              console.log("✅ Image uploaded:", publicUrl);
+              const {
+                data: { publicUrl },
+              } = supabase.storage.from("quoteuploads").getPublicUrl(fileName)
+              imageUrls.push(publicUrl)
+              console.log("✅ Image uploaded:", publicUrl)
             } else {
-              console.error("🔴 Supabase Storage Error:", uploadError.message);
+              console.error("🔴 Supabase Storage Error:", uploadError.message)
             }
           } catch (storageError: any) {
-            console.error("🔴 Storage Processing Error:", storageError);
+            console.error("🔴 Storage Processing Error:", storageError)
           }
         }
       }
 
-      await proceedWithLead(imageUrls);
-
+      await proceedWithLead(imageUrls)
     } catch (error: any) {
-      console.error("🔴 Critical Form Submit Error:", error);
-      toast.error(t("contact.form.errors.submissionFailed"));
+      console.error("🔴 Critical Form Submit Error:", error)
+      toast.error(t("contact.form.errors.submissionFailed"))
     } finally {
       setIsSubmittingLead(false)
     }
@@ -244,7 +323,7 @@ export default function AiEstimatePage() {
             full_name: leadData.name,
             phone_number: leadData.phone,
             source: 'ai_estimator',
-            notes: `Address: ${leadData.address}${imageUrls.length > 0 ? ` | Images: ${imageUrls.join(", ")}` : ""}`
+            notes: `Location: ${propertyLocation}${imageUrls.length > 0 ? ` | Images: ${imageUrls.join(", ")}` : ""}`
           }).select();
 
         if (leadError) {
@@ -285,7 +364,7 @@ export default function AiEstimatePage() {
           source: "AI Estimate Tool",
           tags: ["AI-Estimate-Started"],
           customFields: {
-            iaestimateaddress: leadData.address,
+            iaestimateaddress: propertyLocation,
             "Image of the area to be cleaned": imageUrls.join(", "),
             "AI Analysis Started": "AI Analysis Started" // Using a generic key or it will just be ignored if not found
           }
@@ -399,16 +478,22 @@ export default function AiEstimatePage() {
     setIsSubmittingLead(false);
   }
 
+  const propertyLocation = leadData.address.trim()
+
   async function analyzeImages(base64Images: string[], leadId?: string | null, contactId?: string, uploadedImageUrl?: string) {
     setIsAnalyzing(true)
     console.log(`🚀 Starting AI Analysis for ${base64Images.length} image(s)...`);
     try {
+      // Compress images before sending to reduce payload size
+      console.log("📸 Compressing images...");
+      const compressedImages = await compressImages(base64Images)
+      
       const response = await fetch("/api/analyze-surface", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          images: base64Images,
-          address: leadData.address,
+          images: compressedImages,
+          address: propertyLocation,
         }),
       })
 
@@ -458,7 +543,7 @@ export default function AiEstimatePage() {
                 aiestimatearea: `${data.estimatedSqFt} sqft`,
                 price_range: data.priceRange,
                 iaestimatecontamination: data.contaminationLevel,
-                iaestimateaddress: leadData.address,
+                iaestimateaddress: propertyLocation,
                 iaestimateanalysisnotes: analysisNotes,
                 // Ensure photo is a string here too
                 iaestimateimage_urls: uploadedImageUrl || ""
@@ -497,6 +582,21 @@ export default function AiEstimatePage() {
     const message = `Hi! I used your AI Estimate tool and got a range of ${result?.priceRange} for my ${result?.detectedMaterial}. I'd like to book this service.`
     const whatsappUrl = `https://wa.me/12392654398?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
+  }
+
+  const openGalleryAt = (index: number) => {
+    setActiveGalleryIndex(index)
+    setShowGalleryModal(true)
+  }
+
+  const showPreviousImage = () => {
+    if (images.length === 0) return
+    setActiveGalleryIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+  }
+
+  const showNextImage = () => {
+    if (images.length === 0) return
+    setActiveGalleryIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
   }
 
   return (
@@ -669,12 +769,12 @@ export default function AiEstimatePage() {
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">{t("aiEstimate.form.fullName")}</Label>
                     <div className="relative group">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                      <Input 
-                        placeholder="e.g. John Smith" 
+                      <Input
+                        placeholder="e.g. John Smith"
                         required
                         className="h-14 pl-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all"
                         value={leadData.name}
-                        onChange={e => setLeadData({...leadData, name: e.target.value})}
+                        onChange={e => setLeadData({ ...leadData, name: e.target.value })}
                       />
                     </div>
                   </div>
@@ -683,9 +783,9 @@ export default function AiEstimatePage() {
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">{t("aiEstimate.form.phoneNumber")}</Label>
                     <div className="relative group">
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                      <Input 
+                      <Input
                         type="tel"
-                        placeholder="(555) 000-0000" 
+                        placeholder="(555) 000-0000"
                         required
                         className={`h-14 pl-12 bg-background/50 text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:ring-primary/20 transition-all font-medium ${
                           fieldErrors.phone ? "border-red-500 focus:border-red-500" : "border-border focus:border-primary"
@@ -693,7 +793,7 @@ export default function AiEstimatePage() {
                         value={leadData.phone}
                         onChange={e => {
                           const formatted = formatPhoneNumber(e.target.value)
-                          setLeadData({...leadData, phone: formatted})
+                          setLeadData({ ...leadData, phone: formatted })
                           if (fieldErrors.phone) setFieldErrors({})
                         }}
                         maxLength={14}
@@ -757,7 +857,7 @@ export default function AiEstimatePage() {
                    </div>
                    <div className="text-center">
                       <h3 className="text-2xl font-bold text-foreground font-(family-name:--font-orbitron) tracking-wider mb-2 uppercase">{t("aiEstimate.analyzing.mapping")}</h3>
-                      <p className="text-muted-foreground text-[10px] uppercase tracking-[0.3em] font-bold">Deploying Neural Network...</p>
+                      <p className="text-muted-foreground text-[10px] uppercase tracking-[0.3em] font-bold">Optimizing & Analyzing Images...</p>
                    </div>
                 </div>
               </div>
@@ -775,7 +875,11 @@ export default function AiEstimatePage() {
                     
                     {/* Visual Analysis */}
                     <div className="space-y-6">
-                      <div className="relative aspect-square md:aspect-video rounded-2xl overflow-hidden border border-border group shadow-inner">
+                      <button
+                        type="button"
+                        onClick={() => openGalleryAt(0)}
+                        className="relative w-full aspect-square md:aspect-video rounded-2xl overflow-hidden border border-border group shadow-inner cursor-zoom-in"
+                      >
                         {images.length > 0 && <Image src={images[0]} alt="Analyzed" fill className="object-cover" />}
                         <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-all duration-300" />
                         
@@ -788,7 +892,22 @@ export default function AiEstimatePage() {
                             <span className="text-primary text-[9px] font-black uppercase tracking-widest">Basado en {images.length} fotos</span>
                           </div>
                         )}
-                      </div>
+                      </button>
+
+                      {images.length > 1 && (
+                        <div className="grid grid-cols-4 gap-2">
+                          {images.slice(0, 4).map((img, i) => (
+                            <button
+                              type="button"
+                              key={i}
+                              onClick={() => openGalleryAt(i)}
+                              className="relative aspect-square rounded-xl overflow-hidden border border-border hover:border-primary transition-colors"
+                            >
+                              <Image src={img} alt={`Analyzed ${i + 1}`} fill className="object-cover" />
+                            </button>
+                          ))}
+                        </div>
+                      )}
                       
                       <div className="grid grid-cols-2 gap-3">
                          <div className="bg-muted/30 border border-border p-4 rounded-xl flex flex-col gap-1">
@@ -814,6 +933,12 @@ export default function AiEstimatePage() {
                        <p className="text-muted-foreground text-sm mb-10 leading-relaxed font-medium">
                          {t("aiEstimate.result.validity")}
                        </p>
+
+                       <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-left">
+                         <p className="text-[11px] leading-relaxed text-amber-900 dark:text-amber-200 font-semibold">
+                           This is an AI-based estimate. Final price is confirmed after our on-site visit and inspection of the exact area to be cleaned.
+                         </p>
+                       </div>
                        
                        <div className="space-y-3">
                           <Button 
@@ -823,6 +948,14 @@ export default function AiEstimatePage() {
                             <span className="flex items-center gap-3">
                               {t("aiEstimate.result.lockPrice")} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </span>
+                          </Button>
+
+                          <Button
+                            type="button"
+                            onClick={() => setShowBookingModal(true)}
+                            className="w-full h-14 bg-foreground text-background hover:opacity-90 rounded-2xl text-sm font-bold uppercase tracking-widest"
+                          >
+                            Schedule Appointment
                           </Button>
                           
                           <button 
@@ -849,6 +982,40 @@ export default function AiEstimatePage() {
                     </div>
                   ))}
                 </div>
+
+                {result?.pricingDebug && (
+                  <div className="bg-card/40 backdrop-blur-md border border-border rounded-2xl p-5 space-y-3">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                      Estimation Breakdown
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border">
+                        <p className="text-muted-foreground uppercase tracking-wide text-[10px]">Address Used</p>
+                        <p className="font-semibold text-foreground mt-1">{result.pricingDebug.normalizedAddress}</p>
+                      </div>
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border">
+                        <p className="text-muted-foreground uppercase tracking-wide text-[10px]">Property Type</p>
+                        <p className="font-semibold text-foreground mt-1">{result.pricingDebug.propertyType}</p>
+                      </div>
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border">
+                        <p className="text-muted-foreground uppercase tracking-wide text-[10px]">Zone Tier</p>
+                        <p className="font-semibold text-foreground mt-1 uppercase">{result.pricingDebug.zoneTier}</p>
+                      </div>
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border">
+                        <p className="text-muted-foreground uppercase tracking-wide text-[10px]">Pricing Category</p>
+                        <p className="font-semibold text-foreground mt-1 uppercase">{result.pricingDebug.serviceCategory}</p>
+                      </div>
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border">
+                        <p className="text-muted-foreground uppercase tracking-wide text-[10px]">Location Multiplier</p>
+                        <p className="font-semibold text-foreground mt-1">x{result.pricingDebug.locationMultiplier}</p>
+                      </div>
+                      <div className="bg-muted/30 rounded-xl p-3 border border-border">
+                        <p className="text-muted-foreground uppercase tracking-wide text-[10px]">Maps Data Source</p>
+                        <p className="font-semibold text-foreground mt-1 uppercase">{result.pricingDebug.source}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -927,6 +1094,75 @@ export default function AiEstimatePage() {
               {t("aiEstimate.form.sendAnother") || "Enviar otra solicitud"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showGalleryModal} onOpenChange={setShowGalleryModal}>
+        <DialogContent className="sm:max-w-4xl bg-card border-border p-3 md:p-5">
+          <DialogHeader>
+            <DialogTitle className="font-(family-name:--font-orbitron) text-lg uppercase tracking-wide">
+              Analysis Gallery
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border bg-black/20">
+              {images[activeGalleryIndex] && (
+                <Image
+                  src={images[activeGalleryIndex]}
+                  alt={`Analyzed image ${activeGalleryIndex + 1}`}
+                  fill
+                  className="object-contain"
+                />
+              )}
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <Button type="button" variant="outline" onClick={showPreviousImage}>
+                Previous
+              </Button>
+              <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">
+                {images.length > 0 ? `${activeGalleryIndex + 1} / ${images.length}` : "0 / 0"}
+              </span>
+              <Button type="button" variant="outline" onClick={showNextImage}>
+                Next
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
+        <DialogContent className="sm:max-w-5xl bg-card border-border p-4 md:p-6 max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="font-(family-name:--font-orbitron) text-xl uppercase tracking-wide">
+              {getText("aiEstimate.booking.ready", "Ready to Book?")}
+            </DialogTitle>
+            <DialogDescription>
+              {getText("aiEstimate.booking.selectDate", "Select your preferred date and time below")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+            <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+              <p className="text-[11px] leading-relaxed text-amber-900 dark:text-amber-200 font-semibold">
+                This booking is based on an estimate. Final price will be provided after our in-person visit and surface evaluation.
+              </p>
+            </div>
+
+            <div className="relative rounded-xl overflow-hidden border border-border">
+              <iframe
+                src="https://apighlv.elitecleaningsurfaces.com/widget/booking/PhQ7q4iIMz6LUvtmegB6"
+                style={{
+                  width: "100%",
+                  border: "none",
+                  overflow: "auto",
+                  height: "72vh",
+                  minHeight: "650px",
+                }}
+                scrolling="yes"
+                id="PhQ7q4iIMz6LUvtmegB6_booking_calendar_modal"
+                className="rounded-xl"
+              />
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
