@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Shield,
   Droplets,
+  MapPin,
   AlertTriangle,
   Plus,
   X,
@@ -68,6 +69,19 @@ interface LeadData {
   address: string
 }
 
+interface AddressSuggestion {
+  placeId: string
+  description: string
+  mainText: string
+  secondaryText: string
+}
+
+interface SelectedAddressMeta {
+  placeId: string
+  lat: number
+  lng: number
+}
+
 export default function AiEstimatePage() {
   const { t } = useLanguage()
   const [images, setImages] = useState<string[]>([])
@@ -84,11 +98,82 @@ export default function AiEstimatePage() {
   const [activeStep, setActiveStep] = useState<"idle" | "form" | "analyzing" | "result">("idle")
   const fileInputRef = useRef<HTMLInputElement>(null)
   const addMoreRef = useRef<HTMLInputElement>(null)
+  const addressComboboxRef = useRef<HTMLDivElement>(null)
+  const autocompleteAbortRef = useRef<AbortController | null>(null)
+  const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([])
+  const [isAddressLoading, setIsAddressLoading] = useState(false)
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false)
+  const [highlightedAddressIndex, setHighlightedAddressIndex] = useState(-1)
+  const [addressLookupError, setAddressLookupError] = useState("")
+  const [selectedAddressMeta, setSelectedAddressMeta] = useState<SelectedAddressMeta | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!addressComboboxRef.current?.contains(event.target as Node)) {
+        setShowAddressSuggestions(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick)
+    return () => document.removeEventListener("mousedown", handleOutsideClick)
+  }, [])
+
+  useEffect(() => {
+    if (activeStep !== "form") return
+
+    const query = leadData.address.trim()
+    if (selectedAddressMeta || query.length < 3) {
+      setAddressSuggestions([])
+      setShowAddressSuggestions(false)
+      setHighlightedAddressIndex(-1)
+      setIsAddressLoading(false)
+      return
+    }
+
+    const timeoutId = setTimeout(async () => {
+      autocompleteAbortRef.current?.abort()
+      const controller = new AbortController()
+      autocompleteAbortRef.current = controller
+
+      setIsAddressLoading(true)
+      setAddressLookupError("")
+
+      try {
+        const response = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(query)}`, {
+          method: "GET",
+          signal: controller.signal,
+        })
+
+        const data = await response.json()
+        if (!response.ok) {
+          throw new Error(data?.error || "Address lookup failed")
+        }
+
+        const suggestions: AddressSuggestion[] = Array.isArray(data?.suggestions) ? data.suggestions : []
+        setAddressSuggestions(suggestions)
+        setShowAddressSuggestions(suggestions.length > 0)
+        setHighlightedAddressIndex(suggestions.length > 0 ? 0 : -1)
+      } catch (error: any) {
+        if (error?.name === "AbortError") return
+        setAddressSuggestions([])
+        setShowAddressSuggestions(false)
+        setHighlightedAddressIndex(-1)
+        setAddressLookupError("No pudimos cargar sugerencias de direccion.")
+      } finally {
+        setIsAddressLoading(false)
+      }
+    }, 220)
+
+    return () => {
+      clearTimeout(timeoutId)
+      autocompleteAbortRef.current?.abort()
+    }
+  }, [leadData.address, selectedAddressMeta, activeStep])
 
   // Load GHL booking script when booking modal is opened
   useEffect(() => {
@@ -244,6 +329,11 @@ export default function AiEstimatePage() {
       return
     }
 
+    if (!selectedAddressMeta) {
+      toast.error("Selecciona tu direccion desde las sugerencias para continuar.")
+      return
+    }
+
     setIsSubmittingLead(true)
     setFieldErrors({})
 
@@ -323,7 +413,7 @@ export default function AiEstimatePage() {
             full_name: leadData.name,
             phone_number: leadData.phone,
             source: 'ai_estimator',
-            notes: `Location: ${propertyLocation}${imageUrls.length > 0 ? ` | Images: ${imageUrls.join(", ")}` : ""}`
+            notes: `Location: ${propertyLocation}${selectedAddressMeta ? ` | Coordinates: ${selectedAddressMeta.lat},${selectedAddressMeta.lng}` : ""}${imageUrls.length > 0 ? ` | Images: ${imageUrls.join(", ")}` : ""}`
           }).select();
 
         if (leadError) {
@@ -365,6 +455,7 @@ export default function AiEstimatePage() {
           tags: ["AI-Estimate-Started"],
           customFields: {
             iaestimateaddress: propertyLocation,
+            iaestimatelatlng: selectedAddressMeta ? `${selectedAddressMeta.lat},${selectedAddressMeta.lng}` : "",
             "Image of the area to be cleaned": imageUrls.join(", "),
             "AI Analysis Started": "AI Analysis Started" // Using a generic key or it will just be ignored if not found
           }
@@ -494,6 +585,9 @@ export default function AiEstimatePage() {
         body: JSON.stringify({
           images: compressedImages,
           address: propertyLocation,
+          placeId: selectedAddressMeta?.placeId,
+          lat: selectedAddressMeta?.lat,
+          lng: selectedAddressMeta?.lng,
         }),
       })
 
@@ -509,7 +603,7 @@ export default function AiEstimatePage() {
       setResult(data)
       setActiveStep("result")
       
-      const analysisNotes = `Material: ${data.detectedMaterial}, Price: ${data.priceRange}, Area: ${data.estimatedSqFt}sqft, Confidence: ${data.confidenceScore}%`;
+      const analysisNotes = `Material: ${data.detectedMaterial}, Price: ${data.priceRange}, Area: ${data.estimatedSqFt}sqft, Confidence: ${data.confidenceScore}%, Coordinates: ${selectedAddressMeta?.lat ?? "n/a"}, ${selectedAddressMeta?.lng ?? "n/a"}`;
 
       // Update Supabase
       if (leadId) {
@@ -597,6 +691,72 @@ export default function AiEstimatePage() {
   const showNextImage = () => {
     if (images.length === 0) return
     setActiveGalleryIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+  }
+
+  const handleAddressInputChange = (value: string) => {
+    setLeadData({ ...leadData, address: value })
+    setSelectedAddressMeta(null)
+    setAddressLookupError("")
+    if (!value.trim()) {
+      setAddressSuggestions([])
+      setShowAddressSuggestions(false)
+      setHighlightedAddressIndex(-1)
+    }
+  }
+
+  const selectAddressSuggestion = async (suggestion: AddressSuggestion) => {
+    setIsAddressLoading(true)
+    setAddressLookupError("")
+
+    try {
+      const response = await fetch(`/api/places/details?placeId=${encodeURIComponent(suggestion.placeId)}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to validate address")
+      }
+
+      setLeadData({ ...leadData, address: data.address })
+      setSelectedAddressMeta({
+        placeId: data.placeId,
+        lat: Number(data.lat),
+        lng: Number(data.lng),
+      })
+      setAddressSuggestions([])
+      setShowAddressSuggestions(false)
+      setHighlightedAddressIndex(-1)
+    } catch {
+      setAddressLookupError("No pudimos validar esa direccion. Intenta otra sugerencia.")
+    } finally {
+      setIsAddressLoading(false)
+    }
+  }
+
+  const handleAddressKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showAddressSuggestions || addressSuggestions.length === 0) return
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault()
+      setHighlightedAddressIndex((prev) => (prev + 1) % addressSuggestions.length)
+      return
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault()
+      setHighlightedAddressIndex((prev) => (prev <= 0 ? addressSuggestions.length - 1 : prev - 1))
+      return
+    }
+
+    if (event.key === "Enter" && highlightedAddressIndex >= 0) {
+      event.preventDefault()
+      await selectAddressSuggestion(addressSuggestions[highlightedAddressIndex])
+      return
+    }
+
+    if (event.key === "Escape") {
+      setShowAddressSuggestions(false)
+      setHighlightedAddressIndex(-1)
+    }
   }
 
   return (
@@ -808,16 +968,67 @@ export default function AiEstimatePage() {
 
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Property address</Label>
-                    <div className="relative group">
+                    <div ref={addressComboboxRef} className="relative group">
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         type="text"
-                        placeholder="Street, City, ZIP"
+                        placeholder="Empieza a escribir tu direccion..."
                         required
-                        className="h-14 px-4 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all"
+                        className="h-14 pl-12 pr-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground/30 rounded-xl focus:border-primary focus:ring-primary/20 transition-all"
                         value={leadData.address}
-                        onChange={e => setLeadData({ ...leadData, address: e.target.value })}
+                        onChange={e => handleAddressInputChange(e.target.value)}
+                        onFocus={() => {
+                          if (addressSuggestions.length > 0 && !selectedAddressMeta) {
+                            setShowAddressSuggestions(true)
+                          }
+                        }}
+                        onKeyDown={handleAddressKeyDown}
+                        autoComplete="off"
+                        role="combobox"
+                        aria-expanded={showAddressSuggestions}
+                        aria-controls="address-suggestions"
                       />
+                      {isAddressLoading && (
+                        <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-primary" />
+                      )}
+
+                      {!isAddressLoading && selectedAddressMeta && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400">
+                          Valid
+                        </span>
+                      )}
+
+                      {showAddressSuggestions && addressSuggestions.length > 0 && (
+                        <div
+                          id="address-suggestions"
+                          className="absolute z-40 mt-2 w-full overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl backdrop-blur-xl"
+                        >
+                          <ul className="max-h-72 overflow-y-auto py-1">
+                            {addressSuggestions.map((suggestion, index) => (
+                              <li key={suggestion.placeId}>
+                                <button
+                                  type="button"
+                                  className={`w-full px-4 py-3 text-left transition-colors ${
+                                    index === highlightedAddressIndex ? "bg-primary/10" : "hover:bg-muted/60"
+                                  }`}
+                                  onMouseEnter={() => setHighlightedAddressIndex(index)}
+                                  onClick={() => selectAddressSuggestion(suggestion)}
+                                >
+                                  <p className="text-sm font-semibold text-foreground leading-snug">{suggestion.mainText}</p>
+                                  <p className="text-xs text-muted-foreground mt-0.5">{suggestion.secondaryText}</p>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
+                    {addressLookupError && (
+                      <p className="text-[11px] font-semibold text-red-500">{addressLookupError}</p>
+                    )}
+                    {!selectedAddressMeta && leadData.address.trim().length >= 3 && !isAddressLoading && !showAddressSuggestions && !addressLookupError && (
+                      <p className="text-[11px] text-muted-foreground">Selecciona una direccion sugerida para validar la ubicacion.</p>
+                    )}
                   </div>
 
                   <Button 
